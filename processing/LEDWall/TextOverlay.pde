@@ -6,7 +6,7 @@ class TextOverlay {
   PFont f;                    // font
   int fontHeight;             // font height
   int alignX, alignY;         // text align x & y
-  color c;                 // color 
+  color c;                    // color 
   boolean textSet = false;    // is the text set?
   int sx = 0, sy = 0;
   boolean isOn = false;
@@ -15,8 +15,6 @@ class TextOverlay {
     alignX = ax;
     alignY = ay;
     f = _f;
-    buffer.RAW.textFont(f);
-    fontHeight = int(buffer.RAW.textAscent() + buffer.RAW.textDescent());
     txt = "1234567890";
     lines = new ArrayList<String>();
     c = color(255);
@@ -30,24 +28,29 @@ class TextOverlay {
       return false;
     }
   }
-
+  
   private void setupText() {
+    buffer.RAW.textFont(f);
+    fontHeight = int(buffer.RAW.textAscent() + buffer.RAW.textDescent());
+    
     words = txt.split(" ");               // split the test into a string array of words
     String current_line = new String();             // a string for creating a text line
     lines.clear();                        // clear the arraylist of text lines
 
     for (int i = 0; i < words.length; i++) {           // loop through the words
       String test = current_line + words[i] + " ";     // add the current line and new word to the test string
-      //println(test);
 
       // is the text width of test line greater then the width of the buffer??
       if (buffer.RAW.textWidth(test) + 10 > buffer.RAW.width) {   
-        lines.add(current_line);                // if it is, add the current line to the Array list of lines
+        lines.add(current_line.trim());                // if it is, add the current line to the Array list of lines
         current_line = words[i] + " ";                 // now reset the current line by adding the new word to it
+        if (i == (words.length - 1)) {
+          lines.add(current_line);
+        }
       }
       else {
         current_line = test;                           // we still have more room, so make the test line into the current line
-        if (words.length - 1 == i) {                   // check to see if we are on the last word
+        if (i == (words.length - 1)) {                   // check to see if we are on the last word
           lines.add(current_line);              // if we are, then we are done, so add the current line to the arraylist
         }
       }
@@ -70,6 +73,10 @@ class TextOverlay {
   
   void setColor(color _c) {
     c = _c;
+  }
+  
+  void setFont(PFont _f) {
+    f = _f;
   }
   
   void on() {

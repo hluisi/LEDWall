@@ -8,8 +8,10 @@ class Modes {
 
   int current;
   int start_time, check_time;
+  
+  String text = new String();
 
-  PFont testFont = loadFont("Verdana-Bold-40.vlw");
+  PFont testFont = loadFont("Verdana-Bold-52.vlw");
   TextOverlay text_overlay = new TextOverlay(CENTER, CENTER, testFont);
 
   Modes() {
@@ -29,22 +31,30 @@ class Modes {
       set(MAIN);
     } 
     else if (check_time > 16000) {
+      text = "This concludes this test of the Emergency Broadcast System.";
+      showText = true;
       showImage(smpte);
     } 
     else if (check_time > 14000) {
-      showTestColor(color(255, 255, 255), "W H I T E");
+      showText = false;
+      showTestColor(color(255, 255, 255));
     } 
     else if (check_time > 12000) {
-      showTestColor(color(0, 0, 255), "B L U E");
+      showText = false;
+      showTestColor(color(0, 0, 255));
     } 
     else if (check_time > 10000) {
-      showTestColor(color(0, 255, 0), "G R E E N");
+      showText = false;
+      showTestColor(color(0, 255, 0));
     } 
     else if (check_time > 8000) {
-      showTestColor(color(255, 0, 0), "R E D");
+      showText = false;
+      showTestColor(color(255, 0, 0));
     } 
     else {
-      showImage(test);
+      text = "This is a test. For the next few seconds, this station will conduct a test of the Emergency Broadcast System. This is only a test.";
+      showText = true;
+      showImage(smpte);
     }
   }
 
@@ -57,15 +67,15 @@ class Modes {
     } else {
       text_overlay.off();
     }
-    text_overlay.setColor(color(255, 255, 0));
-    text_overlay.set("This is a test. For the next sixty seconds, this station will conduct a test of the Emergency Broadcast System. This is only a test.");
+    text_overlay.setColor(color(255, 255, 128));
+    text_overlay.set(text);
     text_overlay.display();
     buffer.endDraw();
     buffer.update();
     buffer.send();
   }
 
-  void showTestColor(color c, String s) {
+  void showTestColor(color c) {
     buffer.beginDraw();
     buffer.RAW.background(c);
     if (showText) {
@@ -74,7 +84,7 @@ class Modes {
       text_overlay.off();
     }
     text_overlay.setColor(color(0, 0, 0));
-    text_overlay.set(s);
+    text_overlay.set(text);
     text_overlay.display();
     buffer.endDraw();
     buffer.update();

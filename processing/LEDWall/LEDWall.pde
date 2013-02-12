@@ -55,16 +55,20 @@ Kinect kinect;
 
 // frame buffer setup
 final int FRAME_BUFFER_WIDTH  = 640;
-final int FRAME_BUFFER_HEIGHT = 240;
+final int FRAME_BUFFER_HEIGHT = 480;
 FrameBuffers buffer;
 
 // Debug Setup
-final int DEBUG_PIXEL_SIZE      = 4;                                      // size of each degun pixel
-final int DEBUG_PIXEL_SPACING   = DEBUG_PIXEL_SIZE;                       // the spacing for each debug pixel
-final int DEBUG_REAL_PIXEL_SIZE = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING; // the total size of each debug pixel
-final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE;           // the x size of the debug window
+final int DEBUG_PIXEL_SIZE      = 3;  // size of each debug pixel
+final int DEBUG_PIXEL_SPACING_X = 3;  // the X spacing for each debug pixel
+final int DEBUG_PIXEL_SPACING_Y = 6;  // the X spacing for each debug pixel
+
+final int DEBUG_REAL_PIXEL_SIZE_X = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_X; // the total X size of each debug pixel
+final int DEBUG_REAL_PIXEL_SIZE_Y = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_Y; // the total Y size of each debug pixel
+
+final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;           // the x size of the debug window
 final int DEBUG_WINDOW_YSIZE = 200;                                       // the y size of the debug window
-final int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE * ROWS;
+final int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 
 boolean DEBUG_SHOW_WALL  = true;                                    // show the wall on the computer screen wall?
 boolean showText = true;
@@ -82,7 +86,7 @@ void setup() {
   int x, y;
   x = DEBUG_WINDOW_XSIZE;
   if (DEBUG_SHOW_WALL) {
-    y = (ROWS * DEBUG_REAL_PIXEL_SIZE) + DEBUG_WINDOW_YSIZE;
+    y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
   } 
   else {
     y = DEBUG_WINDOW_YSIZE;
@@ -115,10 +119,10 @@ void drawDebug() {
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
   text("time check: " + (mode.check_time / 1000), 10, DEBUG_WINDOW_START + 35);
-  text("sx: " + mode.text_overlay.sx, 10, DEBUG_WINDOW_START + 50);
-  text("sy: " + mode.text_overlay.sy, 10, DEBUG_WINDOW_START + 65);
-  text("words: " + mode.text_overlay.words.length, 10, DEBUG_WINDOW_START + 80);
-  text("lines: " + mode.text_overlay.lines.size(), 10, DEBUG_WINDOW_START + 95);
+  //text("sx: " + mode.text_overlay.sx, 10, DEBUG_WINDOW_START + 50);
+  //text("sy: " + mode.text_overlay.sy, 10, DEBUG_WINDOW_START + 65);
+  //text("words: " + mode.text_overlay.words.length, 10, DEBUG_WINDOW_START + 80);
+  //text("lines: " + mode.text_overlay.lines.size(), 10, DEBUG_WINDOW_START + 95);
 }
 
 void keyPressed() {

@@ -21,8 +21,8 @@
  
  --------------------------------------------------------------------*/
 
-final int RAW_BUFFER_WIDTH  = 640;
-final int RAW_BUFFER_HEIGHT = 240;      
+final int RAW_BUFFER_WIDTH  = FRAME_BUFFER_WIDTH;
+final int RAW_BUFFER_HEIGHT = FRAME_BUFFER_HEIGHT;      
 final int SMALL_BUFFER_WIDTH  = COLUMNS; 
 final int SMALL_BUFFER_HEIGHT = ROWS;   
 
@@ -76,8 +76,9 @@ class FrameBuffers {
 
   // display on screen
   private void displayOnScreen(int x, int y, color c) {
-    int screenX = (x * DEBUG_REAL_PIXEL_SIZE) + (DEBUG_REAL_PIXEL_SIZE / 2);
-    int screenY = (y * DEBUG_REAL_PIXEL_SIZE) + (DEBUG_REAL_PIXEL_SIZE / 2);
+    int screenX = (x * DEBUG_REAL_PIXEL_SIZE_X) + (DEBUG_REAL_PIXEL_SIZE_X / 2);
+    int screenY = (y * DEBUG_REAL_PIXEL_SIZE_Y) + (DEBUG_REAL_PIXEL_SIZE_Y / 2);
+    noStroke();
     fill(c);
     rectMode(CENTER);
     rect(screenX, screenY, DEBUG_PIXEL_SIZE, DEBUG_PIXEL_SIZE);
