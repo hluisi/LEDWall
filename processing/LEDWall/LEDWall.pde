@@ -60,12 +60,15 @@ FrameBuffers buffer;
 
 // Debug Setup
 final int DEBUG_PIXEL_SIZE      = 4;                                      // size of each degun pixel
-final int DEBUG_PIXEL_SPACING   = DEBUG_PIXEL_SIZE;                   // the spacing for each debug pixel
+final int DEBUG_PIXEL_SPACING   = DEBUG_PIXEL_SIZE;                       // the spacing for each debug pixel
 final int DEBUG_REAL_PIXEL_SIZE = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING; // the total size of each debug pixel
 final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE;           // the x size of the debug window
 final int DEBUG_WINDOW_YSIZE = 200;                                       // the y size of the debug window
 final int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE * ROWS;
-final boolean DEBUG_SHOW_WALL  = true;                                    // show the wall on the computer screen wall?
+
+boolean DEBUG_SHOW_WALL  = true;                                    // show the wall on the computer screen wall?
+boolean showText = true;
+
 
 PImage smpte, test;
 
@@ -85,15 +88,15 @@ void setup() {
     y = DEBUG_WINDOW_YSIZE;
   }
   size(x, y, P2D);  // create the window
-  noSmooth();
+  //noSmooth();
 
   buffer = new FrameBuffers();
   mode = new Modes();
   kinect = new Kinect(this);  //, SimpleOpenNI.RUN_MODE_MULTI_THREADED);
   kinect.update();
 
-  smpte = loadImage("smpte_160x80.png");
-  test = loadImage("test_160x80.png");
+  smpte = loadImage("smpte_640x240.png");
+  test  = loadImage("test_640x240.png");
 
 }
 
@@ -122,7 +125,7 @@ void keyPressed() {
   switch(key) {
 
     // switch to TEST mode
-  case 't':
+  case '0':
     mode.set(mode.TEST);
     break;
 
@@ -137,11 +140,11 @@ void keyPressed() {
   case '3':
     mode.set(mode.KSCENE);
     break;
-
-    // quit running sketch
-  case 'q':
-    exit();
+    
+  case 't':
+    showText = !showText;
     break;
+
   }
 }
 

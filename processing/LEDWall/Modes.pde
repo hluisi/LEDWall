@@ -9,7 +9,7 @@ class Modes {
   int current;
   int start_time, check_time;
 
-  PFont testFont = createFont("Arial-Black", 46);
+  PFont testFont = loadFont("Verdana-Bold-40.vlw");
   TextOverlay text_overlay = new TextOverlay(CENTER, CENTER, testFont);
 
   Modes() {
@@ -52,11 +52,14 @@ class Modes {
     buffer.beginDraw();
     buffer.RAW.background(0);
     buffer.RAW.image(img, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-    text_overlay.on();
+    if (showText) {
+      text_overlay.on();
+    } else {
+      text_overlay.off();
+    }
     text_overlay.setColor(color(255, 255, 0));
     text_overlay.set("This is a test. For the next sixty seconds, this station will conduct a test of the Emergency Broadcast System. This is only a test.");
     text_overlay.display();
-    text_overlay.off();
     buffer.endDraw();
     buffer.update();
     buffer.send();
@@ -65,11 +68,14 @@ class Modes {
   void showTestColor(color c, String s) {
     buffer.beginDraw();
     buffer.RAW.background(c);
-    text_overlay.on();
+    if (showText) {
+      text_overlay.on();
+    } else {
+      text_overlay.off();
+    }
     text_overlay.setColor(color(0, 0, 0));
     text_overlay.set(s);
     text_overlay.display();
-    text_overlay.off();
     buffer.endDraw();
     buffer.update();
     buffer.send();
