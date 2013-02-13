@@ -55,13 +55,13 @@ Kinect kinect;
 
 // frame buffer setup
 final int FRAME_BUFFER_WIDTH  = 640;
-final int FRAME_BUFFER_HEIGHT = 480;
+final int FRAME_BUFFER_HEIGHT = 240;
 FrameBuffers buffer;
 
 // Debug Setup
-final int DEBUG_PIXEL_SIZE      = 3;  // size of each debug pixel
-final int DEBUG_PIXEL_SPACING_X = 3;  // the X spacing for each debug pixel
-final int DEBUG_PIXEL_SPACING_Y = 6;  // the X spacing for each debug pixel
+final int DEBUG_PIXEL_SIZE      = 4;  // size of each debug pixel
+final int DEBUG_PIXEL_SPACING_X = 4;  // the X spacing for each debug pixel
+final int DEBUG_PIXEL_SPACING_Y = 4;  // the X spacing for each debug pixel
 
 final int DEBUG_REAL_PIXEL_SIZE_X = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_X; // the total X size of each debug pixel
 final int DEBUG_REAL_PIXEL_SIZE_Y = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_Y; // the total Y size of each debug pixel

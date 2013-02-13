@@ -11,7 +11,7 @@ class Modes {
   
   String text = new String();
 
-  PFont testFont = loadFont("Verdana-Bold-52.vlw");
+  PFont testFont = loadFont("Arial-Black-42.vlw");
   TextOverlay text_overlay = new TextOverlay(CENTER, CENTER, testFont);
 
   Modes() {
