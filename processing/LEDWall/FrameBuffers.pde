@@ -24,21 +24,14 @@ final int SMALL_BUFFER_HEIGHT = ROWS;
 
 class FrameBuffers {
 
-  PGraphics RAW;     // main buffer used for drawing each frame
-  PImage first;   // first small image buffer the size of the LED Matrix
-  PImage second;  // second small image buffer the size of the LED Matrix
+  PGraphics RAW;  // main buffer used for drawing each frame
+  PImage SMALL;   // small image buffer the size of the LED Matrix
   
   boolean rawIsDrawing = false;  // has PGraphics beginDraw() been called?
 
-  int lastDraw = 1;  // which buffer to send next
-
-
   FrameBuffers() {
     RAW    = createGraphics(RAW_BUFFER_WIDTH, RAW_BUFFER_HEIGHT, P2D);    // create the RAW PGraphics object
-    first  = createImage(SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT, RGB);   // create the first small image buffer
-    second = createImage(SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT, RGB);   // create the second small image buffer
-    //Your numbers RAW.noSmooth();
-    //RAW.noStroke();
+    SMALL  = createImage(SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT, RGB);   // create the first small image buffer
   }
 
   // start drawing on the RAW PGraphics object
@@ -60,14 +53,7 @@ class FrameBuffers {
       println("forgot to end drawing before updating the buffers!!");
     }
     
-    if (lastDraw == 1) {  // the last draw was to the first buffer, so now copy the second one
-      second.copy(RAW, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, 0, SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT);
-      lastDraw = 2;
-    } 
-    else {  // the last draw was to the second buffer, so copy the first
-      first.copy(RAW, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, 0, SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT);
-      lastDraw = 1;
-    }
+    SMALL.copy(RAW, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, 0, SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT);
   }
 
   // display on screen
@@ -83,23 +69,15 @@ class FrameBuffers {
   // send buffer to the LED wall
   void send() {
 
-    PImage current;
-    if (lastDraw == 1) { 
-      current = first;
-    } 
-    else {
-      current = second;
-    }
-
-    current.loadPixels(); // load color data into the image's pixel array
+    SMALL.loadPixels(); // load color data into the image's pixel array
     // TODO
-    // break down current image into smaller images via arrayCopy
+    // break down small image into smaller images via arrayCopy
     // then send small images via serial to each teensy
     for (int i = 0; i < TOTAL; i++) {
       if (DEBUG_SHOW_WALL) {  // display the pixel for debugging? 
         int x = i % COLUMNS;  
         int y = i / COLUMNS;
-        displayOnScreen(x, y, current.pixels[i]);
+        displayOnScreen(x, y, SMALL.pixels[i]);
       }
     }
   }
