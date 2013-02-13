@@ -1,18 +1,14 @@
 /*--------------------------------------------------------------------
- The goal here is to create 3 different frame buffers:
+ The goal here is to create 2 different frame buffers:
  
  1st. The RAW full sized buffer that is used for drawing and 
  creating each frame.
  
  2nd. A small frame buffer that matches the size of the LED matrix.
  
- 3rd. Another small frame buffer to double buffer the matrix 
- to allow for threading out the sending of data while also 
- drawing a new frame the RAW buffer. 
- 
  Because we only draw on the RAW buffer, it needs to be 
- PGrpahic object. But the two small buffers can be PImages, thus 
- making them smaller and easier to deal with.
+ PGrpahic object. But the small buffer can be PImages, thus 
+ making it smaller and easier to deal with.
  
  TODO 
  breakdown the small buffer into even smaller images that will be sent 
