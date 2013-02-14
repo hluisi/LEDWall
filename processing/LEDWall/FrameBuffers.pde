@@ -32,6 +32,8 @@ class FrameBuffers {
   FrameBuffers() {
     RAW    = createGraphics(RAW_BUFFER_WIDTH, RAW_BUFFER_HEIGHT, P2D);    // create the RAW PGraphics object
     SMALL  = createImage(SMALL_BUFFER_WIDTH, SMALL_BUFFER_HEIGHT, RGB);   // create the first small image buffer
+    RAW.noStroke();
+    RAW.smooth();
   }
 
   // start drawing on the RAW PGraphics object
@@ -61,6 +63,7 @@ class FrameBuffers {
     int screenX = (x * DEBUG_REAL_PIXEL_SIZE_X) + (DEBUG_REAL_PIXEL_SIZE_X / 2);
     int screenY = (y * DEBUG_REAL_PIXEL_SIZE_Y) + (DEBUG_REAL_PIXEL_SIZE_Y / 2);
     noStroke();
+    smooth();
     fill(c);
     rectMode(CENTER);
     rect(screenX, screenY, DEBUG_PIXEL_SIZE, DEBUG_PIXEL_SIZE);

@@ -6,12 +6,18 @@ class TextOverlay {
   PFont f;                    // font
   int fontHeight;             // font height
   int alignX, alignY;         // text align x & y
+  int bWidth, bHeight;        // width and height of the buffer
+  PGraphics buffer;           // the graphics buffer
   color c;                    // color 
   boolean textSet = false;    // is the text set?
   int sx = 0, sy = 0;
   boolean isOn = false;
+  
 
-  TextOverlay(int ax, int ay, PFont _f) {
+  TextOverlay(PGraphics b, int ax, int ay, PFont _f) {
+    buffer = b;
+    bWidth = buffer.width;
+    bHeight = buffer.height;
     alignX = ax;
     alignY = ay;
     f = _f;
@@ -30,8 +36,8 @@ class TextOverlay {
   }
   
   private void setupText() {
-    buffer.RAW.textFont(f);
-    fontHeight = int(buffer.RAW.textAscent() + buffer.RAW.textDescent());
+    buffer.textFont(f);
+    fontHeight = int(buffer.textAscent() + buffer.textDescent());
     
     words = txt.split(" ");               // split the test into a string array of words
     String current_line = new String();             // a string for creating a text line
@@ -41,7 +47,7 @@ class TextOverlay {
       String test = current_line + words[i] + " ";     // add the current line and new word to the test string
 
       // is the text width of test line greater then the width of the buffer??
-      if (buffer.RAW.textWidth(test) + 10 > buffer.RAW.width) {   
+      if (buffer.textWidth(test) + 10 > bWidth) {   
         lines.add(current_line.trim());                // if it is, add the current line to the Array list of lines
         current_line = words[i] + " ";                 // now reset the current line by adding the new word to it
         if (i == (words.length - 1)) {
@@ -88,16 +94,16 @@ class TextOverlay {
   }
 
   private void drawText() {
-    buffer.RAW.textFont(f);  // set the font
+    buffer.textFont(f);  // set the font
 
     if (alignX == LEFT) {
       sx = 4;
     } 
     else if (alignX == CENTER) {
-      sx = buffer.RAW.width / 2;
+      sx = bWidth / 2;
     } 
     else if (alignX == RIGHT) {
-      sx = buffer.RAW.width - 4;
+      sx = bWidth - 4;
     }
 
     int textHeight = fontHeight * lines.size();
@@ -106,19 +112,19 @@ class TextOverlay {
       sy = 4;
     } 
     else if (alignY == CENTER) {
-      sy = (buffer.RAW.height / 2) - (textHeight / 2);
+      sy = (bHeight / 2) - (textHeight / 2);
     } 
     else if (alignY == BOTTOM) {
-      sy = (buffer.RAW.height - textHeight) + 4;
+      sy = (bHeight - textHeight) + 4;
     }
 
-    buffer.RAW.textAlign(alignX, TOP);
-    buffer.RAW.fill(c);
+    buffer.textAlign(alignX, TOP);
+    buffer.fill(c);
 
     for (int i = 0; i < lines.size(); i++) {
       String thisLine = (String) lines.get(i);
       int y = (fontHeight * i) + sy;
-      buffer.RAW.text(thisLine, sx, y);
+      buffer.text(thisLine, sx, y);
     }
   }
 

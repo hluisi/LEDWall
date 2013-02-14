@@ -47,12 +47,6 @@ final int COLUMNS = 160;             // the amount of LEDs per column (x)
 final int ROWS    = 80;              // the amount of LEDs per row (y)
 final int TOTAL   = COLUMNS * ROWS;  // the total amount of LEDs on the wall
 
-// Mode setup
-Modes mode;
-
-// Kinect Setup
-Kinect kinect;
-
 // frame buffer setup
 final int FRAME_BUFFER_WIDTH  = 640;
 final int FRAME_BUFFER_HEIGHT = 240;
@@ -73,6 +67,14 @@ final int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 boolean DEBUG_SHOW_WALL  = true;                                    // show the wall on the computer screen wall?
 boolean showText = true;
 
+Control control;
+
+// Add modes here
+final int TEST   = 0;
+final int MAIN   = 1;
+final int KRGB   = 2;
+final int KDEPTH = 3;
+final int KSCENE = 4;
 
 PImage smpte, test;
 
@@ -92,13 +94,11 @@ void setup() {
     y = DEBUG_WINDOW_YSIZE;
   }
   size(x, y, P2D);  // create the window
-  //noSmooth();
+  noStroke();
+  smooth();
 
-  buffer = new FrameBuffers();
-  mode = new Modes();
-  kinect = new Kinect(this);  //, SimpleOpenNI.RUN_MODE_MULTI_THREADED);
-  kinect.update();
-
+  control = new Control();
+  
   smpte = loadImage("smpte_640x240.png");
   test  = loadImage("test_640x240.png");
 
@@ -107,7 +107,7 @@ void setup() {
 
 void draw() {
   background(0);
-  mode.run();
+  control.run();
   drawDebug();
 }
 
@@ -118,11 +118,11 @@ void drawDebug() {
 
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
-  text("time check: " + (mode.check_time / 1000), 10, DEBUG_WINDOW_START + 35);
-  //text("sx: " + mode.text_overlay.sx, 10, DEBUG_WINDOW_START + 50);
-  //text("sy: " + mode.text_overlay.sy, 10, DEBUG_WINDOW_START + 65);
+  //text("test: " + control.buffer.RAW.pixels.length, 10, DEBUG_WINDOW_START + 50);
+  //text("real: " + (640 * 240), 10, DEBUG_WINDOW_START + 65);
   //text("words: " + mode.text_overlay.words.length, 10, DEBUG_WINDOW_START + 80);
   //text("lines: " + mode.text_overlay.lines.size(), 10, DEBUG_WINDOW_START + 95);
+  image(control.buffer.SMALL, width/2,DEBUG_WINDOW_START + 20);
 }
 
 void keyPressed() {
@@ -130,19 +130,19 @@ void keyPressed() {
 
     // switch to TEST mode
   case '0':
-    mode.set(mode.TEST);
+    control.mode.set(TEST);
     break;
 
   case '1':
-    mode.set(mode.KRGB);
+    control.mode.set(KRGB);
     break;
 
   case '2':
-    mode.set(mode.KDEPTH);
+    control.mode.set(KDEPTH);
     break;
 
   case '3':
-    mode.set(mode.KSCENE);
+    control.mode.set(KSCENE);
     break;
     
   case 't':
