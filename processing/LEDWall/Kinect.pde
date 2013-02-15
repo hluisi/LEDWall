@@ -28,6 +28,7 @@ class Kinect extends SimpleOpenNI {
 
   PImage rgbImage() {
     PImage img = super.rgbImage(); //.get(X_START, Y_START, X_END, Y_END);
+    img.updatePixels();
     arrayCopy(img.pixels, current.pixels, current.pixels.length);
     current.updatePixels();
     return current;

@@ -49,7 +49,7 @@ final int TOTAL   = COLUMNS * ROWS;  // the total amount of LEDs on the wall
 
 // frame buffer setup
 final int FRAME_BUFFER_WIDTH  = 640;
-final int FRAME_BUFFER_HEIGHT = 240;
+final int FRAME_BUFFER_HEIGHT = 320;
 FrameBuffers buffer;
 
 // Debug Setup
@@ -99,8 +99,8 @@ void setup() {
 
   control = new Control();
   
-  smpte = loadImage("smpte_640x240.png");
-  test  = loadImage("test_640x240.png");
+  smpte = loadImage("smpte_640x320.png");
+  test  = loadImage("test_640x320.png");
 
 }
 
@@ -118,7 +118,7 @@ void drawDebug() {
 
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
-  //text("test: " + control.buffer.RAW.pixels.length, 10, DEBUG_WINDOW_START + 50);
+  //text("test: " + control.kinect.getDepthFPS(), 10, DEBUG_WINDOW_START + 50);
   //text("real: " + (640 * 240), 10, DEBUG_WINDOW_START + 65);
   //text("words: " + mode.text_overlay.words.length, 10, DEBUG_WINDOW_START + 80);
   //text("lines: " + mode.text_overlay.lines.size(), 10, DEBUG_WINDOW_START + 95);
