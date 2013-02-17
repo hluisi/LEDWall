@@ -48,6 +48,29 @@ class FrameBuffers {
     rawIsDrawing = false;  // not drawing
   }
   
+  void drawBackground(color c) {
+    if (!rawIsDrawing) {
+      beginDraw();
+    }
+    
+    RAW.background(c);
+  }
+  
+  void drawBackground(PImage img) {
+    if (!rawIsDrawing) {
+      beginDraw();
+    }
+    
+    if (img.height == RAW.height && img.width == RAW.width) {
+      background(img);
+    } else {
+      println("background image does not match the RAW buffer size!");
+      PImage tempBG = createImage(RAW.width,RAW.height,RGB);
+      tempBG.copy(img,0,0,img.width,img.height,0,0,RAW.width,RAW.height);
+      background(tempBG);
+    }
+  }
+  
   // copy and resize the RAW buffer to the smaller (LED Wall) size
   void update() {
     if (rawIsDrawing) {  // make sure we called endDraw before copying and resizing the RAW buffer
