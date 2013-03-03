@@ -2,17 +2,21 @@ import processing.serial.*;
 
 int DISPLAY_MODE = 1;
 
-final int DISPLAY_MODE_TEST         = 0;
-final int DISPLAY_MODE_BGCOLOR = 1;
-final int DISPLAY_MODE_SHOWEQ  = 2;
+final int DISPLAY_MODE_TEST       = 0;
+final int DISPLAY_MODE_BGCOLOR    = 1;
+final int DISPLAY_MODE_SHOWEQ     = 2;
 final int DISPLAY_MODE_KINECT     = 3;
-final int DISPLAY_MODE_USERAUDIO = 4;
-final int DISPLAY_MODE_USERBG = 5;
+final int DISPLAY_MODE_USERAUDIO  = 4;
+final int DISPLAY_MODE_USERBG     = 5;
 final int DISPLAY_MODE_WHEELAUDIO = 6;
-final int DISPLAY_MODE_WHEEL = 7;
+final int DISPLAY_MODE_WHEEL      = 7;
 
-final String[] DISPLAY_STR = { "TEST", "BACKGROUND", "EQ", "KINECT", "USER_AUDIO", "USER_BG", "WHEEL_AUDIO", "WHEEL_COLORS" };
-final String[] AUDIO_STR = { "RAW", "SMOOTHED", "BALANCED"  };
+final String[] DISPLAY_STR = { 
+  "TEST", "BACKGROUND", "EQ", "KINECT", "USER_AUDIO", "USER_BG", "WHEEL_AUDIO", "WHEEL_COLORS"
+};
+final String[] AUDIO_STR = { 
+  "RAW", "SMOOTHED", "BALANCED"
+};
 
 PImage smpte, test, wall_image;
 
@@ -24,7 +28,7 @@ void setup() {
   size(x, y, P3D);
 
   smpte = loadImage("smpte_640x320.png");
-  test = loadImage("test_640x320.png");
+  test  = loadImage("test_640x320.png");
   wall_image = createImage(COLUMNS, ROWS, RGB);
 
   setupAudio();
@@ -59,17 +63,17 @@ void drawDebug() {
   text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 50);
   text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 65);
   text("kinect user  X: " + kinect.user1_center.x + "  Y: " + kinect.user1_center.y, 10, DEBUG_WINDOW_START + 80);
-  
+
   image(wall_image, DEBUG_WINDOW_XSIZE - (wall_image.width + 10), DEBUG_WINDOW_START + 10);
 }
 
 void doMode() {
-  if (DISPLAY_MODE == DISPLAY_MODE_TEST)         doTest();
-  if (DISPLAY_MODE == DISPLAY_MODE_BGCOLOR) doBGColor();
-  if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)  doEQ();
-  if (DISPLAY_MODE == DISPLAY_MODE_KINECT)     doKinect();
-  if (DISPLAY_MODE == DISPLAY_MODE_USERAUDIO)     doUserAudio();
-  if (DISPLAY_MODE == DISPLAY_MODE_USERBG)     doUserBg();
+  if (DISPLAY_MODE == DISPLAY_MODE_TEST)      doTest();
+  if (DISPLAY_MODE == DISPLAY_MODE_BGCOLOR)   doBGColor();
+  if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)    doEQ();
+  if (DISPLAY_MODE == DISPLAY_MODE_KINECT)    doKinect();
+  if (DISPLAY_MODE == DISPLAY_MODE_USERAUDIO) doUserAudio();
+  if (DISPLAY_MODE == DISPLAY_MODE_USERBG)    doUserBg();
   if (DISPLAY_MODE == DISPLAY_MODE_WHEELAUDIO) {
     if (wheel.use_audio != true) wheel.audioOn();
     doWheel();

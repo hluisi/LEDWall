@@ -16,7 +16,7 @@ void doWheel() {
   buffer.image(kinect.user_image, 0, 0);
   buffer.endDraw();
 }
-  
+
 
 class Wheel {
   //PShape sun_shape;
@@ -37,7 +37,7 @@ class Wheel {
     last_cycle = millis();
     use_audio = false;
   }
-  
+
   private void cycleColors() {
     color saved = colors[0];
     for (int i = 0; i < (colors.length - 1); i++) {
@@ -45,29 +45,29 @@ class Wheel {
     }
     colors[colors.length - 1] = saved;
   }
-  
+
   private void cycleColors(color c) {
     for (int i = 0; i < (colors.length - 1); i++) {
       colors[i] = colors[i + 1];
     }
     colors[colors.length - 1] = c;
   }
-  
+
   void resetColors() {
     arrayCopy(default_colors, colors);
   }
-  
+
   void setLocation(float x, float y) {
     location.x = round(x);
     location.y = round(y);
   }
-  
+
   void audioOn() {
     use_audio = true;
     resetColors();
     cycle_time = 1;
   }
-  
+
   void audioOff() {
     use_audio = false;
     resetColors();
@@ -85,7 +85,7 @@ class Wheel {
 
 
   void display() {
-    
+
     check();
 
     buffer.noStroke();
