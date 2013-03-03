@@ -1,158 +1,146 @@
-/*--------------------------------------------------------------------
- Processing code to control a large LED matrix wall. This code is 
- hardware specific geared to our burning man project for 2013. 
- 
- It currently uses some of the following hardware:
- 
- WS2811-based RGB LED strips
- MSGEQ7 chip for audio interaction
- Microsoft kinect for user interaction
- 
- It also uses the following processing libraries:
- 
- Toxiclibs        <http://toxiclibs.org/>
- blobDectection   <http://www.v3ga.net/processing/BlobDetection/>
- simpleOpenNI     <http://code.google.com/p/simple-openni/>
- 
- If you have any questions about this code or our burning man project 
- you may email us at: 
- wall(aT)hunterluisi(doT)com
- 
- Written by Hunter Luisi and Max Cooper
- 
- --------------------------------------------------------------------
- This file is part of the Wall of Light project.
- 
- It is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as
- published by the Free Software Foundation, either version 3 of
- the License, or (at your option) any later version.
- 
- It is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public
- License along with it.  If not, see
- <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------*/
+import processing.serial.*;
 
-// imports
-import SimpleOpenNI.*;
-//import processing.serial.*;
+int DISPLAY_MODE = 1;
 
-// Wall Setup
-final int COLUMNS = 160;             // the amount of LEDs per column (x)
-final int ROWS    = 80;              // the amount of LEDs per row (y)
-final int TOTAL   = COLUMNS * ROWS;  // the total amount of LEDs on the wall
+final int DISPLAY_MODE_TEST         = 0;
+final int DISPLAY_MODE_BGCOLOR = 1;
+final int DISPLAY_MODE_SHOWEQ  = 2;
+final int DISPLAY_MODE_KINECT     = 3;
+final int DISPLAY_MODE_USERAUDIO = 4;
+final int DISPLAY_MODE_USERBG = 5;
+final int DISPLAY_MODE_WHEELAUDIO = 6;
+final int DISPLAY_MODE_WHEEL = 7;
 
-// frame buffer setup
-final int FRAME_BUFFER_WIDTH  = 640;
-final int FRAME_BUFFER_HEIGHT = 320;
-//FrameBuffers buffer;
+final String[] DISPLAY_STR = { "TEST", "BACKGROUND", "EQ", "KINECT", "USER_AUDIO", "USER_BG", "WHEEL_AUDIO", "WHEEL_COLORS" };
+final String[] AUDIO_STR = { "RAW", "SMOOTHED", "BALANCED"  };
 
-// Debug Setup
-final int DEBUG_PIXEL_SIZE      = 4;  // size of each debug pixel
-final int DEBUG_PIXEL_SPACING_X = 4;  // the X spacing for each debug pixel
-final int DEBUG_PIXEL_SPACING_Y = 4;  // the X spacing for each debug pixel
-
-final int DEBUG_REAL_PIXEL_SIZE_X = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_X; // the total X size of each debug pixel
-final int DEBUG_REAL_PIXEL_SIZE_Y = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_Y; // the total Y size of each debug pixel
-
-final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;           // the x size of the debug window
-final int DEBUG_WINDOW_YSIZE = 200;                                       // the y size of the debug window
-final int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
-
-boolean DEBUG_SHOW_WALL  = true;                                    // show the wall on the computer screen wall?
-boolean showText = true;
-
-Control control;
-
-// Add modes here
-final int TEST   = 0;
-final int MAIN   = 1;
-final int KRGB   = 2;
-final int KDEPTH = 3;
-final int KSCENE = 4;
-final int SINGLE = 5;
-
-PImage smpte, test;
+PImage smpte, test, wall_image;
 
 void setup() {
-  // List all the available serial ports
-  //println(Serial.list());
+  int x = DEBUG_WINDOW_XSIZE, y;
+  if (DEBUG_SHOW_WALL) y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
+  else y = DEBUG_WINDOW_YSIZE;
 
-  // create the window based on the amount 
-  // of leds, rows, columns, pixel size, 
-  // debug space, etc..
-  int x, y;
-  x = DEBUG_WINDOW_XSIZE;
-  if (DEBUG_SHOW_WALL) {
-    y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
-  } 
-  else {
-    y = DEBUG_WINDOW_YSIZE;
-  }
-  size(x, y, P2D);  // create the window
-  noStroke();
+  size(x, y, P3D);
 
-  control = new Control();
-  
   smpte = loadImage("smpte_640x320.png");
-  test  = loadImage("test_640x320.png");
+  test = loadImage("test_640x320.png");
+  wall_image = createImage(COLUMNS, ROWS, RGB);
 
+  setupAudio();
+  setupSerial();
+  setupBuffer();
+  setupWall();
+  setupWheel();
+  setupEQ();
+  setupKinect();
 }
 
+void update() {
+  buffer.updatePixels();
+  wall_image.copy(buffer, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
+}
 
 void draw() {
-  background(0);
-  control.run();
+  doMode();
+  update();
+  wall.setFrame(wall_image);
+  wall.display();
   drawDebug();
 }
 
 void drawDebug() {
-  fill(100);
+  fill(#212121);
   rectMode(CORNER);
-  rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_YSIZE);
-
+  rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
-  text("X : " + control.kinect.user_center.x + "  Y: " + control.kinect.user_center.y, 10, DEBUG_WINDOW_START + 50);
-  //text("real: " + (640 * 240), 10, DEBUG_WINDOW_START + 65);
-  //text("words: " + mode.text_overlay.words.length, 10, DEBUG_WINDOW_START + 80);
-  //text("lines: " + mode.text_overlay.lines.size(), 10, DEBUG_WINDOW_START + 95);
-  image(control.buffer.SMALL, width/2,DEBUG_WINDOW_START + 20);
+  text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use arrow keys to change)", 10, DEBUG_WINDOW_START + 35);
+  text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 50);
+  text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 65);
+  text("kinect user  X: " + kinect.user1_center.x + "  Y: " + kinect.user1_center.y, 10, DEBUG_WINDOW_START + 80);
+  
+  image(wall_image, DEBUG_WINDOW_XSIZE - (wall_image.width + 10), DEBUG_WINDOW_START + 10);
+}
+
+void doMode() {
+  if (DISPLAY_MODE == DISPLAY_MODE_TEST)         doTest();
+  if (DISPLAY_MODE == DISPLAY_MODE_BGCOLOR) doBGColor();
+  if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)  doEQ();
+  if (DISPLAY_MODE == DISPLAY_MODE_KINECT)     doKinect();
+  if (DISPLAY_MODE == DISPLAY_MODE_USERAUDIO)     doUserAudio();
+  if (DISPLAY_MODE == DISPLAY_MODE_USERBG)     doUserBg();
+  if (DISPLAY_MODE == DISPLAY_MODE_WHEELAUDIO) {
+    if (wheel.use_audio != true) wheel.audioOn();
+    doWheel();
+  }
+  if (DISPLAY_MODE == DISPLAY_MODE_WHEEL) {
+    if (wheel.use_audio != false) wheel.audioOff();
+    doWheel();
+  }
+}
+
+void doTest() {
+  buffer.beginDraw();
+  buffer.image(smpte, 0, 0);
+  buffer.endDraw();
+}
+
+void doBGColor() {
+  color thisColor = audio.COLORS[AUDIO_MODE];
+  buffer.beginDraw();
+  buffer.background(thisColor);
+  buffer.endDraw();
+}
+
+void doUserAudio() {
+  color thisColor = audio.COLORS[AUDIO_MODE];
+  kinect.updateUser(thisColor);
+  buffer.beginDraw();
+  buffer.background(0);
+  buffer.image(kinect.user_image, 0, 0);
+  //if (audio.VOLUME < 70) buffer.filter(INVERT);
+  buffer.endDraw();
+}
+
+void doUserBg() {
+  color thisColor = audio.COLORS[AUDIO_MODE];
+  kinect.updateUserBlack();
+  buffer.beginDraw();
+  buffer.background(thisColor);
+  buffer.image(kinect.user_image, 0, 0);
+  //if (audio.VOLUME < 70) buffer.filter(POSTERIZE,5);
+  buffer.endDraw();
 }
 
 void keyPressed() {
-  switch(key) {
+  //println("keyPressed: " + key);
+  if (key == CODED) {
+    if (keyCode == UP) {
+      DISPLAY_MODE++;
+      if (DISPLAY_MODE > 7) DISPLAY_MODE = 0;
+    } 
+    else if (keyCode == DOWN) {
+      DISPLAY_MODE--;
+      if (DISPLAY_MODE < 0) DISPLAY_MODE = 7;
+    }
+  }
+  if (key == '1') KINECT_MODE = KINECT_MODE_RGB;
+  if (key == '2') KINECT_MODE = KINECT_MODE_DEPTH;
+  //if (key == '3') KINECT_MODE = KINECT_MODE_USER;
+  //if (key == '4') DISPLAY_MODE = DISPLAY_MODE_KINECT;
 
-    // switch to TEST mode
-  case '0':
-    control.mode.set(TEST);
-    break;
-
-  case '1':
-    control.mode.set(KRGB);
-    break;
-
-  case '2':
-    control.mode.set(KDEPTH);
-    break;
-
-  case '3':
-    control.mode.set(KSCENE);
-    break;
-  
-  case '4':
-    control.mode.set(SINGLE);
-    break;
-    
-  case 't':
-    showText = !showText;
-    break;
-
+  if (key == 'r') {
+    AUDIO_MODE = AUDIO_MODE_RAW;
+    println("Audio set to RAW mode ...");
+  }
+  if (key == 's') {
+    AUDIO_MODE = AUDIO_MODE_SMOOTHED;
+    println("Audio set to SMOOTHED mode ...");
+  }
+  if (key == 'b') {
+    AUDIO_MODE = AUDIO_MODE_BALANCED;
+    println("Audio set to BALANCED mode ...");
   }
 }
 
