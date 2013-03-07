@@ -24,6 +24,7 @@ final String[] COLOR_STR = {
 
 PImage smpte, test, wall_image;
 
+
 void setup() {
   int x = DEBUG_WINDOW_XSIZE, y;
   if (DEBUG_SHOW_WALL) y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
@@ -41,8 +42,10 @@ void setup() {
   setupWall();
   setupWheel();
   setupEQ();
-  setupBalls();
+  //setupBalls();
+  
   setupKinect();
+  setupParticles();
   frameRate(30);
 }
 
@@ -70,11 +73,12 @@ void drawDebug() {
   text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 65);
   text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 80);
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 95);
-  text("Balls: " + balls.size(), 10, DEBUG_WINDOW_START + 110);
-  BigBall b = balls.get(0);
+  //text("particles: " + particles.size(), 10, DEBUG_WINDOW_START + 110);
+  //BigBall b = balls.get(0);
   text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 125);
-  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 140);
-  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 155);
+  text("User time: " + kinect.userTimeStamp(), 10, DEBUG_WINDOW_START + 140);
+  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 155);
+  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 170);
 
   image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10), DEBUG_WINDOW_START + 10);
 }
@@ -86,7 +90,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_KINECT)    doKinect();
   if (DISPLAY_MODE == DISPLAY_MODE_USERAUDIO) doUserAudio();
   if (DISPLAY_MODE == DISPLAY_MODE_USERBG)    doUserBg();
-  if (DISPLAY_MODE == DISPLAY_MODE_BALLS)     doBalls();
+  if (DISPLAY_MODE == DISPLAY_MODE_BALLS)     doParticles(); //doBalls();
   if (DISPLAY_MODE == DISPLAY_MODE_WHEELAUDIO) {
     if (wheel.use_audio != true) wheel.audioOn();
     doWheel();
@@ -173,6 +177,8 @@ void keyPressed() {
     AUDIO_MODE = AUDIO_MODE_BALANCED;
     println("Audio set to BALANCED mode ...");
   }
+  
+  //if (key == ',') kinect.moveKinect(0.5);
   
 }
 

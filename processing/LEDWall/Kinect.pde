@@ -8,7 +8,7 @@ final int BUFFER_HEIGHT = 320;
 Kinect kinect;
 
 void setupKinect() {
-  kinect  = new Kinect(this, SimpleOpenNI.RUN_MODE_MULTI_THREADED); 
+  kinect  = new Kinect(this,SimpleOpenNI.RUN_MODE_MULTI_THREADED); 
   kinect.update();
   println("KINECT SETUP ...");
 }
@@ -19,11 +19,18 @@ void doKinect() {
 
 void onNewUser(int userId) {
   println("New User Detected - userId: " + userId);
-  if (kinect.getNumberOfUsers() > 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
+  //if (kinect.getNumberOfUsers() > 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
+  //float[] mtest;
+  //kinect.getUserCoordsys(mtest);
+  //println(mtest);
 }
 
 void onLostUser(int userId) {
   println("User Lost - userId: " + userId);
+}
+
+void onExitUser(int userId) {
+  println("User " + userId + " is off screen");
 }
 
 class Kinect extends SimpleOpenNI {
@@ -55,6 +62,7 @@ class Kinect extends SimpleOpenNI {
     depth_image   = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
     user_image    = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
     enableDepth();
+    println(depthHeight());
     enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
     //alternativeViewPointDepthToImage();
     setMirror(true);
@@ -127,8 +135,10 @@ class Kinect extends SimpleOpenNI {
   void updateDepth() {
     update();
     depthImage().updatePixels();
+    //println(depthImage().height);
     arrayCopy(depthImage().pixels, depth_image.pixels, depth_image.pixels.length);
     depth_image.updatePixels();
+    //depth_image = depthImage();
   }
 
   void displayDepth() {
