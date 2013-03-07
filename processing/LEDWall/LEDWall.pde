@@ -65,10 +65,10 @@ void drawDebug() {
   rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
-  text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use arrow keys to change)", 10, DEBUG_WINDOW_START + 35);
+  text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
   text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 50);
   text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 65);
-  text("color mode: " + COLOR_STR[COLOR_MODE], 10, DEBUG_WINDOW_START + 80);
+  text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 80);
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 95);
   text("Balls: " + balls.size(), 10, DEBUG_WINDOW_START + 110);
   BigBall b = balls.get(0);
