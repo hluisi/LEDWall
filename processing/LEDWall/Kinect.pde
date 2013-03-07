@@ -2,14 +2,8 @@ import SimpleOpenNI.*;
 
 final int KINECT_WIDTH = 640;
 final int KINECT_HEIGHT = 480;
-
-int KINECT_MODE = 0;
-
-final int KINECT_MODE_RGB     = 0;
-final int KINECT_MODE_DEPTH = 1;
-//final int KINECT_MODE_USER_BLACK = 2;
-//final int KINECT_MODE_USER_AUDIO = 3;
-
+final int BUFFER_WIDTH  = 640;
+final int BUFFER_HEIGHT = 320;
 
 Kinect kinect;
 
@@ -23,9 +17,14 @@ void doKinect() {
   kinect.display();
 }
 
-//void onNewUser() {
-//kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
-//}
+void onNewUser(int userId) {
+  println("New User Detected - userId: " + userId);
+  if (kinect.getNumberOfUsers() > 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
+}
+
+void onLostUser(int userId) {
+  println("User Lost - userId: " + userId);
+}
 
 class Kinect extends SimpleOpenNI {
   final int KINECT_X_START = 0;
@@ -33,13 +32,13 @@ class Kinect extends SimpleOpenNI {
   final int KINECT_Y_START = 0;
   final int KINECT_Y_END = BUFFER_HEIGHT;
 
-  PVector user1_center = new PVector();
+  PVector user_center = new PVector();
 
-  int[] scene_map;
+  int[] depth_map;
   int[] user_map;
-  int user_id;
+  int user_id = 99999;
 
-  PImage current_image, rgb_image, depth_image, user_image;
+  PImage current_image, depth_image, user_image;
 
   Kinect(PApplet parent) {
     super(parent);
@@ -52,35 +51,26 @@ class Kinect extends SimpleOpenNI {
   }
 
   private void setup() {
-    current_image = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
-    rgb_image     = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
+    current_image = createImage(COLUMNS, ROWS, ARGB);
     depth_image   = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
     user_image    = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
     enableDepth();
-    enableRGB();
     enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
     //alternativeViewPointDepthToImage();
     setMirror(true);
   }
 
-  void useRBG() {
-    KINECT_MODE = KINECT_MODE_RGB;
-  }
-
-  void useDepth() {
-    KINECT_MODE = KINECT_MODE_DEPTH;
-  }
 
   void updateSingle(color c, boolean map_depth) {
     if (getNumberOfUsers() > 0) {
-      PVector temp = new PVector();
-      getCoM(1, temp);
-      convertRealWorldToProjective(temp, user1_center);
+      user_id = 99999;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
+      depth_map = depthMap();
 
       user_image.loadPixels();
       for (int i = 0; i < user_image.pixels.length; i++) {
         if (user_map[i] != 0) {
+          user_id = min(user_map[i], user_id);
           if (map_depth) {
             float bright = brightness(depthImage().pixels[i]);
             float r = map(bright, 0, 255, 0, red(c));
@@ -97,7 +87,19 @@ class Kinect extends SimpleOpenNI {
         }
       }
       user_image.updatePixels();
-      current_image = user_image;
+      current_image.copy(user_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
+    } 
+
+    if (user_id == 99999) {
+      user_center.x = buffer.width / 2; 
+      user_center.y = buffer.height / 2;
+    } 
+    else {
+      PVector temp = new PVector();
+      getCoM(user_id, temp);
+      convertRealWorldToProjective(temp, user_center);
+      user_center.x /= 4; 
+      user_center.y /= 4;
     }
   }
 
@@ -113,7 +115,7 @@ class Kinect extends SimpleOpenNI {
 
   void updateUserAudio() {
     update();
-    updateSingle(audio.COLORS[AUDIO_MODE], false);
+    updateSingle(audio.COLOR[COLOR_MODE], false);
   }
 
   void drawCurrent() {
@@ -122,19 +124,8 @@ class Kinect extends SimpleOpenNI {
     buffer.endDraw();
   }
 
-  void updateRGB() {
-    rgbImage().updatePixels();
-    arrayCopy(rgbImage().pixels, rgb_image.pixels, rgb_image.pixels.length);
-    rgb_image.updatePixels();
-  }
-
-  void displayRGB() {
-    updateRGB();
-    current_image = rgb_image;
-    drawCurrent();
-  }
-
   void updateDepth() {
+    update();
     depthImage().updatePixels();
     arrayCopy(depthImage().pixels, depth_image.pixels, depth_image.pixels.length);
     depth_image.updatePixels();
@@ -142,23 +133,12 @@ class Kinect extends SimpleOpenNI {
 
   void displayDepth() {
     updateDepth();
-    current_image = depth_image;
+    current_image.copy(depth_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
     drawCurrent();
   }
 
-  private void doMode() {
-    update();
-    if (KINECT_MODE == KINECT_MODE_RGB) displayRGB();
-    if (KINECT_MODE == KINECT_MODE_DEPTH) displayDepth();
-  }
-
-  void display(int _mode) {
-    if (_mode != KINECT_MODE) KINECT_MODE = _mode;
-    doMode();
-  }
-
   void display() {
-    doMode();
+    displayDepth();
   }
 }
 

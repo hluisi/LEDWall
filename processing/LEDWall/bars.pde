@@ -276,7 +276,7 @@ class textBar extends baseBar {
       start_y = location.y - (text_height / 2) + (font_height / 2);
     }
     else {
-      start_y = location.y + 2;
+      start_y = location.y;
     }
 
     float start_x = 0;
@@ -311,6 +311,7 @@ class valueBar extends baseBar {
   color   value_stroke;    // the stroke color of the value bar
   color   value_weight;    // the stroke weight of the value bar
   color   text_color;      // the color of the value text 
+  int     text_offset;     // offset text acording to alignment
   PVector value_start;     // the start location for drawing the value bar
   PVector value_end;       // the end location for drawing the value bar
   boolean value_stroke_on; // is the stroke on for the value bar?
@@ -329,10 +330,11 @@ class valueBar extends baseBar {
     MIN   = 0;    // default min of zero
     MAX   = 1023; // default max of 1023
 
-      value_color     = color(0); // default value bar color of black
+    value_color     = color(0); // default value bar color of black
     value_stroke    = color(0); // default value bar stroke of black
     value_weight    = 2;        // default value stroke weight of two
     text_color      = color(0); // default value text color of black
+    text_offset     = 0;
     value_stroke_on = true;     // value stroke is on
     value_text_on   = true;     // value text is on
 
@@ -473,12 +475,34 @@ class valueBar extends baseBar {
   void strokeBgOff() {
     base_stroke_on = false;
   }
+  
+  void textOffset(int _offset) {
+    text_offset = _offset;
+  }
 
   void drawText() {
     buffer.textFont(value_text_font);  // set the font
     buffer.fill(text_color);     // set color for font
     buffer.textAlign(base_align_x, base_align_y);
-    buffer.text(value, location.x, location.y);
+    if (base_align_x == LEFT && base_align_y == TOP)
+      buffer.text(value, location.x - text_offset, location.y - text_offset);
+    else if (base_align_x == CENTER && base_align_y == TOP)
+      buffer.text(value, location.x, location.y - text_offset);
+    else if (base_align_x == RIGHT && base_align_y == TOP)
+      buffer.text(value, location.x + text_offset, location.y - text_offset);
+    else if (base_align_x == LEFT && base_align_y == CENTER)
+      buffer.text(value, location.x - text_offset, location.y);
+    else if (base_align_x == CENTER && base_align_y == CENTER)
+      buffer.text(value, location.x, location.y);
+    else if (base_align_x == RIGHT && base_align_y == CENTER)
+      buffer.text(value, location.x + text_offset, location.y);
+    else if (base_align_x == LEFT && base_align_y == BOTTOM)
+      buffer.text(value, location.x - text_offset, location.y + text_offset);
+    else if (base_align_x == CENTER && base_align_y == BOTTOM)
+      buffer.text(value, location.x, location.y + text_offset);
+    else
+      buffer.text(value, location.x + text_offset, location.y + text_offset);
+    //buffer.text(value, location.x, location.y);
   }
 
   void drawBar() {

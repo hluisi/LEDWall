@@ -7,13 +7,18 @@ void setupWheel() {
 }
 
 void doWheel() {
-  if (kinect.user1_center.x < 1 && kinect.user1_center.y < 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
+  //if (kinect.user1_center.x < 1 && kinect.user1_center.y < 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
   //if (kinect.user1_center.x == null) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
-  wheel.setLocation(kinect.user1_center.x, kinect.user1_center.y);
+  wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
   buffer.beginDraw();
-  kinect.updateUserBlack();
+  if (wheel.use_audio) {
+    TColor thisColor = TColor.newARGB(audio.COLOR[COLOR_MODE]);
+    thisColor.complement();
+    kinect.updateUser(thisColor.toARGB());
+  }
+  else kinect.updateUserBlack();
   wheel.display();
-  buffer.image(kinect.user_image, 0, 0);
+  buffer.image(kinect.current_image, 0, 0);
   buffer.endDraw();
 }
 
@@ -65,7 +70,7 @@ class Wheel {
   void audioOn() {
     use_audio = true;
     resetColors();
-    cycle_time = 1;
+    cycle_time = 50;
   }
 
   void audioOff() {
@@ -77,7 +82,8 @@ class Wheel {
   private void check() {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
-      if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
+      //if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
+      if (use_audio) cycleColors(audio.COLOR[COLOR_MODE]);
       else cycleColors();
       last_cycle = cTime;
     }
@@ -94,13 +100,13 @@ class Wheel {
     for (int i = 0; i < 8; i++) {
 
       buffer.fill(colors[i]);
-      buffer.quad(location.x, location.y, 0, i * 40, 0, (i + 1) * 40, location.x, location.y);
-      buffer.quad(location.x, location.y, i * 80, 0, (i + 1) * 80, 0, location.x, location.y);
+      buffer.quad(location.x, location.y, 0, i * 10, 0, (i + 1) * 10, location.x, location.y);
+      buffer.quad(location.x, location.y, i * 20, 0, (i + 1) * 20, 0, location.x, location.y);
 
       int j = 7 - i;
       buffer.fill(colors[j]);
-      buffer.quad(location.x, location.y, buffer.width, i * 40, buffer.width, (i + 1) * 40, location.x, location.y);
-      buffer.quad(location.x, location.y, i * 80, buffer.height, (i + 1) * 80, buffer.height, location.x, location.y);
+      buffer.quad(location.x, location.y, buffer.width, i * 10, buffer.width, (i + 1) * 10, location.x, location.y);
+      buffer.quad(location.x, location.y, i * 20, buffer.height, (i + 1) * 20, buffer.height, location.x, location.y);
     }
   }
 }
