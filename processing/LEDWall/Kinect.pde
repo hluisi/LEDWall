@@ -19,10 +19,6 @@ void doKinect() {
 
 void onNewUser(int userId) {
   println("New User Detected - userId: " + userId);
-  //if (kinect.getNumberOfUsers() > 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
-  //float[] mtest;
-  //kinect.getUserCoordsys(mtest);
-  //println(mtest);
 }
 
 void onLostUser(int userId) {

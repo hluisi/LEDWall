@@ -49,38 +49,57 @@ void setup() {
   frameRate(30);
 }
 
-void update() {
-  buffer.updatePixels();
-  //wall_image.copy(buffer, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
-}
-
 void draw() {
   doMode();
-  update();
-  wall.setFrame(buffer);
   wall.display();
   drawDebug();
 }
 
 void drawDebug() {
+  // fill debug window dary grey
   fill(#212121);
   rectMode(CORNER);
   rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
+  
+  // fill text display background
+  fill(#414141);
+  rect(5, DEBUG_WINDOW_START + 5, 300, 210);
+  
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
   text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
-  text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 50);
-  text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 65);
-  text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 80);
-  text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 95);
-  //text("particles: " + particles.size(), 10, DEBUG_WINDOW_START + 110);
-  //BigBall b = balls.get(0);
-  text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 125);
-  text("User time: " + kinect.userTimeStamp(), 10, DEBUG_WINDOW_START + 140);
-  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 155);
-  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 170);
-
-  image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10), DEBUG_WINDOW_START + 10);
+  text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
+  text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 80);
+  
+  text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 110);
+  text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 125);
+  
+  text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 155);
+  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 170);
+  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 185);
+  
+  
+  //image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10) - 170, DEBUG_WINDOW_START + 10);
+  //image(buffer, width - 270, DEBUG_WINDOW_START + 10);
+  
+  fill(#414141);
+  rectMode(CORNER);
+  rect(DEBUG_WINDOW_XSIZE - 150, DEBUG_WINDOW_START + 5, 145, 210);
+  for(int i = 0; i < wall.teensyImages.length; i++) {
+    pushMatrix();
+    int y = DEBUG_WINDOW_START + 14 + (i * 16);
+    
+    String temp = "Teensy " + i;
+    fill(255);
+    text(temp, DEBUG_WINDOW_XSIZE - 90 - textWidth(temp) - 5, y + (i * 4) + 12);
+    
+    translate(DEBUG_WINDOW_XSIZE - 90, y + (i * 4));
+    
+    //rotateZ(radians(90));
+    //rotateX(radians(-180));
+    image(wall.teensyImages[i], 0, 0);
+    popMatrix();
+  }
 }
 
 void doMode() {
@@ -99,45 +118,6 @@ void doMode() {
     if (wheel.use_audio != false) wheel.audioOff();
     doWheel();
   }
-}
-
-void displayImage(PImage _image) {
-  PImage bufferImage = createImage(COLUMNS, ROWS, ARGB);
-  bufferImage.copy(_image, 0, 0, _image.width, _image.height, 0, 0, bufferImage.width, bufferImage.height);
-  buffer.beginDraw();
-  buffer.image(bufferImage, 0, 0);
-  buffer.endDraw();
-}
-
-void doTest() {
-  displayImage(smpte);
-}
-
-void doBGColor() {
-  color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
-  buffer.beginDraw();
-  buffer.background(thisColor);
-  buffer.endDraw();
-}
-
-void doUserAudio() {
-  color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
-  kinect.updateUser(thisColor);
-  buffer.beginDraw();
-  buffer.background(0);
-  buffer.image(kinect.current_image, 0, 0);
-  //if (audio.VOLUME < 70) buffer.filter(INVERT);
-  buffer.endDraw();
-}
-
-void doUserBg() {
-  color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
-  kinect.updateUserBlack();
-  buffer.beginDraw();
-  buffer.background(thisColor);
-  buffer.image(kinect.current_image, 0, 0);
-  //if (audio.VOLUME < 70) buffer.filter(POSTERIZE,5);
-  buffer.endDraw();
 }
 
 void keyPressed() {
