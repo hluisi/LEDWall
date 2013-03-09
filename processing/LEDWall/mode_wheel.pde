@@ -18,7 +18,7 @@ void doWheel() {
   }
   else kinect.updateUserBlack();
   wheel.display();
-  buffer.image(kinect.current_image, 0, 0);
+  buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }
 

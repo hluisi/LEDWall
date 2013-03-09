@@ -19,7 +19,7 @@ final String[] AUDIO_STR = {
   "RAW", "SMOOTHED", "BALANCED"
 };
 final String[] COLOR_STR = { 
-  "AUDIO", "NO WHITE", "NO BLACK"
+  "AUDIO UP", "AUDIO DOWN", "SINGLE UP", "SINGLE DOWN", "MAPPED WHITE", "MAPPED BLACK"
 };
 
 PImage smpte, test, wall_image;
@@ -47,6 +47,11 @@ void setup() {
   setupKinect();
   setupParticles();
   frameRate(30);
+  
+  TColor col = TColor.newRGB(0,0,255);
+  float[] test = new float [4];
+  col.toRGBAArray(test);
+  println(test);
 }
 
 void draw() {
@@ -57,12 +62,12 @@ void draw() {
 
 void drawDebug() {
   // fill debug window dary grey
-  fill(#212121);
+  fill(#313131);
   rectMode(CORNER);
   rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
   
   // fill text display background
-  fill(#414141);
+  fill(#212121);
   rect(5, DEBUG_WINDOW_START + 5, 300, 210);
   
   fill(255);
@@ -75,14 +80,14 @@ void drawDebug() {
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 125);
   
   text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 155);
-  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 170);
+  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]) + "   Hue: " + hue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 170);
   text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 185);
   
   
   //image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10) - 170, DEBUG_WINDOW_START + 10);
   //image(buffer, width - 270, DEBUG_WINDOW_START + 10);
   
-  fill(#414141);
+  fill(#212121);
   rectMode(CORNER);
   rect(DEBUG_WINDOW_XSIZE - 150, DEBUG_WINDOW_START + 5, 145, 210);
   for(int i = 0; i < wall.teensyImages.length; i++) {
@@ -125,11 +130,11 @@ void keyPressed() {
   if (key == CODED) {
     if (keyCode == UP) {
       COLOR_MODE++;
-      if (COLOR_MODE > 2) COLOR_MODE = 0;
+      if (COLOR_MODE > 5) COLOR_MODE = 0;
     } 
     else if (keyCode == DOWN) {
       COLOR_MODE--;
-      if (COLOR_MODE < 0) COLOR_MODE = 2;
+      if (COLOR_MODE < 0) COLOR_MODE = 5;
     }
     println("Color set to " + COLOR_STR[COLOR_MODE] + " mode ...");
   }

@@ -27,7 +27,7 @@ void doParticles() {
   physics.update ();
   
   buffer.beginDraw();
-  buffer.background(0);
+  buffer.background(0,255);
   buffer.pushStyle();
   buffer.blendMode(ADD);
   
@@ -42,8 +42,8 @@ void doParticles() {
   
   //kinect.updateUser(audio.COLOR[COLOR_MODE_NOBLACK]);
   kinect.updateUserBlack();
-  buffer.blend(kinect.current_image,0,0,kinect.current_image.width,kinect.current_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
-  buffer.image(kinect.current_image, 0, 0);
+  buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
+  //buffer.image(kinect.buffer_image, 0, 0);
   buffer.popStyle();
   buffer.endDraw();
 }

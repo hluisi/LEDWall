@@ -5,16 +5,29 @@ final int KINECT_HEIGHT = 480;
 final int BUFFER_WIDTH  = 640;
 final int BUFFER_HEIGHT = 320;
 
+
+
 Kinect kinect;
 
 void setupKinect() {
-  kinect  = new Kinect(this,SimpleOpenNI.RUN_MODE_MULTI_THREADED); 
+  println("KINECT - starting setup...");
+  kinect  = new Kinect(this, SimpleOpenNI.RUN_MODE_MULTI_THREADED); 
+  //kinect  = new Kinect(this,SimpleOpenNI.RUN_MODE_SINGLE_THREADED);
   kinect.update();
-  println("KINECT SETUP ...");
+  println("KINECT - setup finished!");
 }
 
 void doKinect() {
-  kinect.display();
+  kinect.setDepthImageColor(audio.COLOR[COLOR_MODE]);
+  kinect.bufferDepth();
+  buffer.beginDraw();
+  buffer.background(0);
+  buffer.pushStyle();
+  //buffer.tint(audio.COLOR[COLOR_MODE]);
+  buffer.image(kinect.buffer_image, 0, 0);
+  buffer.popStyle();
+  buffer.endDraw();
+  //kinect.display();
 }
 
 void onNewUser(int userId) {
@@ -35,36 +48,95 @@ class Kinect extends SimpleOpenNI {
   final int KINECT_Y_START = 0;
   final int KINECT_Y_END = BUFFER_HEIGHT;
 
+  int mode = 0;
+
+  final int MODE_DEPTH      = 0;
+  final int MODE_IRCAMERA   = 1;
+  final int MODE_USERSCOLOR = 2;
+  final int MODE_USERSBLACK = 3;
+  final int MODE_USERSSKELL = 4;
+  final int MODE_HANDS      = 5;
+
+
   PVector user_center = new PVector();
 
   int[] depth_map;
   int[] user_map;
   int user_id = 99999;
 
-  PImage current_image, depth_image, user_image;
+  PImage buffer_image, depth_image, user_image;
 
   Kinect(PApplet parent) {
     super(parent);
-    setup();
+    defaults();
   }
 
   Kinect(PApplet parent, int runMode) {
     super(parent, runMode);
-    setup();
+    defaults();
   }
 
-  private void setup() {
-    current_image = createImage(COLUMNS, ROWS, ARGB);
-    depth_image   = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
-    user_image    = createImage(KINECT_X_END, KINECT_Y_END, ARGB);
-    enableDepth();
-    println(depthHeight());
-    enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
+  private void defaults() {
+    buffer_image = createImage(COLUMNS, ROWS, ARGB);
+
+    // enable depth
+    if (enableDepth() == false) {
+      println("KINECT - ERROR opening the depthMap! Is the kinect connected?!?!");
+      exit();
+      return;
+    } 
+    else {
+      depth_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
+      println("KINECT - depth enabled!");
+    }
+
+    // enable IR
+    if (enableIR() == false) {
+      println("KINECT - ERROR opening the IR Camera! Is the kinect connected?!?!");
+      exit();
+      return;
+    } 
+    else {
+      //depth_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
+      println("KINECT - IR enabled!");
+    }
+
+    // enable user
+    if (enableUser(SimpleOpenNI.SKEL_PROFILE_NONE) == false) {
+      println("KINECT - ERROR opening the userMap! Is the kinect connected?!?!");
+      exit();
+      return;
+    } 
+    else {
+      user_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
+      println("KINECT - user enabled!");
+    }
+
     //alternativeViewPointDepthToImage();
-    setMirror(true);
+    mirrorOn();
   }
 
+  void mirrorOn() {
+    setMirror(true);
+    println("KINECT - mirroring is now ON ...");
+  }
 
+  void mirrorOff() {
+    setMirror(false);
+    println("KINECT - mirroring is now OFF ...");
+  }
+
+  void setDepthImageColor(color c) {
+    int r = (c >> 16) & 0xFF;  // Faster way of getting red(argb)
+    int g = (c >> 8) & 0xFF;   // Faster way of getting green(argb)
+    int b = c & 0xFF;          // Faster way of getting blue(argb)
+
+    super.setDepthImageColor(r, g, b);
+  }
+  
+  //void updateUser() {
+    
+  
   void updateSingle(color c, boolean map_depth) {
     if (getNumberOfUsers() > 0) {
       user_id = 99999;
@@ -91,7 +163,7 @@ class Kinect extends SimpleOpenNI {
         }
       }
       user_image.updatePixels();
-      current_image.copy(user_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
+      buffer_image.copy(user_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
     } 
 
     if (user_id == 99999) {
@@ -122,29 +194,28 @@ class Kinect extends SimpleOpenNI {
     updateSingle(audio.COLOR[COLOR_MODE], false);
   }
 
-  void drawCurrent() {
-    buffer.beginDraw();
-    buffer.image(current_image, 0, 0);
-    buffer.endDraw();
-  }
 
-  void updateDepth() {
+
+  //void bufferUserColor() {
+
+
+  void bufferIR() {
     update();
-    depthImage().updatePixels();
-    //println(depthImage().height);
-    arrayCopy(depthImage().pixels, depth_image.pixels, depth_image.pixels.length);
-    depth_image.updatePixels();
-    //depth_image = depthImage();
+    buffer_image.copy(irImage(), 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
   }
 
-  void displayDepth() {
-    updateDepth();
-    current_image.copy(depth_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
-    drawCurrent();
+  void bufferDepth() {
+    update();
+    buffer_image.copy(depthImage(), 8, 4, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
   }
+
+  //void update() {
+  //super.update();
+  //if (mode == MODE_DEPTH) bufferDepth();
+  //}
 
   void display() {
-    displayDepth();
+    //displayDepth();
   }
 }
 
