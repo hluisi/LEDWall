@@ -1,5 +1,3 @@
-import processing.serial.*;
-
 int DISPLAY_MODE = 1;
 
 final int DISPLAY_MODE_TEST       = 0;
@@ -19,7 +17,7 @@ final String[] AUDIO_STR = {
   "RAW", "SMOOTHED", "BALANCED"
 };
 final String[] COLOR_STR = { 
-  "AUDIO UP", "AUDIO DOWN", "SINGLE UP", "SINGLE DOWN", "MAPPED WHITE", "MAPPED BLACK"
+  "RAW", "SMOOTH", "BRIGHT", "COMPLEMENT", "INVERTED"
 };
 
 PImage smpte, test, wall_image;
@@ -47,11 +45,6 @@ void setup() {
   setupKinect();
   setupParticles();
   frameRate(30);
-  
-  TColor col = TColor.newRGB(0,0,255);
-  float[] test = new float [4];
-  col.toRGBAArray(test);
-  println(test);
 }
 
 void draw() {
@@ -75,13 +68,16 @@ void drawDebug() {
   text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
   text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
   text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 80);
+  text("bass: " + audio.RANGES[AUDIO_MODE][BASS], 10, DEBUG_WINDOW_START + 95);
+  text("mids: " + audio.RANGES[AUDIO_MODE][MIDS], 10, DEBUG_WINDOW_START + 110);
+  text("treb: " + audio.RANGES[AUDIO_MODE][TREB], 10, DEBUG_WINDOW_START + 125);
   
-  text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 110);
-  text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 125);
+  text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 155);
+  text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
-  text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 155);
-  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]) + "   Hue: " + hue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 170);
-  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 185);
+  text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 185);
+  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]) + "   Sat: " + saturation(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 200);
+  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 215);
   
   
   //image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10) - 170, DEBUG_WINDOW_START + 10);
@@ -130,11 +126,11 @@ void keyPressed() {
   if (key == CODED) {
     if (keyCode == UP) {
       COLOR_MODE++;
-      if (COLOR_MODE > 5) COLOR_MODE = 0;
+      if (COLOR_MODE > 4) COLOR_MODE = 0;
     } 
     else if (keyCode == DOWN) {
       COLOR_MODE--;
-      if (COLOR_MODE < 0) COLOR_MODE = 5;
+      if (COLOR_MODE < 0) COLOR_MODE = 4;
     }
     println("Color set to " + COLOR_STR[COLOR_MODE] + " mode ...");
   }
@@ -164,6 +160,10 @@ void keyPressed() {
   }
   
   //if (key == ',') kinect.moveKinect(0.5);
-  
 }
 
+
+    
+
+
+  

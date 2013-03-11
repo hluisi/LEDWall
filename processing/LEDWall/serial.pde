@@ -1,3 +1,5 @@
+import processing.serial.*;
+
 Serial myPort;   // Serial port of the teensy running the MSGEQ libiray
 int lf = 10;     // Line feed character
 String in_string = ""; // Serial port in string

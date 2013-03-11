@@ -14,7 +14,7 @@ void setupParticles() {
   
   attractor = new Attractor(new Vec2D(buffer.width/2,buffer.height/2));
   
-  particles = new Particle [256];
+  particles = new Particle [512];
   for (int i = 0; i < particles.length; i++) {
     float x = random(buffer.width); float y = random(buffer.height);
     Vec2D loc = new Vec2D(x,y);
@@ -57,7 +57,7 @@ class Attractor extends VerletParticle2D {
     super (loc);
     r = 24;
     physics.addParticle(this);
-    physics.addBehavior(new AttractionBehavior(this, buffer.width, 0.05));
+    physics.addBehavior(new AttractionBehavior(this, buffer.width, 0.005));
   }
 
   void display () {
@@ -80,7 +80,7 @@ class Particle extends VerletParticle2D {
     spectrum = spec;
     reset();
     physics.addParticle(this);
-    //physics.addBehavior(new AttractionBehavior(this, r, -1));
+    physics.addBehavior(new AttractionBehavior(this, r, -0.005));
   }
   
   void reset() {
@@ -90,7 +90,7 @@ class Particle extends VerletParticle2D {
     lifespan = random(255);
     r = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, 2, buffer.height / 5);
     p_color = audio.COLOR[COLOR_MODE];
-    if (update_color) {
+    if (update_color == false) {
       if (kinect.user_id != 99999) {
         x = kinect.user_center.x; y = kinect.user_center.y;
       } else {
@@ -123,7 +123,7 @@ class Particle extends VerletParticle2D {
     if (x < 1 || x > buffer.width - 1)  f.x *= -1;
     if (y < 1 || y > buffer.height - 1) f.y *= -1;
     
-    float push = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, -0.25, 5);
+    float push = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, -0.75, 5);
     f = f.scale(push);
     //f.jitter(0.1,0.1);
     
