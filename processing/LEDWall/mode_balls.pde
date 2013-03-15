@@ -27,7 +27,9 @@ void doParticles() {
   physics.update ();
   
   buffer.beginDraw();
-  buffer.background(0,255);
+  //buffer.background(0,255);
+  buffer.fill(0, 10);
+  buffer.rect(0,0,buffer.width, buffer.height);
   buffer.pushStyle();
   buffer.blendMode(ADD);
   
@@ -41,8 +43,10 @@ void doParticles() {
   
   
   //kinect.updateUser(audio.COLOR[COLOR_MODE_NOBLACK]);
-  kinect.updateUserBlack();
-  buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
+  //if (kinect.user_id != 99999) {
+    kinect.updateUserBlack();
+    buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
+  //}
   //buffer.image(kinect.buffer_image, 0, 0);
   buffer.popStyle();
   buffer.endDraw();
@@ -91,7 +95,7 @@ class Particle extends VerletParticle2D {
     r = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, 2, buffer.height / 5);
     p_color = audio.COLOR[COLOR_MODE];
     if (update_color == false) {
-      if (kinect.user_id != 99999) {
+      if (kinect.user_id != -1) {
         x = kinect.user_center.x; y = kinect.user_center.y;
       } else {
         x = buffer.width / 2; y = buffer.height / 2;

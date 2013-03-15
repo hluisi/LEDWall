@@ -17,7 +17,7 @@ final String[] AUDIO_STR = {
   "RAW", "SMOOTHED", "BALANCED"
 };
 final String[] COLOR_STR = { 
-  "RAW", "SMOOTH", "BRIGHT", "COMPLEMENT", "INVERTED"
+  "RAW", "SMOOTH", "BRIGHT", "COMPLEMENT" //, "INVERTED"
 };
 
 PImage smpte, test, wall_image;
@@ -35,6 +35,7 @@ void setup() {
   wall_image = createImage(COLUMNS, ROWS, RGB);
 
   setupAudio();
+  setupMinim();
   setupSerial();
   setupBuffer();
   setupWall();
@@ -48,7 +49,9 @@ void setup() {
 }
 
 void draw() {
-  doMode();
+  //updateMinim();
+  //doMode();
+  minimTest();
   wall.display();
   drawDebug();
 }
@@ -67,12 +70,14 @@ void drawDebug() {
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
   text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
   text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
-  text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 80);
-  text("bass: " + audio.RANGES[AUDIO_MODE][BASS], 10, DEBUG_WINDOW_START + 95);
-  text("mids: " + audio.RANGES[AUDIO_MODE][MIDS], 10, DEBUG_WINDOW_START + 110);
-  text("treb: " + audio.RANGES[AUDIO_MODE][TREB], 10, DEBUG_WINDOW_START + 125);
-  
-  text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 155);
+  text("audio volume: " + aaudio.VOLUME, 10, DEBUG_WINDOW_START + 80);
+  text("bass: " + aaudio.BASS, 10, DEBUG_WINDOW_START + 95);
+  text("mids: " + aaudio.MIDS, 10, DEBUG_WINDOW_START + 110);
+  text("treb: " + aaudio.TREB, 10, DEBUG_WINDOW_START + 125);
+  //text("gain: " + gain, 10, DEBUG_WINDOW_START + 140);
+  //javax.sound.sampled.FloatControl myGain = in.gain();
+  //text("mv: " + mv, 10, DEBUG_WINDOW_START + 155);
+  //text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 155);
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
   text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 185);
@@ -126,11 +131,11 @@ void keyPressed() {
   if (key == CODED) {
     if (keyCode == UP) {
       COLOR_MODE++;
-      if (COLOR_MODE > 4) COLOR_MODE = 0;
+      if (COLOR_MODE > 3) COLOR_MODE = 0;
     } 
     else if (keyCode == DOWN) {
       COLOR_MODE--;
-      if (COLOR_MODE < 0) COLOR_MODE = 4;
+      if (COLOR_MODE < 0) COLOR_MODE = 3;
     }
     println("Color set to " + COLOR_STR[COLOR_MODE] + " mode ...");
   }

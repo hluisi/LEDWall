@@ -33,7 +33,7 @@ class Audio {
   volatile int[][] EQ_DATA = new int [3][6]; // int mapped audio eq data 
   volatile int VOLUME = 0;                   // audio volume
   volatile int[][] RANGES = new int [3][3];  // bass, mid, and treble
-  volatile int[] COLOR = new int [5];
+  volatile int[] COLOR = new int [4];
 
   int LAST_UPDATE = 0;
   int UPDATE_CHECK = 0;
@@ -59,40 +59,43 @@ class Audio {
   }
   
   private void setColors() {
+    // map rgb to bass, mids, treb
     float r = map(RANGES[AUDIO_MODE][BASS], 64, 1023, 0, 1);  // map bass to red
     float g = map(RANGES[AUDIO_MODE][MIDS], 64, 1023, 0, 1);  // map mid to green
     float b = map(RANGES[AUDIO_MODE][TREB], 64, 1023, 0, 1);  // map treb to blue
+    // create a raw Tcolor use for ref
+    TColor raw_color = TColor.newRGB(r,g,b);
+    // set the raw color to the color array
+    COLOR[COLOR_RAW] = raw_color.toARGB();
     
-    TColor audio_color = TColor.newRGB(r,g,b);
-    float hue = audio_color.hue();
-    float bright = audio_color.brightness();
-    float sat = audio_color.saturation();
+    // create the smooth color from the raw rgb values
+    TColor smooth_color = TColor.newRGB(r,g,b);
     
-    
-    COLOR[COLOR_RAW] = audio_color.toARGB();
-    
-    if (audio_color.saturation() < 0.3) {
-      audio_color.getClosestHue();
-      audio_color.setBrightness(bright);
-      audio_color.setSaturation(1);
+    // how close to white is the color
+    if (smooth_color.saturation() < 0.3) {
+      smooth_color.setHue(smooth_color.getClosestHue().getHue());
+      //smooth_color.setBrightness(raw_color.brightness());
+      //smooth_color.setSaturation(1);
     }
     
-    COLOR[COLOR_SMOOTH] = audio_color.toARGB();
+    COLOR[COLOR_SMOOTH] = smooth_color.toARGB();
     
-    audio_color.setBrightness(1);
-    COLOR[COLOR_BRIGHT] = audio_color.toARGB();
+    TColor bright_color = TColor.newRGB(r,g,b);
+    bright_color = bright_color.analog(bright_color.saturation(), 0.0);
+    COLOR[COLOR_BRIGHT] = bright_color.toARGB();
     
-    audio_color.setBrightness(bright);
+    //audio_color.setBrightness(bright);
     
-    TColor comp = audio_color.getComplement();
+    TColor complement_color = TColor.newRGB(r,g,b);
+    complement_color = complement_color.getComplement();
     
-    COLOR[COLOR_COMPLEMENT] = comp.toARGB();
+    COLOR[COLOR_COMPLEMENT] = complement_color.toARGB();
     
-    audio_color.setHue(hue);
-    audio_color.setSaturation(sat);
-    audio_color.invert();
+    //audio_color.setHue(hue);
+    //audio_color.setSaturation(sat);
+    //audio_color.invert();
     
-    COLOR[COLOR_INVERT] = audio_color.toARGB();
+    //COLOR[COLOR_INVERT] = audio_color.toARGB();
     
     
     

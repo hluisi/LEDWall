@@ -9,9 +9,11 @@ final int BUFFER_HEIGHT = 320;
 
 Kinect kinect;
 
+
 void setupKinect() {
   println("KINECT - starting setup...");
   kinect  = new Kinect(this, SimpleOpenNI.RUN_MODE_MULTI_THREADED); 
+
   //kinect  = new Kinect(this,SimpleOpenNI.RUN_MODE_SINGLE_THREADED);
   kinect.update();
   println("KINECT - setup finished!");
@@ -30,16 +32,58 @@ void doKinect() {
   //kinect.display();
 }
 
-void onNewUser(int userId) {
-  println("New User Detected - userId: " + userId);
+
+public void onNewUser(int userId) {
+  println("KINECT - onNewUser - found new user: " + userId);
+  println(" - starting pose detection");
+  kinect.requestCalibrationSkeleton(userId, true);
 }
 
-void onLostUser(int userId) {
-  println("User Lost - userId: " + userId);
+public void onLostUser(int userId) {
+  println("KINECT - onLostUser - lost user: " + userId);
+  
+  
 }
 
-void onExitUser(int userId) {
-  println("User " + userId + " is off screen");
+public void onExitUser(int userId) {
+  println("KINECT - onExitUser - user " + userId + " has exited.");
+  println(" - stopping pose detection");
+  kinect.stopPoseDetection(userId);
+}
+
+public void onReEnterUser(int userId) {
+  println("KINECT - onReEnterUser - user " + userId + " has come back.");
+  kinect.requestCalibrationSkeleton(userId, true);
+  println(" - starting pose detection");
+}
+
+public void onStartCalibration(int userId) {
+  println("KINECT - onStartCalibration - starting calibration on user: " + userId);
+}
+
+public void onEndCalibration(int userId, boolean successfull) {
+  if (successfull) {
+   println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
+   kinect.startTrackingSkeleton(userId);
+  } else {
+    println("KINECT - onEndCalibration - calibration for user " + userId + " has failed!!!");
+    println(" - Trying pose detection");
+    kinect.startPoseDetection("Psi", userId);
+  }
+}
+
+public void onStartPose(String pose, int userId) {
+  println("KINECT - onStartPose - userId: " + userId + ", pose: " + pose);
+  
+  if (pose.equals("Psi") == true) {
+    println(" - stoping pose detection");
+    kinect.stopPoseDetection(userId); 
+    kinect.requestCalibrationSkeleton(userId, true);
+  }
+}
+
+public void onEndPose(String pose, int userId) {
+  println("onEndPose - userId: " + userId + ", pose: " + pose);
 }
 
 class Kinect extends SimpleOpenNI {
@@ -62,7 +106,7 @@ class Kinect extends SimpleOpenNI {
 
   int[] depth_map;
   int[] user_map;
-  int user_id = 99999;
+  int user_id = -1;
 
   PImage buffer_image, depth_image, user_image;
 
@@ -102,7 +146,7 @@ class Kinect extends SimpleOpenNI {
     }
 
     // enable user
-    if (enableUser(SimpleOpenNI.SKEL_PROFILE_NONE) == false) {
+    if (enableUser(SimpleOpenNI.SKEL_PROFILE_ALL) == false) {
       println("KINECT - ERROR opening the userMap! Is the kinect connected?!?!");
       exit();
       return;
@@ -133,20 +177,20 @@ class Kinect extends SimpleOpenNI {
 
     super.setDepthImageColor(r, g, b);
   }
-  
+
   //void updateUser() {
-    
-  
+
+
   void updateSingle(color c, boolean map_depth) {
     if (getNumberOfUsers() > 0) {
-      user_id = 99999;
+      user_id = -1;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
       depth_map = depthMap();
 
       user_image.loadPixels();
       for (int i = 0; i < user_image.pixels.length; i++) {
         if (user_map[i] != 0) {
-          user_id = min(user_map[i], user_id);
+          user_id = max(user_map[i], user_id);
           if (map_depth) {
             float bright = brightness(depthImage().pixels[i]);
             float r = map(bright, 0, 255, 0, red(c));
@@ -166,16 +210,21 @@ class Kinect extends SimpleOpenNI {
       buffer_image.copy(user_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
     } 
 
-    if (user_id == 99999) {
+    if (user_id == -1) {
       user_center.x = buffer.width / 2; 
       user_center.y = buffer.height / 2;
     } 
     else {
       PVector temp = new PVector();
-      getCoM(user_id, temp);
-      convertRealWorldToProjective(temp, user_center);
-      user_center.x /= 4; 
-      user_center.y /= 4;
+      if (getCoM(user_id, temp)) {
+        convertRealWorldToProjective(temp, user_center);
+        user_center.x /= 4; 
+        user_center.y /= 4;
+      } 
+      else {
+        user_center.x = buffer.width / 2; 
+        user_center.y = buffer.height / 2;
+      }
     }
   }
 

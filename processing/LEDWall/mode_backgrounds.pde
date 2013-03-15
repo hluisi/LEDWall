@@ -2,6 +2,7 @@ void doBGColor() {
   color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
   buffer.beginDraw();
   buffer.background(thisColor);
+  //eq.volume.display(audio.VOLUME);
   buffer.endDraw();
 }
 
