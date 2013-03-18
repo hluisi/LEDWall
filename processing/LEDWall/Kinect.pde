@@ -20,7 +20,7 @@ void setupKinect() {
 }
 
 void doKinect() {
-  kinect.setDepthImageColor(audio.COLOR[COLOR_MODE]);
+  kinect.setDepthImageColor(aaudio.COLOR);
   kinect.bufferDepth();
   buffer.beginDraw();
   buffer.background(0);
@@ -135,15 +135,15 @@ class Kinect extends SimpleOpenNI {
     }
 
     // enable IR
-    if (enableIR() == false) {
-      println("KINECT - ERROR opening the IR Camera! Is the kinect connected?!?!");
-      exit();
-      return;
-    } 
-    else {
+    //if (enableIR() == false) {
+    //  println("KINECT - ERROR opening the IR Camera! Is the kinect connected?!?!");
+    //  exit();
+    //  return;
+    //} 
+    //else {
       //depth_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
-      println("KINECT - IR enabled!");
-    }
+    //  println("KINECT - IR enabled!");
+    //}
 
     // enable user
     if (enableUser(SimpleOpenNI.SKEL_PROFILE_ALL) == false) {
@@ -240,7 +240,7 @@ class Kinect extends SimpleOpenNI {
 
   void updateUserAudio() {
     update();
-    updateSingle(audio.COLOR[COLOR_MODE], false);
+    updateSingle(aaudio.COLOR, false);
   }
 
 

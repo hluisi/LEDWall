@@ -12,7 +12,7 @@ void doWheel() {
   wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
   buffer.beginDraw();
   if (wheel.use_audio) {
-    TColor thisColor = TColor.newARGB(audio.COLOR[COLOR_MODE]);
+    TColor thisColor = TColor.newARGB(aaudio.COLOR);
     thisColor.complement();
     kinect.updateUser(thisColor.toARGB());
   }
@@ -83,7 +83,7 @@ class Wheel {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
       //if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
-      if (use_audio) cycleColors(audio.COLOR[COLOR_MODE]);
+      if (use_audio) cycleColors(aaudio.COLOR);
       else cycleColors();
       last_cycle = cTime;
     }

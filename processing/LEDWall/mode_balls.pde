@@ -18,7 +18,7 @@ void setupParticles() {
   for (int i = 0; i < particles.length; i++) {
     float x = random(buffer.width); float y = random(buffer.height);
     Vec2D loc = new Vec2D(x,y);
-    particles[i] = new Particle(loc, i % 6);
+    particles[i] = new Particle(loc, i % 9);
   }
   println("Particles SETUP ...");
 }
@@ -27,9 +27,9 @@ void doParticles() {
   physics.update ();
   
   buffer.beginDraw();
-  //buffer.background(0,255);
-  buffer.fill(0, 10);
-  buffer.rect(0,0,buffer.width, buffer.height);
+  buffer.background(0,255);
+  //buffer.fill(0, 10);
+  //buffer.rect(0,0,buffer.width, buffer.height);
   buffer.pushStyle();
   buffer.blendMode(ADD);
   
@@ -92,8 +92,8 @@ class Particle extends VerletParticle2D {
     if (test < 0.25) update_color = false;
     else update_color = true;
     lifespan = random(255);
-    r = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, 2, buffer.height / 5);
-    p_color = audio.COLOR[COLOR_MODE];
+    r = map(aaudio.RAW[spectrum], 0, 30, 2, buffer.height / 10);
+    p_color = aaudio.COLOR;
     if (update_color == false) {
       if (kinect.user_id != -1) {
         x = kinect.user_center.x; y = kinect.user_center.y;
@@ -114,8 +114,8 @@ class Particle extends VerletParticle2D {
     if (lifespan < 0) reset();
     
     if (update_color) {
-      p_color = audio.COLOR[COLOR_MODE];
-      r = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, 2, buffer.height / 5);
+      p_color = aaudio.COLOR;
+      r = map(aaudio.RAW[spectrum], 0, 30, 2, buffer.height / 5);
     }
     
     
@@ -127,7 +127,7 @@ class Particle extends VerletParticle2D {
     if (x < 1 || x > buffer.width - 1)  f.x *= -1;
     if (y < 1 || y > buffer.height - 1) f.y *= -1;
     
-    float push = map(audio.EQ_DATA[AUDIO_MODE][spectrum], 0, 1023, -0.75, 5);
+    float push = map(aaudio.RAW[spectrum], 0, 30, -0.75, 5);
     f = f.scale(push);
     //f.jitter(0.1,0.1);
     

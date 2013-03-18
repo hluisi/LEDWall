@@ -286,6 +286,7 @@ class textBar extends baseBar {
     if (base_align_x == RIGHT) {
       start_x = -2;
     }
+    
     // build a new string with all the line
     buffer.fill(text_color);
     for (int i = 0; i < line_list.size(); i++) {
@@ -295,6 +296,7 @@ class textBar extends baseBar {
       float y = start_y + (font_height * i);
       //println(y);
       buffer.text(thisLine, x, y);
+
     }
   }
 
@@ -404,11 +406,11 @@ class valueBar extends baseBar {
     value = v;
   }
 
-  void setMIN(int _v) {
+  void setMin(int _v) {
     MIN = _v;
   }
 
-  void setMAX(int _v) {
+  void setMax(int _v) {
     MAX = _v;
   }
 
@@ -535,6 +537,7 @@ class valueBar extends baseBar {
   }
 }
 
+
 class eqBar {
   baseBar RED, ORANGE, YELLOW, GREEN;
   valueBar VALUE;
@@ -543,6 +546,10 @@ class eqBar {
   float eq_x, eq_y, eq_width, eq_height;
   color eq_value_color;
   PFont eq_font;
+  PFont label_font;
+  String eq_label;
+  color eq_label_color;
+  boolean label_set;
 
   final float orange_cutoff = 0.9;
   final float yellow_cutoff = 0.75;
@@ -556,8 +563,14 @@ class eqBar {
     eq_align_x = _align_x;
     eq_align_y = _align_y;
     eq_font    = _font;
-
+    eq_label = "";
+    label_set = false;
+    init();
+  }
+  
+  private void init() {
     eq_value_color = color(0, 255, 0);
+    eq_label_color = color(0);
 
     VALUE = new valueBar(eq_x, eq_y, eq_width, eq_height, eq_align_x, eq_align_y, eq_font);
     VALUE.bgOff();
@@ -657,6 +670,33 @@ class eqBar {
   void strokeOff() {
     RED.strokeOff();
   }
+  
+  void setValueColor(color _c) {
+    eq_value_color = _c;
+  }
+  
+  void setLabel(String _t) {
+    eq_label = _t;
+    label_set = true;
+  }
+  
+  void clearLabel() {
+    eq_label = "";
+    label_set = false;
+  }
+  
+  void setLabelColor(color _c) {
+    eq_label_color = _c;
+  }
+  
+  void setLabelFont(PFont ff) {
+    label_font = ff;
+  }
+  
+  void setFont(PFont ff) {
+    eq_font = ff;
+    VALUE.setFont(eq_font);
+  }
 
   void move(float _x, float _y) {
     eq_x = _x;
@@ -688,19 +728,16 @@ class eqBar {
     VALUE.location.y = eq_y;
   }
 
-  void setFont(PFont ff) {
-    eq_font = ff;
-    VALUE.setFont(eq_font);
-  }
+  
 
   private void updateColor() { 
-    if (eq_value < 512) {
+    if (eq_value < VALUE.MAX * 0.5) {
       eq_value_color = color(0, 255, 0); // less then half is green
     } 
-    else if (eq_value > 512 && eq_value < 768) {
+    else if (eq_value > VALUE.MAX * 0.5 && eq_value < VALUE.MAX * 0.75) {
       eq_value_color = color(255, 255, 0); // then yellow
     } 
-    else if (eq_value > 768 && eq_value < 920) {
+    else if (eq_value > VALUE.MAX * 0.75 && eq_value < VALUE.MAX * 0.9) {
       eq_value_color = color(229, 128, 0);  // then orange
     }
     else {
@@ -714,6 +751,27 @@ class eqBar {
     updateColor();
     VALUE.setColor(eq_value_color);
   }
+  
+  void drawLabel() {
+    buffer.textAlign(RED.base_align_x, CENTER);
+    buffer.textFont(label_font);
+    buffer.fill(eq_label_color);
+    buffer.pushMatrix();
+    buffer.translate(RED.location.x, RED.location.y);
+    if (RED.base_align_y == BOTTOM) {
+      buffer.rotate(radians(-90));
+    } else if (RED.base_align_y == TOP) {
+      buffer.rotate(radians(-90));
+    }
+    
+    float x = 0;
+    if (RED.base_align_x == LEFT)   x = 3;
+    if (RED.base_align_x == RIGHT)  x = -3;
+    if (RED.base_align_x == CENTER && RED.base_align_y == BOTTOM) x = 3 + (buffer.textWidth(eq_label) / 2);
+    if (RED.base_align_x == CENTER && RED.base_align_y == TOP) x = 0 - (buffer.textWidth(eq_label) / 2) - 3;
+    buffer.text(eq_label, x, 0);
+    buffer.popMatrix();
+  }
 
   void drawAll() {
     RED.display();
@@ -721,6 +779,7 @@ class eqBar {
     YELLOW.display();
     GREEN.display();
     VALUE.display(eq_value);
+    if (label_set) drawLabel();
   }
 
   void display(int _v) {

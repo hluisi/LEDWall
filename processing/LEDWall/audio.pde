@@ -1,4 +1,4 @@
-
+/*
 import toxi.color.*;
 import toxi.color.theory.*;
 import toxi.util.datatypes.*;
@@ -122,6 +122,4 @@ class Audio {
     setColors();
     
   }
-}
-
-
+} */

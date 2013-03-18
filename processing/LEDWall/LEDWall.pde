@@ -1,5 +1,7 @@
 int DISPLAY_MODE = 1;
 
+float mm = 0;
+
 final int DISPLAY_MODE_TEST       = 0;
 final int DISPLAY_MODE_SHOWEQ     = 1;
 final int DISPLAY_MODE_KINECT     = 2;
@@ -28,15 +30,15 @@ void setup() {
   if (DEBUG_SHOW_WALL) y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
   else y = DEBUG_WINDOW_YSIZE;
 
-  size(x, y, P3D);
+  size(x, y, P2D);
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
   wall_image = createImage(COLUMNS, ROWS, RGB);
 
-  setupAudio();
+  //setupAudio();
   setupMinim();
-  setupSerial();
+  //setupSerial();
   setupBuffer();
   setupWall();
   setupWheel();
@@ -45,13 +47,13 @@ void setup() {
   
   setupKinect();
   setupParticles();
-  frameRate(30);
+  //frameRate(60);
 }
 
 void draw() {
   //updateMinim();
-  //doMode();
-  minimTest();
+  doMode();
+  //minimTest();
   wall.display();
   drawDebug();
 }
@@ -69,20 +71,21 @@ void drawDebug() {
   fill(255);
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
   text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
-  text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
+  //text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
   text("audio volume: " + aaudio.VOLUME, 10, DEBUG_WINDOW_START + 80);
   text("bass: " + aaudio.BASS, 10, DEBUG_WINDOW_START + 95);
   text("mids: " + aaudio.MIDS, 10, DEBUG_WINDOW_START + 110);
   text("treb: " + aaudio.TREB, 10, DEBUG_WINDOW_START + 125);
-  //text("gain: " + gain, 10, DEBUG_WINDOW_START + 140);
+  text("test: " + aaudio.RAW[5], 10, DEBUG_WINDOW_START + 140);
   //javax.sound.sampled.FloatControl myGain = in.gain();
-  //text("mv: " + mv, 10, DEBUG_WINDOW_START + 155);
+  mm = max(mm,aaudio.RAW[5]);
+  text("max: " + mm, 10, DEBUG_WINDOW_START + 155);
   //text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 155);
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
-  text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 185);
-  text("Brightness: " + brightness(audio.COLOR[COLOR_MODE]) + "   Sat: " + saturation(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 200);
-  text("R: " + red(audio.COLOR[COLOR_MODE]) + "  G: " + green(audio.COLOR[COLOR_MODE]) + "   B: " + blue(audio.COLOR[COLOR_MODE]), 10, DEBUG_WINDOW_START + 215);
+  //text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 185);
+  text("Brightness: " + brightness(aaudio.COLOR) + "   Sat: " + saturation(aaudio.COLOR), 10, DEBUG_WINDOW_START + 200);
+  text("R: " + aaudio.RED + "  G: " + aaudio.GREEN + "   B: " + aaudio.BLUE, 10, DEBUG_WINDOW_START + 215);
   
   
   //image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10) - 170, DEBUG_WINDOW_START + 10);
@@ -128,17 +131,17 @@ void doMode() {
 
 void keyPressed() {
   //println("keyPressed: " + key);
-  if (key == CODED) {
-    if (keyCode == UP) {
-      COLOR_MODE++;
-      if (COLOR_MODE > 3) COLOR_MODE = 0;
-    } 
-    else if (keyCode == DOWN) {
-      COLOR_MODE--;
-      if (COLOR_MODE < 0) COLOR_MODE = 3;
-    }
-    println("Color set to " + COLOR_STR[COLOR_MODE] + " mode ...");
-  }
+  //if (key == CODED) {
+  //  if (keyCode == UP) {
+   //   COLOR_MODE++;
+   //   if (COLOR_MODE > 3) COLOR_MODE = 0;
+   // } 
+   // else if (keyCode == DOWN) {
+   //   COLOR_MODE--;
+   //   if (COLOR_MODE < 0) COLOR_MODE = 3;
+   // }
+   // println("Color set to " + COLOR_STR[COLOR_MODE] + " mode ...");
+  //}
   
   if (key == '1') DISPLAY_MODE = DISPLAY_MODE_TEST;
   if (key == '2') DISPLAY_MODE = DISPLAY_MODE_SHOWEQ;
@@ -151,18 +154,18 @@ void keyPressed() {
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_BALLS;
 
 
-  if (key == 'r') {
-    AUDIO_MODE = AUDIO_MODE_RAW;
-    println("Audio set to RAW mode ...");
-  }
-  if (key == 's') {
-    AUDIO_MODE = AUDIO_MODE_SMOOTHED;
-    println("Audio set to SMOOTHED mode ...");
-  }
-  if (key == 'b') {
-    AUDIO_MODE = AUDIO_MODE_BALANCED;
-    println("Audio set to BALANCED mode ...");
-  }
+  //if (key == 'r') {
+  //  AUDIO_MODE = AUDIO_MODE_RAW;
+  //  println("Audio set to RAW mode ...");
+  //}
+  //if (key == 's') {
+  //  AUDIO_MODE = AUDIO_MODE_SMOOTHED;
+  //  println("Audio set to SMOOTHED mode ...");
+  //}
+  //if (key == 'b') {
+  //  AUDIO_MODE = AUDIO_MODE_BALANCED;
+  //  println("Audio set to BALANCED mode ...");
+  //}
   
   //if (key == ',') kinect.moveKinect(0.5);
 }

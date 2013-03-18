@@ -1,5 +1,6 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
 import toxi.color.*;
 import toxi.color.theory.*;
 import toxi.util.datatypes.*;
@@ -8,39 +9,42 @@ Minim minim;
 AudioInput in;
 FFT fft;
 AverageListener aaudio;
+//LowPassFS lpf;
 
 void setupMinim() {
   minim = new Minim(this);
-  in = minim.getLineIn(Minim.STEREO, 512);
+  in = minim.getLineIn(Minim.MONO, 512);
+  //lpf = new LowPassFS(64, in.sampleRate());
+  //in.addEffect(lpf);
   fft = new FFT(in.bufferSize(), in.sampleRate());
-  fft.logAverages(9,1);
-  fft.window(FFT.HAMMING);
+  fft.logAverages(63,1);
+  fft.window(FFT.HANN);
   aaudio = new AverageListener(fft, in);
   //println("Avg size: " + fft.avgSize());
   for(int i = 0; i < fft.avgSize(); i++) {
-    println("i:" + i + "  f:" + fft.getAverageCenterFrequency(i) );
+    println("i:" + i + "  f:" + round(fft.getAverageCenterFrequency(i)) );
     //println("i:" + i + "  f:" + fft.indexToFreq(i));
   }
   println(fft.getBandWidth());
   println(fft.timeSize());
 }
 
-//void updateMinim() {
-//  fft.forward(in.mix);
-//}
-
 void minimTest() {
   buffer.beginDraw();
   buffer.rectMode(CORNERS);
   buffer.background(aaudio.COLOR);
-  buffer.fill(255,0,0);
-  buffer.stroke(0);
+  
   float w = buffer.width / 9;
   w += w / 22;
-  for(int i = 0; i < fft.avgSize() - 3; i++) {
-    float v = (20*((float)Math.log10(fft.getAvg(i+2))));
-    float h = map(v, -45, 30, buffer.height, 0);
+  for(int i = 0; i < fft.avgSize(); i++) {
+    //float v = (20*((float)Math.log10(fft.getAvg(i))));
+    //int int_value = int(constrain(round(fft.getAvg(i)*aaudio.spectrumScale),0,512));
+    buffer.fill(255,0,0);
+    buffer.stroke(0);
+    float h = map(aaudio.AVERAGES[i], 0, 255, buffer.height, 0);
     buffer.rect(i*w, buffer.height, (i*w) + w, h);
+    buffer.fill(255);
+    buffer.text(aaudio.AVERAGES[i], w, height - 5);
   }
   
   //if ( beat.isRange(3,5,2) ) {
@@ -62,7 +66,7 @@ void stop()
   // always close Minim audio classes when you are done with them
   in.close();
   minim.stop();
-  kinect.close();
+  //kinect.close();
   
   super.stop();
 }
@@ -73,8 +77,11 @@ class AverageListener implements AudioListener {
   private AudioInput in;
   //private float[] mapped_averages;
   public int[] AVERAGES;
+  public float[] DIFF;
+  private float[] RAW;
   public color COLOR;// = new int [4];
   public int BASS, MIDS, TREB, VOLUME, RED, GREEN, BLUE;
+  float spectrumGain = 1.5;
   
   AverageListener(FFT fft, AudioInput in) {
     this.in = in;
@@ -83,8 +90,10 @@ class AverageListener implements AudioListener {
     this.fft = fft;
     
     //mapped_averages = new float [fft.avgSize()];
+    RAW = new float [fft.avgSize()];
+    DIFF = new float [fft.avgSize()];
     AVERAGES = new int [fft.avgSize()];
-    //COLOR = color(0);
+    COLOR = color(0);
     BASS = 0;
     MIDS = 0;
     TREB = 0;
@@ -94,36 +103,60 @@ class AverageListener implements AudioListener {
     BLUE = 0;
   }
   
-  private int mapdB(float value) {
-    float db_value = 20*((float)Math.log10(value));           // convert to dB
-    float float_value = map(db_value,-45,30,0,100);           // map dB to value
-    int int_value = int(constrain(round(float_value),0,100)); // constrain it
-    return int_value;                                         // return it
-  }
+  //private int mapdB(float value) {
+    //float db_value = 20*((float)Math.log10(value));           // convert to dB
+    //float float_value = map(db_value,-45,30,0,100);           // map dB to value
+    //int int_value = int(constrain(round(float_value),0,100)); // constrain it
+  //  int int_value = int(constrain(round(value*spectrumScale),0,255));
+   // return int_value;                                         // return it
+  //}
   
   private void mapAverages() {
-    for ( int i = 0; i < AVERAGES.length; i++) {   
-      AVERAGES[i] = mapdB(fft.getAvg(i));                   
+    for ( int i = 0; i < RAW.length; i++) {
+      RAW[i] = fft.getAvg(i);
+      int value = round(map(RAW[i]*spectrumGain,0,30,0,100));
+      value = int(constrain(value,0,100));
+      AVERAGES[i] = value;      
     }
+    float raw_max = max(RAW);
+    for ( int i = 0; i < RAW.length; i++) {
+      DIFF[i] = map(RAW[i], 0, raw_max, 0, 255);
+    }
+    
   }
   
   private void mapRanges() {
-    VOLUME = mapdB(in.mix.level());
-    BASS = round((AVERAGES[0] + AVERAGES[1] + AVERAGES[2] + AVERAGES[3]) / 4);
-    MIDS = round((AVERAGES[5] + AVERAGES[6] + AVERAGES[7]) / 3);
-    TREB = round((AVERAGES[8] + AVERAGES[9] + AVERAGES[10]) / 3); 
+    VOLUME = round(map(in.mix.level()*256,0,256,0,100));
+    BASS = round((RAW[0] + RAW[1] + RAW[2]) / 3);
+    MIDS = round((RAW[3] + RAW[4] + RAW[5]) / 3);
+    TREB = round((RAW[6] + RAW[7] + RAW[8]) / 3); 
+    
   }
   
   private void mapColors() {
-    int w1 = int(map(BASS, 0, 100, 0, 120));
-    int w2 = int(map(MIDS, 0, 100, 0, 120));
-    int w3 = int(map(TREB, 0, 100, 0, 120));
-    float b = map(w1+w2+w3, 0, 300, 0, 1);
+    RED   = round(map((RAW[0] + RAW[1] + RAW[2]) / 3, 0, 30, 0, 255));
+    GREEN = round(map((RAW[3] + RAW[4] + RAW[5]) / 3, 0, 30, 0, 255));
+    BLUE  = round(map((RAW[6] + RAW[7] + RAW[8]) / 3, 0, 30, 0, 255)); 
     
-    TColor raw = new TColor(TColor.BLUE);
-    raw = raw.getRotatedRYB(w1+w2+w3);
-    raw.setBrightness(b);
-    COLOR = raw.toARGB();
+    COLOR = color(RED,GREEN,BLUE);
+    
+    //TColor raw_color = TColor.newARGB(color(RED, GREEN, BLUE));
+    //float bright = map(VOLUME,0, 100, 0, 1);
+    //raw_color.setBrightness(bright);
+    //COLOR = raw_color.toARGB();
+    
+    //int[] cWheel = new int [9];
+    //int angle = 0;
+    //for (int i = 0; i < cWheel.length; i++) {
+    //  cWheel[i] = round(map(RAW[i], 0, 180, 0, 40));
+    //  angle += cWheel[i];
+    //}
+    
+    //TColor raw = new TColor(TColor.BLUE);
+    //raw = raw.getRotatedRYB(angle);
+    //float b = map(VOLUME,0, 100, 0, 1);
+    //raw.setBrightness(b);
+    //COLOR = raw.toARGB();
     
     //pushStyle();
     //colorMode(HSB, 360, 100, 100, 100);
@@ -158,10 +191,7 @@ class AverageListener implements AudioListener {
     
   }
   
-  void calcAverages() {
-    AVERAGES[0] = mapdB(fft.calcAvg(0,2));
-    ///AVERAGES[1] = mapdB(fft.calcAvr(3, 12));
-  }
+ 
     
   void samples(float[] samps) {
     fft.forward(in.mix.toArray());

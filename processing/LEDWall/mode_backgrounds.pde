@@ -1,5 +1,5 @@
 void doBGColor() {
-  color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
+  color thisColor = aaudio.COLOR; //audio.COLORS[AUDIO_MODE];
   buffer.beginDraw();
   buffer.background(thisColor);
   //eq.volume.display(audio.VOLUME);
@@ -7,7 +7,7 @@ void doBGColor() {
 }
 
 void doUserAudio() {
-  color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
+  color thisColor = aaudio.COLOR; //audio.COLORS[AUDIO_MODE];
   kinect.updateUser(thisColor);
   buffer.beginDraw();
   buffer.background(0);
@@ -17,7 +17,7 @@ void doUserAudio() {
 }
 
 void doUserBg() {
-  color thisColor = audio.COLOR[COLOR_MODE]; //audio.COLORS[AUDIO_MODE];
+  color thisColor = aaudio.COLOR; //audio.COLORS[AUDIO_MODE];
   kinect.updateUserBlack();
   buffer.beginDraw();
   buffer.background(thisColor);
