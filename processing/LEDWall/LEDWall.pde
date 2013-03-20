@@ -72,20 +72,20 @@ void drawDebug() {
   text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
   text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
   //text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
-  text("audio volume: " + aaudio.VOLUME, 10, DEBUG_WINDOW_START + 80);
-  text("bass: " + aaudio.BASS, 10, DEBUG_WINDOW_START + 95);
-  text("mids: " + aaudio.MIDS, 10, DEBUG_WINDOW_START + 110);
-  text("treb: " + aaudio.TREB, 10, DEBUG_WINDOW_START + 125);
-  text("test: " + aaudio.RAW[5], 10, DEBUG_WINDOW_START + 140);
-  //javax.sound.sampled.FloatControl myGain = in.gain();
-  mm = max(mm,aaudio.RAW[5]);
-  text("max: " + mm, 10, DEBUG_WINDOW_START + 155);
-  //text("User: " + kinect.user_id, 10, DEBUG_WINDOW_START + 155);
+  //text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 80);
+  text("BASS: " + audio.BASS, 10, DEBUG_WINDOW_START + 65); 
+  text("MIDS: " + audio.MIDS, 80, DEBUG_WINDOW_START + 65);
+  text("TREB: " + audio.TREB, 150, DEBUG_WINDOW_START + 65);
+  text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 80);
+  text("FFT test: " + audio.RAW[5], 10, DEBUG_WINDOW_START + 110);
+  mm = max(mm,audio.RAW[5]);
+  text("FFT max: " + mm, 10, DEBUG_WINDOW_START + 125);
+  
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
   //text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 185);
-  text("Brightness: " + brightness(aaudio.COLOR) + "   Sat: " + saturation(aaudio.COLOR), 10, DEBUG_WINDOW_START + 200);
-  text("R: " + aaudio.RED + "  G: " + aaudio.GREEN + "   B: " + aaudio.BLUE, 10, DEBUG_WINDOW_START + 215);
+  text("Brightness: " + brightness(audio.COLOR) + "   Sat: " + saturation(audio.COLOR), 10, DEBUG_WINDOW_START + 200);
+  text("R: " + audio.RED + "  G: " + audio.GREEN + "   B: " + audio.BLUE, 10, DEBUG_WINDOW_START + 215);
   
   
   //image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10) - 170, DEBUG_WINDOW_START + 10);

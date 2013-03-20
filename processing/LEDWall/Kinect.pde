@@ -20,7 +20,7 @@ void setupKinect() {
 }
 
 void doKinect() {
-  kinect.setDepthImageColor(aaudio.COLOR);
+  kinect.setDepthImageColor(audio.COLOR);
   kinect.bufferDepth();
   buffer.beginDraw();
   buffer.background(0);
@@ -240,7 +240,7 @@ class Kinect extends SimpleOpenNI {
 
   void updateUserAudio() {
     update();
-    updateSingle(aaudio.COLOR, false);
+    updateSingle(audio.COLOR, false);
   }
 
 

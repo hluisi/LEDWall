@@ -51,10 +51,10 @@ class EQ {
   void show() {
 
     //buffer.background(0);
-    volume.display(aaudio.VOLUME);
+    volume.display(audio.VOLUME);
 
     for (int i = 0; i < 9; i++) {
-      spec[i].display(aaudio.AVERAGES[i]);
+      spec[i].display(audio.AVERAGES[i]);
     }
   }
 

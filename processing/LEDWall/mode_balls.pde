@@ -18,7 +18,7 @@ void setupParticles() {
   for (int i = 0; i < particles.length; i++) {
     float x = random(buffer.width); float y = random(buffer.height);
     Vec2D loc = new Vec2D(x,y);
-    particles[i] = new Particle(loc, i % 9);
+    particles[i] = new Particle(loc, i % 6);
   }
   println("Particles SETUP ...");
 }
@@ -44,10 +44,17 @@ void doParticles() {
   
   //kinect.updateUser(audio.COLOR[COLOR_MODE_NOBLACK]);
   //if (kinect.user_id != 99999) {
-    kinect.updateUserBlack();
-    buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
+    //kinect.updateUserBlack();
+    //buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
   //}
   //buffer.image(kinect.buffer_image, 0, 0);
+  
+  buffer.strokeWeight(1);
+  buffer.stroke(255);
+  for (int i = 0; i < 160 - 1; i++) {
+    buffer.line(i, (buffer.height / 2) + in.left.get(i)*30, i + 1, (buffer.height / 2) + in.left.get(i+1)*30);
+    //buffer.line(i, 60 + in.right.get(i)*30, i + 1, 60 + in.right.get(i+1)*30);
+  }
   buffer.popStyle();
   buffer.endDraw();
 }
@@ -61,7 +68,7 @@ class Attractor extends VerletParticle2D {
     super (loc);
     r = 24;
     physics.addParticle(this);
-    physics.addBehavior(new AttractionBehavior(this, buffer.width, 0.005));
+    physics.addBehavior(new AttractionBehavior(this, buffer.width / 2, 0.005));
   }
 
   void display () {
@@ -81,19 +88,19 @@ class Particle extends VerletParticle2D {
 
   Particle (Vec2D loc, int spec) {
     super(loc);
-    spectrum = spec;
+    spectrum = spec + 1;
     reset();
     physics.addParticle(this);
-    physics.addBehavior(new AttractionBehavior(this, r, -0.005));
+    //physics.addBehavior(new AttractionBehavior(this, r * 2, -0.05));
   }
   
   void reset() {
     float test = random(1);
-    if (test < 0.25) update_color = false;
+    if (test < 0.35) update_color = false;
     else update_color = true;
     lifespan = random(255);
-    r = map(aaudio.RAW[spectrum], 0, 30, 2, buffer.height / 10);
-    p_color = aaudio.COLOR;
+    r = map(audio.RAW[spectrum], 0, 30, 2, buffer.height / 8);
+    p_color = audio.COLOR;
     if (update_color == false) {
       if (kinect.user_id != -1) {
         x = kinect.user_center.x; y = kinect.user_center.y;
@@ -114,8 +121,8 @@ class Particle extends VerletParticle2D {
     if (lifespan < 0) reset();
     
     if (update_color) {
-      p_color = aaudio.COLOR;
-      r = map(aaudio.RAW[spectrum], 0, 30, 2, buffer.height / 5);
+      p_color = audio.COLOR;
+      r = map(audio.RAW[spectrum], 0, 30, 2, buffer.height / 8);
     }
     
     
@@ -127,8 +134,8 @@ class Particle extends VerletParticle2D {
     if (x < 1 || x > buffer.width - 1)  f.x *= -1;
     if (y < 1 || y > buffer.height - 1) f.y *= -1;
     
-    float push = map(aaudio.RAW[spectrum], 0, 30, -0.75, 5);
-    f = f.scale(push);
+    float push = map(audio.RAW[spectrum], 0, 30, -0.025, 1.25);
+    f = f.scale(spectrum * push );
     //f.jitter(0.1,0.1);
     
     addVelocity(f);
