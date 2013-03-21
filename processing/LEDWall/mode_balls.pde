@@ -52,7 +52,7 @@ void doParticles() {
   buffer.strokeWeight(1);
   buffer.stroke(255);
   for (int i = 0; i < 160 - 1; i++) {
-    buffer.line(i, (buffer.height / 2) + in.left.get(i)*30, i + 1, (buffer.height / 2) + in.left.get(i+1)*30);
+    buffer.line(i, (buffer.height / 2) + audio.in.left.get(i)*30, i + 1, (buffer.height / 2) + audio.in.left.get(i+1)*30);
     //buffer.line(i, 60 + in.right.get(i)*30, i + 1, 60 + in.right.get(i+1)*30);
   }
   buffer.popStyle();
@@ -99,7 +99,7 @@ class Particle extends VerletParticle2D {
     if (test < 0.35) update_color = false;
     else update_color = true;
     lifespan = random(255);
-    r = map(audio.RAW[spectrum], 0, 30, 2, buffer.height / 8);
+    r = map(audio.spectrums[spectrum].raw, 0, 30, 2, buffer.height / 8);
     p_color = audio.COLOR;
     if (update_color == false) {
       if (kinect.user_id != -1) {
@@ -122,7 +122,7 @@ class Particle extends VerletParticle2D {
     
     if (update_color) {
       p_color = audio.COLOR;
-      r = map(audio.RAW[spectrum], 0, 30, 2, buffer.height / 8);
+      r = map(audio.spectrums[spectrum].raw, 0, 30, 2, buffer.height / 8);
     }
     
     
@@ -134,7 +134,7 @@ class Particle extends VerletParticle2D {
     if (x < 1 || x > buffer.width - 1)  f.x *= -1;
     if (y < 1 || y > buffer.height - 1) f.y *= -1;
     
-    float push = map(audio.RAW[spectrum], 0, 30, -0.025, 1.25);
+    float push = map(audio.spectrums[spectrum].raw, 0, 30, -0.025, 1.25);
     f = f.scale(spectrum * push );
     //f.jitter(0.1,0.1);
     

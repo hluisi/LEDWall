@@ -308,17 +308,23 @@ class textBar extends baseBar {
 class valueBar extends baseBar {
   PFont   value_text_font; // font for value text
   int     value;           // value
+  int     peak;            // the peak of the value
   int     MIN, MAX;        // the min and MAX values for mapping
   color   value_color;     // the color of the value bar
   color   value_stroke;    // the stroke color of the value bar
-  color   value_weight;    // the stroke weight of the value bar
+  int     value_weight;    // the stroke weight of the value bar
   color   text_color;      // the color of the value text 
   int     text_offset;     // offset text acording to alignment
   PVector value_start;     // the start location for drawing the value bar
   PVector value_end;       // the end location for drawing the value bar
+  PVector peak_start;
+  PVector peak_end;
+  color   peak_color;
+  int     peak_weight;
   boolean value_stroke_on; // is the stroke on for the value bar?
   boolean value_text_on;   // is the value text on?
   boolean base_bg_on;      // is the background on?
+  boolean peak_on;
 
   valueBar(float _x, float _y, float _width, float _height, int _align_x, int _align_y, PFont _font) {
     super(_x, _y, _width, _height, _align_x, _align_y); // create the base bar
@@ -342,6 +348,13 @@ class valueBar extends baseBar {
 
     value_start = new PVector(); // create value bar start vector
     value_end   = new PVector(); // create value bar end vector
+    
+    peak_start  = new PVector();
+    peak_end    = new PVector();
+    peak_color = color(0);
+    peak_weight = 1;
+    peak = 0;
+    peak_on = false;
   }
 
   void update() {
@@ -352,24 +365,39 @@ class valueBar extends baseBar {
     value_start.y = base_start.y;
     value_end.x   = base_end.x;
     value_end.y   = base_end.y;
+    
+    peak_start.x = base_start.x;
+    peak_start.y = base_start.y;
+    peak_end.x   = base_end.x;
+    peak_end.y   = base_end.y;
 
     // mapping from the top left to the bottom right
     if (base_align_x == LEFT && base_align_y == TOP) {
       value_end.x = map(value, MIN, MAX, location.x, location.x + base_width);
       value_end.y = map(value, MIN, MAX, location.y, location.y + base_height);
+      peak_end.x = map(peak, MIN, MAX, location.x, location.x + base_width);
+      peak_start.y = map(peak, MIN, MAX, location.y, location.y + base_height);
+      peak_end.y = peak_start.y;
     }
     // mapping from the top center to the bottom center
     if (base_align_x == CENTER && base_align_y == TOP) {
       value_end.y = map(value, MIN, MAX, location.y, location.y + base_height);
+      peak_start.y = map(peak, MIN, MAX, location.y, location.y + base_height);
+      peak_end.y = peak_start.y;
     }
     // mapping from the top right to the bottom left
     if (base_align_x == RIGHT && base_align_y == TOP) {
       value_start.x = map(value, MIN, MAX, location.x, location.x - base_width);
       value_end.y   = map(value, MIN, MAX, location.y, location.y + base_height);
+      peak_start.x = map(peak, MIN, MAX, location.x, location.x - base_width);
+      peak_start.y = map(peak, MIN, MAX, location.y, location.y + base_height);
+      peak_end.y = peak_start.y;
     }
     // mapping from the center left to the center right
     if (base_align_x == LEFT && base_align_y == CENTER) {
       value_end.x = map(value, MIN, MAX, location.x, location.x + base_width);
+      peak_start.x = map(peak, MIN, MAX, location.x, location.x + base_width);
+      peak_end.x = peak_start.x;
     }
     // mapping from the center outward
     if (base_align_x == CENTER && base_align_y == CENTER) {
@@ -385,21 +413,35 @@ class valueBar extends baseBar {
     // mapping from the center right to the center left
     if (base_align_x == RIGHT && base_align_y == CENTER) {
       value_start.x = map(value, MIN, MAX, location.x, location.x - base_width);
+      peak_start.x = map(peak, MIN, MAX, location.x, location.x - base_width);
+      peak_end.x = peak_start.x;
     }
     // mapping from the bottom left to the top right
     if (base_align_x == LEFT && base_align_y == BOTTOM) {
       value_end.x   = map(value, MIN, MAX, location.x, location.x + base_width);
       value_start.y = map(value, MIN, MAX, location.y, location.y - base_height);
+      peak_end.x   = map(peak, MIN, MAX, location.x, location.x + base_width);
+      peak_start.y = map(peak, MIN, MAX, location.y, location.y - base_height);
+      peak_end.y = peak_start.y;
     }
     // mapping from the bottom center to the top center
     if (base_align_x == CENTER && base_align_y == BOTTOM) {
       value_start.y = map(value, MIN, MAX, location.y, location.y - base_height);
+      peak_start.y = map(peak, MIN, MAX, location.y, location.y - base_height);
+      peak_end.y = peak_start.y;
     }
     // mapping from the bottom right to the top left
     if (base_align_x == RIGHT && base_align_y == BOTTOM) {
       value_start.x = map(value, MIN, MAX, location.x, location.x - base_width);
       value_start.y = map(value, MIN, MAX, location.y, location.y - base_height);
+      peak_start.x = map(peak, MIN, MAX, location.x, location.x - base_width);
+      peak_start.y = map(peak, MIN, MAX, location.y, location.y - base_height);
+      peak_end.y = peak_start.y;
     }
+    
+    peak_start.x = round(peak_start.x);  peak_end.x = round(peak_end.x);
+    peak_start.y = round(peak_start.y);  peak_end.y = round(peak_end.y);
+    
   }
 
   private void setValue(int v) {
@@ -481,6 +523,26 @@ class valueBar extends baseBar {
   void textOffset(int _offset) {
     text_offset = _offset;
   }
+  
+  void setPeak(int p) {
+    peak = p;
+  }
+  
+  void setPeakColor (color c) {
+    peak_color = c;
+  }
+  
+  void setPeakWeight(int v) {
+    peak_weight = v;
+  }
+  
+  void peakOn() {
+    peak_on = true;
+  }
+  
+  void peakOff() {
+    peak_on = false;
+  }
 
   void drawText() {
     buffer.textFont(value_text_font);  // set the font
@@ -519,6 +581,11 @@ class valueBar extends baseBar {
     buffer.fill(value_color);           // color bar to value level
     buffer.rect(value_start.x, value_start.y, value_end.x, value_end.y, base_corners);
     buffer.rectMode(CORNER);
+    if (peak_on) {
+      buffer.stroke(peak_color);
+      buffer.strokeWeight(1);
+      buffer.line(peak_start.x, peak_end.y, peak_end.x, peak_end.y);
+    }
   }
 
   void display() {
@@ -697,6 +764,11 @@ class eqBar {
     eq_font = ff;
     VALUE.setFont(eq_font);
   }
+  
+  void setPeak(int p) {
+    VALUE.setPeakColor( getColor(p) );
+    VALUE.setPeak(p);
+  }
 
   void move(float _x, float _y) {
     eq_x = _x;
@@ -728,21 +800,25 @@ class eqBar {
     VALUE.location.y = eq_y;
   }
 
-  
-
-  private void updateColor() { 
-    if (eq_value < VALUE.MAX * 0.5) {
-      eq_value_color = color(0, 255, 0); // less then half is green
+  private color getColor(int v) {
+    color return_color;
+    if (v < VALUE.MAX * 0.5) {
+      return_color = color(0, 255, 0); // less then half is green
     } 
-    else if (eq_value > VALUE.MAX * 0.5 && eq_value < VALUE.MAX * 0.75) {
-      eq_value_color = color(255, 255, 0); // then yellow
+    else if (v > VALUE.MAX * 0.5 && v < VALUE.MAX * 0.75) {
+      return_color = color(255, 255, 0); // then yellow
     } 
-    else if (eq_value > VALUE.MAX * 0.75 && eq_value < VALUE.MAX * 0.9) {
-      eq_value_color = color(229, 128, 0);  // then orange
+    else if (v > VALUE.MAX * 0.75 && v < VALUE.MAX * 0.9) {
+      return_color = color(229, 128, 0);  // then orange
     }
     else {
-      eq_value_color = color(255, 0, 0);
+      return_color = color(255, 0, 0);
     }
+    return return_color;
+  }
+
+  private void updateColor() { 
+    eq_value_color = getColor(eq_value);
   }
 
   void setValue(int _v) {
@@ -772,7 +848,7 @@ class eqBar {
     buffer.text(eq_label, x, 0);
     buffer.popMatrix();
   }
-
+  
   void drawAll() {
     RED.display();
     ORANGE.display();

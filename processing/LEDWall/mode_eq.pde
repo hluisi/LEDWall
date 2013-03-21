@@ -40,10 +40,13 @@ class EQ {
       spec[i].VALUE.textColor(color(255, 255));
       spec[i].VALUE.textOffset(10);
       spec[i].VALUE.setMax(100);
+      spec[i].VALUE.setPeakWeight(1);
+      spec[i].VALUE.peakOn();
       spec[i].strokeOff(); 
       spec[i].setLabelFont(tFont);
       spec[i].setLabelColor(color(0, 128));
-      spec[i].setLabel(round(fft.getAverageCenterFrequency(i)) + " Hz");
+      spec[i].setLabel(round(audio.fft.getAverageCenterFrequency(i)) + " Hz");
+      
       x += 16;
     }
   }
@@ -54,7 +57,9 @@ class EQ {
     volume.display(audio.VOLUME);
 
     for (int i = 0; i < 9; i++) {
-      spec[i].display(audio.AVERAGES[i]);
+      spec[i].setPeak( audio.spectrums[i].mapped_peak );
+      spec[i].display( audio.spectrums[i].mapped_raw );
+      //spec[i].display(audio.AVERAGES[i]);
     }
   }
 

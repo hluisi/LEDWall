@@ -6,100 +6,46 @@ import toxi.color.theory.*;
 import toxi.util.datatypes.*;
 
 Minim minim;
-AudioInput in;
-FFT fft;
-BeatDetect beat;
 AverageListener audio;
-
 
 void setupMinim() {
   minim = new Minim(this);
-  in = minim.getLineIn(Minim.MONO, 512);
-  fft = new FFT(in.bufferSize(), in.sampleRate());
-  fft.logAverages(63,1);
-  fft.window(FFT.HANN);
-  beat = new BeatDetect();
-  beat.setSensitivity(320);
-  audio = new AverageListener(fft, in, beat);
-  //println("Avg size: " + fft.avgSize());
-  for(int i = 0; i < fft.avgSize(); i++) {
-    println("i:" + i + "  f:" + round(fft.getAverageCenterFrequency(i)) );
-    //println("i:" + i + "  f:" + fft.indexToFreq(i));
+  audio = new AverageListener();
+  for (int i = 0; i < audio.fft.avgSize(); i++) {
+    println("i:" + i + "  f:" + round(audio.fft.getAverageCenterFrequency(i)) );
   }
-  println(fft.getBandWidth());
-  println(fft.timeSize());
 }
-
-void minimTest() {
-  buffer.beginDraw();
-  buffer.rectMode(CORNERS);
-  buffer.background(audio.COLOR);
-  
-  float w = buffer.width / 9;
-  w += w / 22;
-  for(int i = 0; i < fft.avgSize(); i++) {
-    buffer.fill(255,0,0);
-    buffer.stroke(0);
-    float h = map(audio.AVERAGES[i], 0, 255, buffer.height, 0);
-    buffer.rect(i*w, buffer.height, (i*w) + w, h);
-    buffer.fill(255);
-    buffer.text(audio.AVERAGES[i], w, height - 5);
-  }
-  
-  //if ( beat.isRange(3,5,2) ) {
-  //  buffer.noStroke();
-  //  buffer.fill(0,255,0,128);
-  //  buffer.ellipse(40,40, 40, 40);
-  //}
-  
-  buffer.stroke(255);
-  for (int i = 0; i < 160 - 1; i++) {
-    buffer.line(i, 20 + in.left.get(i)*30, i + 1, 20 + in.left.get(i+1)*30);
-    buffer.line(i, 60 + in.right.get(i)*30, i + 1, 60 + in.right.get(i+1)*30);
-  }
-  buffer.endDraw();
-}
-
-void stop() {
-  
-  kinect.close();
-  
-  // always close Minim audio classes when you are done with them
-  in.close();
-  minim.stop();
-  
-  
-  super.stop();
-}
-
 
 class AverageListener implements AudioListener {
-  private FFT fft;
-  private AudioInput in;
-  private BeatDetect beat;
-  public int[] AVERAGES;
-  //public float[] DIFF;
-  private float[] RAW;
-  public color COLOR;// = new int [4];
+  public AudioInput in;     // audio input
+  public FFT fft;           // FFT 
+  public BeatDetect beat;   // beat detect
+
+  public color COLOR;
   public int BASS, MIDS, TREB, VOLUME, RED, GREEN, BLUE;
-  public float spectrumGain = 1.5;
+
   private int last_update = millis();
   public int BPM = 0;
   public int bpm_count = 0, sec_count = 0;
   private int[] bpms = new int [15];
-  
-  
-  AverageListener(FFT fft, AudioInput in, BeatDetect beat) {
-    this.in = in;
-    this.in.mute();
-    this.in.addListener(this);
-    this.fft = fft;
-    this.beat = beat;
+  AudioSpectrum[] spectrums;
+
+  AverageListener() {
+    in = minim.getLineIn(Minim.MONO, 512);           // create the audio in 
+    in.mute();                                       // mute it
+    //in.setGain(5);
+    in.addListener(this);                            // add this object to listen to the audio in
+    fft = new FFT(in.bufferSize(), in.sampleRate()); // create the FFT
+    fft.logAverages(63, 1);                           // config the averages 
+    fft.window(FFT.HANN);                            // shape the FFT buffer window using the HANN method
+    beat = new BeatDetect();                         // create a new beat detect 
+    beat.setSensitivity(280);                        // set it's sensitivity
     
-    //mapped_averages = new float [fft.avgSize()];
-    RAW = new float [fft.avgSize()];
-    //DIFF = new float [fft.avgSize()];
-    AVERAGES = new int [fft.avgSize()];
+    spectrums = new AudioSpectrum [ fft.avgSize() ];
+    for (int i = 0; i < spectrums.length; i++) {
+      spectrums[i] = new AudioSpectrum();
+    }
+    
     COLOR = color(0);
     BASS = 0;
     MIDS = 0;
@@ -110,45 +56,28 @@ class AverageListener implements AudioListener {
     BLUE = 0;
     for (int i = 0; i < bpms.length; i++) bpms[i] = 0;
   }
-  
-  //private int mapdB(float value) {
-    //float db_value = 20*((float)Math.log10(value));           // convert to dB
-    //float float_value = map(db_value,-45,30,0,100);           // map dB to value
-    //int int_value = int(constrain(round(float_value),0,100)); // constrain it
-  //  int int_value = int(constrain(round(value*spectrumScale),0,255));
-   // return int_value;                                         // return it
-  //}
-  
+
   private void mapAverages() {
-    for ( int i = 0; i < RAW.length; i++) {
-      RAW[i] = fft.getAvg(i);
-      int value = round(map(RAW[i]*spectrumGain,0,30,0,100));
-      value = int(constrain(value,0,100));
-      AVERAGES[i] = value;      
+    for ( int i = 0; i < spectrums.length; i++) {
+      spectrums[i].set( fft.getAvg(i) );
     }
-    //float raw_max = max(RAW);
-    //for ( int i = 0; i < RAW.length; i++) {
-    //  DIFF[i] = map(RAW[i], 0, raw_max, 0, 255);
-    //}
-    
   }
-  
+
   private void mapRanges() {
-    VOLUME = round(map(in.mix.level()*256,0,256,0,100));
-    BASS = round((RAW[0] + RAW[1] + RAW[2]) / 3);
-    MIDS = round((RAW[3] + RAW[4] + RAW[5]) / 3);
-    TREB = round((RAW[6] + RAW[7] + RAW[8]) / 3); 
-    
+    VOLUME = round(map(in.mix.level()*256, 0, 256, 0, 100));
+    BASS = round((spectrums[0].mapped_raw  + spectrums[1].mapped_raw  + spectrums[2].mapped_raw ) / 3);
+    MIDS = round((spectrums[3].mapped_raw  + spectrums[4].mapped_raw  + spectrums[5].mapped_raw ) / 3);
+    TREB = round((spectrums[6].mapped_raw  + spectrums[7].mapped_raw  + spectrums[8].mapped_raw ) / 3);
   }
-  
+
   private void mapColors() {
-    RED   = round(map((RAW[0] + RAW[1] + RAW[2]) / 3, 0, 30, 0, 255));
-    GREEN = round(map((RAW[3] + RAW[4] ) / 2, 0, 30, 0, 255));
-    BLUE  = round(map((RAW[5] + RAW[6]) / 2, 0, 30, 0, 255)); 
-    
-    COLOR = color(RED,GREEN,BLUE);
+    RED   = round(map(( spectrums[0].mapped_raw + spectrums[1].mapped_raw  + spectrums[2].mapped_raw  ) / 3, 0, 75, 0, 255));
+    GREEN = round(map(( spectrums[3].mapped_raw  + spectrums[4].mapped_raw  ) / 2, 0, 75, 0, 255));
+    BLUE  = round(map(( spectrums[5].mapped_raw  + spectrums[6].mapped_raw ) / 2, 0, 75, 0, 255)); 
+
+    COLOR = color(RED, GREEN, BLUE);
   }
-  
+
   private void mapBPM() {
     int check = millis();
     if (check - last_update > 1000) {
@@ -159,21 +88,23 @@ class AverageListener implements AudioListener {
       bpm_count = 0;
       sec_count++;
       BPM = (bpms[0]  + bpms[1]  + bpms[2]  + bpms[3]  + bpms[4] + 
-             bpms[5]  + bpms[6]  + bpms[8]  + bpms[8]  + bpms[9] + 
-             bpms[10] + bpms[11] + bpms[12] + bpms[13] + bpms[14]) * 4;
+        bpms[5]  + bpms[6]  + bpms[8]  + bpms[8]  + bpms[9] + 
+        bpms[10] + bpms[11] + bpms[12] + bpms[13] + bpms[14]) * 4;
       last_update = check;
-      //println(bpms);
     }
-    
+
     if ( beat.isOnset() ) bpm_count++;
-    
   }
-  
+
   boolean isOnBeat() {
     if ( beat.isOnset() ) return true;
     else return false;
   }
-    
+
+  void close() {
+    in.close();
+  }
+
   void samples(float[] samps) {
     fft.forward(in.mix.toArray());
     beat.detect(in.mix.toArray());
@@ -182,7 +113,7 @@ class AverageListener implements AudioListener {
     mapColors();
     mapBPM();
   }
-  
+
   void samples(float[] sampsL, float[] sampsR) {
     fft.forward(in.mix.toArray());
     beat.detect(in.mix.toArray());
@@ -191,5 +122,87 @@ class AverageListener implements AudioListener {
     mapColors();
     mapBPM();
   }
-  
 }
+
+class AudioSpectrum {
+  //final int MAXIMUM_RAW_LEVEL  = 32; // maxium level coming in (guessed from tests)
+  final int SMOOTH_BUFFER_SIZE = 3;  // the length of the smooth array
+  final int FRAME_TRIGGER      = 60; // how many frames must the peak and low values 
+  
+  float peak   = 0;    // the peak or max level of the spectrum
+  float max_peak = 0;
+  float base   = 9999;    // the base or lowest level of the spectrum
+  float raw    = 0;    // the raw level of the spectrum
+  float smoothed = 0;  // the smoothed over time level of the spectrum 
+  float equalized = 0; // the level equalized or mapped between the base and peak levels
+  float dB = 0; 
+  float spectrumGain = 1.5;
+
+  float[] smooth_buffer = new float [SMOOTH_BUFFER_SIZE];  // buffer for the smoothed level
+  
+  int mapped_raw = 0;
+  int mapped_peak = 0;
+
+  int peak_count = 0, smooth_count = 0;  // counters for peak, base, and smooth
+
+  boolean lowerPeak = false;  // are we lowering the peak?
+
+  AudioSpectrum() {
+    // setup the smooth buffer
+    for (int i = 0; i < smooth_buffer.length; i++) {
+      smooth_buffer[i] = 0;
+    }
+  }
+
+  void set(float value) {
+    
+    raw = value * spectrumGain; // set raw
+    
+    
+    float peak_check = max(peak, raw); // get the max peak level
+    base = min(base, raw);             // set the min base level
+
+    if (peak_check == peak) peak_count++; // if peak is the same as last time, inc the peak counter
+    
+    if (peak_check < 1) peak_check = 1;
+    
+    peak = peak_check;  // now that we know if its the same or not, set it
+    max_peak = max(max_peak, peak);
+
+    if (peak_count > FRAME_TRIGGER) {  // is our peak count higher the the trigger?
+      lowerPeak = true; // start trying to lower the peak
+      peak_count = 0;   // and reset the peak counter
+    }
+
+    if (lowerPeak == true && raw < peak) { // should we lower the peak?
+      peak -= 0.5;
+    } 
+    else if (lowerPeak == true && raw >= peak) { // should we stop trying to lower the peak?
+      lowerPeak = false;
+    }
+    
+    if (smooth_count == smooth_buffer.length) smooth_count = 0; // carry over to the start of the smooth buffer with new values
+    smooth_buffer[smooth_count] = raw; // add raw to the smooth buffer
+    
+    float smooth = 0;
+    for ( int i = 0; i < smooth_buffer.length; i++) { // add all the values together in the smooth buffer
+      smooth += smooth_buffer[i];
+    }
+    smoothed = smooth / smooth_buffer.length; // the smoothed value is the sum of all the values in the 
+                                              // buffer divided by the size of the buffer
+    equalized = map(smoothed, base, peak, 0, max_peak); // map the eqalize the smoothed level
+    if (equalized < 0) equalized = 0;
+    
+    dB = 20*((float)Math.log10(raw)); 
+    
+    mapped_raw  = int(map(raw,  0, max_peak, 0, 100));
+    mapped_raw  = int(constrain(mapped_raw, 0, 100));
+    mapped_peak = int(map(peak, 0, max_peak, 0, 100));
+    mapped_peak = int(constrain(mapped_peak, 0, 100));
+    
+    base += 0.025; // keep trying to raise the base level a small amount every loop 
+    max_peak -= 0.025;
+    if (max_peak < 32) max_peak = 32;
+  }
+}
+

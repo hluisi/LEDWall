@@ -77,9 +77,17 @@ void drawDebug() {
   text("MIDS: " + audio.MIDS, 80, DEBUG_WINDOW_START + 65);
   text("TREB: " + audio.TREB, 150, DEBUG_WINDOW_START + 65);
   text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 80);
-  text("FFT test: " + audio.RAW[5], 10, DEBUG_WINDOW_START + 110);
-  mm = max(mm,audio.RAW[5]);
-  text("FFT max: " + mm, 10, DEBUG_WINDOW_START + 125);
+  text("GAIN: " + audio.in.gain(), 10, DEBUG_WINDOW_START + 95);
+  
+  text("RAW: " + audio.spectrums[0].raw, 10, DEBUG_WINDOW_START + 125);
+  text("SMO: " + audio.spectrums[0].smoothed, 150, DEBUG_WINDOW_START + 125);
+  text("EQL: " + audio.spectrums[0].equalized, 290, DEBUG_WINDOW_START + 125);
+  text("BASE: " + audio.spectrums[0].base, 10, DEBUG_WINDOW_START + 140);
+  text("PEAK: " + audio.spectrums[0].peak, 150, DEBUG_WINDOW_START + 140);
+  text("dB: " + audio.spectrums[0].dB, 290, DEBUG_WINDOW_START + 140);
+  //text("FFT test: " + audio.RAW[5], 10, DEBUG_WINDOW_START + 125);
+  mm = max(mm,audio.spectrums[0].raw);
+  text("FFT max: " + mm, 10, DEBUG_WINDOW_START + 155);
   
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
@@ -127,6 +135,16 @@ void doMode() {
     if (wheel.use_audio != false) wheel.audioOff();
     doWheel();
   }
+}
+
+void stop() {
+  
+  kinect.close();
+  
+  // always close Minim audio classes when you are done with them
+  audio.close();
+  minim.stop();
+  super.stop();
 }
 
 void keyPressed() {
