@@ -1,7 +1,5 @@
 int DISPLAY_MODE = 1;
 
-float mm = 0;
-
 final int DISPLAY_MODE_TEST       = 0;
 final int DISPLAY_MODE_SHOWEQ     = 1;
 final int DISPLAY_MODE_KINECT     = 2;
@@ -30,7 +28,7 @@ void setup() {
   if (DEBUG_SHOW_WALL) y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
   else y = DEBUG_WINDOW_YSIZE;
 
-  size(x, y, P2D);
+  size(x, y, JAVA2D);
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
@@ -47,7 +45,7 @@ void setup() {
   
   setupKinect();
   setupParticles();
-  //frameRate(60);
+  frameRate(30);
 }
 
 void draw() {
@@ -79,15 +77,12 @@ void drawDebug() {
   text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 80);
   text("GAIN: " + audio.in.gain(), 10, DEBUG_WINDOW_START + 95);
   
-  text("RAW: " + audio.spectrums[0].raw, 10, DEBUG_WINDOW_START + 125);
-  text("SMO: " + audio.spectrums[0].smoothed, 150, DEBUG_WINDOW_START + 125);
-  text("EQL: " + audio.spectrums[0].equalized, 290, DEBUG_WINDOW_START + 125);
-  text("BASE: " + audio.spectrums[0].base, 10, DEBUG_WINDOW_START + 140);
-  text("PEAK: " + audio.spectrums[0].peak, 150, DEBUG_WINDOW_START + 140);
-  text("dB: " + audio.spectrums[0].dB, 290, DEBUG_WINDOW_START + 140);
-  //text("FFT test: " + audio.RAW[5], 10, DEBUG_WINDOW_START + 125);
-  mm = max(mm,audio.spectrums[0].raw);
-  text("FFT max: " + mm, 10, DEBUG_WINDOW_START + 155);
+  text("RAW: " + audio.volume.value, 10, DEBUG_WINDOW_START + 125);
+  //text("SMO: " + audio.spectrums[0].raw_smoothed, 150, DEBUG_WINDOW_START + 125);
+  //text("EQL: " + audio.spectrums[0].raw_equalized, 290, DEBUG_WINDOW_START + 125);
+  text("PEAK: " + audio.volume.peak, 80, DEBUG_WINDOW_START + 125);
+  text("MAX PEAK: " + audio.volume.max_peak, 150, DEBUG_WINDOW_START + 125);
+  text("dB: " + audio.volume.dB, 10, DEBUG_WINDOW_START + 140);
   
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   

@@ -286,7 +286,7 @@ class textBar extends baseBar {
     if (base_align_x == RIGHT) {
       start_x = -2;
     }
-    
+
     // build a new string with all the line
     buffer.fill(text_color);
     for (int i = 0; i < line_list.size(); i++) {
@@ -296,7 +296,6 @@ class textBar extends baseBar {
       float y = start_y + (font_height * i);
       //println(y);
       buffer.text(thisLine, x, y);
-
     }
   }
 
@@ -313,6 +312,7 @@ class valueBar extends baseBar {
   color   value_color;     // the color of the value bar
   color   value_stroke;    // the stroke color of the value bar
   int     value_weight;    // the stroke weight of the value bar
+  float   text_height;
   color   text_color;      // the color of the value text 
   int     text_offset;     // offset text acording to alignment
   PVector value_start;     // the start location for drawing the value bar
@@ -338,7 +338,7 @@ class valueBar extends baseBar {
     MIN   = 0;    // default min of zero
     MAX   = 1023; // default max of 1023
 
-    value_color     = color(0); // default value bar color of black
+      value_color     = color(0); // default value bar color of black
     value_stroke    = color(0); // default value bar stroke of black
     value_weight    = 2;        // default value stroke weight of two
     text_color      = color(0); // default value text color of black
@@ -348,8 +348,8 @@ class valueBar extends baseBar {
 
     value_start = new PVector(); // create value bar start vector
     value_end   = new PVector(); // create value bar end vector
-    
-    peak_start  = new PVector();
+
+      peak_start  = new PVector();
     peak_end    = new PVector();
     peak_color = color(0);
     peak_weight = 1;
@@ -365,7 +365,7 @@ class valueBar extends baseBar {
     value_start.y = base_start.y;
     value_end.x   = base_end.x;
     value_end.y   = base_end.y;
-    
+
     peak_start.x = base_start.x;
     peak_start.y = base_start.y;
     peak_end.x   = base_end.x;
@@ -401,13 +401,18 @@ class valueBar extends baseBar {
     }
     // mapping from the center outward
     if (base_align_x == CENTER && base_align_y == CENTER) {
+      
       if (base_width >= base_height) {
         value_start.x = map(value, MIN, MAX, location.x, location.x - base_half_width);
         value_end.x   = map(value, MIN, MAX, location.x, location.x + base_half_width);
+        peak_start.x = map(peak, MIN, MAX, location.x, location.x - base_half_width);
+        peak_end.x   = map(peak, MIN, MAX, location.x, location.x + base_half_width);
       }
       if (base_width <= base_height) {
         value_start.y = map(value, MIN, MAX, location.y, location.y - base_half_height);
         value_end.y   = map(value, MIN, MAX, location.y, location.y + base_half_height);
+        peak_start.y = map(peak, MIN, MAX, location.y, location.y - base_half_height);
+        peak_end.y   = map(peak, MIN, MAX, location.y, location.y + base_half_height);
       }
     }
     // mapping from the center right to the center left
@@ -438,10 +443,9 @@ class valueBar extends baseBar {
       peak_start.y = map(peak, MIN, MAX, location.y, location.y - base_height);
       peak_end.y = peak_start.y;
     }
-    
-    peak_start.x = round(peak_start.x);  peak_end.x = round(peak_end.x);
-    peak_start.y = round(peak_start.y);  peak_end.y = round(peak_end.y);
-    
+
+    //peak_start.x = round(peak_start.x);  peak_end.x = round(peak_end.x);
+    //peak_start.y = round(peak_start.y);  peak_end.y = round(peak_end.y);
   }
 
   private void setValue(int v) {
@@ -519,33 +523,34 @@ class valueBar extends baseBar {
   void strokeBgOff() {
     base_stroke_on = false;
   }
-  
+
   void textOffset(int _offset) {
     text_offset = _offset;
   }
-  
+
   void setPeak(int p) {
     peak = p;
   }
-  
+
   void setPeakColor (color c) {
     peak_color = c;
   }
-  
+
   void setPeakWeight(int v) {
     peak_weight = v;
   }
-  
+
   void peakOn() {
     peak_on = true;
   }
-  
+
   void peakOff() {
     peak_on = false;
   }
 
   void drawText() {
     buffer.textFont(value_text_font);  // set the font
+    text_height = buffer.textAscent() + buffer.textDescent();
     buffer.fill(text_color);     // set color for font
     buffer.textAlign(base_align_x, base_align_y);
     if (base_align_x == LEFT && base_align_y == TOP)
@@ -557,7 +562,7 @@ class valueBar extends baseBar {
     else if (base_align_x == LEFT && base_align_y == CENTER)
       buffer.text(value, location.x - text_offset, location.y);
     else if (base_align_x == CENTER && base_align_y == CENTER)
-      buffer.text(value, location.x, location.y);
+      buffer.text(value, location.x, location.y - 2);
     else if (base_align_x == RIGHT && base_align_y == CENTER)
       buffer.text(value, location.x + text_offset, location.y);
     else if (base_align_x == LEFT && base_align_y == BOTTOM)
@@ -584,7 +589,19 @@ class valueBar extends baseBar {
     if (peak_on) {
       buffer.stroke(peak_color);
       buffer.strokeWeight(1);
-      buffer.line(peak_start.x, peak_end.y, peak_end.x, peak_end.y);
+      if (base_align_x == CENTER && base_align_y == CENTER) {
+        if (base_width >= base_height) {
+          buffer.line(peak_start.x, peak_start.y, peak_start.x, peak_end.y - 1);
+          buffer.line(peak_end.x, peak_start.y, peak_end.x, peak_end.y - 1);
+        }
+        if (base_width <= base_height) {
+          buffer.line(peak_start.x, peak_start.y, peak_end.x, peak_start.y);
+          buffer.line(peak_start.x, peak_end.y, peak_end.x, peak_end.y);
+        }
+      } 
+      else {
+        buffer.line(peak_start.x, peak_end.y - 1, peak_end.x - 1, peak_end.y - 1);
+      }
     }
   }
 
@@ -634,7 +651,7 @@ class eqBar {
     label_set = false;
     init();
   }
-  
+
   private void init() {
     eq_value_color = color(0, 255, 0);
     eq_label_color = color(0);
@@ -737,34 +754,34 @@ class eqBar {
   void strokeOff() {
     RED.strokeOff();
   }
-  
+
   void setValueColor(color _c) {
     eq_value_color = _c;
   }
-  
+
   void setLabel(String _t) {
     eq_label = _t;
     label_set = true;
   }
-  
+
   void clearLabel() {
     eq_label = "";
     label_set = false;
   }
-  
+
   void setLabelColor(color _c) {
     eq_label_color = _c;
   }
-  
+
   void setLabelFont(PFont ff) {
     label_font = ff;
   }
-  
+
   void setFont(PFont ff) {
     eq_font = ff;
     VALUE.setFont(eq_font);
   }
-  
+
   void setPeak(int p) {
     VALUE.setPeakColor( getColor(p) );
     VALUE.setPeak(p);
@@ -827,7 +844,7 @@ class eqBar {
     updateColor();
     VALUE.setColor(eq_value_color);
   }
-  
+
   void drawLabel() {
     buffer.textAlign(RED.base_align_x, CENTER);
     buffer.textFont(label_font);
@@ -836,10 +853,11 @@ class eqBar {
     buffer.translate(RED.location.x, RED.location.y);
     if (RED.base_align_y == BOTTOM) {
       buffer.rotate(radians(-90));
-    } else if (RED.base_align_y == TOP) {
+    } 
+    else if (RED.base_align_y == TOP) {
       buffer.rotate(radians(-90));
     }
-    
+
     float x = 0;
     if (RED.base_align_x == LEFT)   x = 3;
     if (RED.base_align_x == RIGHT)  x = -3;
@@ -848,7 +866,7 @@ class eqBar {
     buffer.text(eq_label, x, 0);
     buffer.popMatrix();
   }
-  
+
   void drawAll() {
     RED.display();
     ORANGE.display();

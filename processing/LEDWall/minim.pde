@@ -22,13 +22,14 @@ class AverageListener implements AudioListener {
   public BeatDetect beat;   // beat detect
 
   public color COLOR;
-  public int BASS, MIDS, TREB, VOLUME, RED, GREEN, BLUE;
+  public int BASS, MIDS, TREB, RED, GREEN, BLUE;
 
   private int last_update = millis();
   public int BPM = 0;
   public int bpm_count = 0, sec_count = 0;
   private int[] bpms = new int [15];
   AudioSpectrum[] spectrums;
+  AudioSpectrum volume;
 
   AverageListener() {
     in = minim.getLineIn(Minim.MONO, 512);           // create the audio in 
@@ -37,7 +38,7 @@ class AverageListener implements AudioListener {
     in.addListener(this);                            // add this object to listen to the audio in
     fft = new FFT(in.bufferSize(), in.sampleRate()); // create the FFT
     fft.logAverages(63, 1);                           // config the averages 
-    fft.window(FFT.HANN);                            // shape the FFT buffer window using the HANN method
+    fft.window(FFT.HAMMING);                            // shape the FFT buffer window using the HANN method
     beat = new BeatDetect();                         // create a new beat detect 
     beat.setSensitivity(280);                        // set it's sensitivity
     
@@ -45,12 +46,12 @@ class AverageListener implements AudioListener {
     for (int i = 0; i < spectrums.length; i++) {
       spectrums[i] = new AudioSpectrum();
     }
+    volume = new AudioSpectrum();
     
     COLOR = color(0);
     BASS = 0;
     MIDS = 0;
     TREB = 0;
-    VOLUME = 0;
     RED = 0;
     GREEN = 0;
     BLUE = 0;
@@ -61,19 +62,19 @@ class AverageListener implements AudioListener {
     for ( int i = 0; i < spectrums.length; i++) {
       spectrums[i].set( fft.getAvg(i) );
     }
+    volume.set( in.mix.level()*100 );
   }
 
   private void mapRanges() {
-    VOLUME = round(map(in.mix.level()*256, 0, 256, 0, 100));
-    BASS = round((spectrums[0].mapped_raw  + spectrums[1].mapped_raw  + spectrums[2].mapped_raw ) / 3);
-    MIDS = round((spectrums[3].mapped_raw  + spectrums[4].mapped_raw  + spectrums[5].mapped_raw ) / 3);
-    TREB = round((spectrums[6].mapped_raw  + spectrums[7].mapped_raw  + spectrums[8].mapped_raw ) / 3);
+    BASS = round((spectrums[0].value  + spectrums[1].value  + spectrums[2].value ) / 3);
+    MIDS = round((spectrums[3].value  + spectrums[4].value  + spectrums[5].value ) / 3);
+    TREB = round((spectrums[6].value  + spectrums[7].value  + spectrums[8].value ) / 3);
   }
 
   private void mapColors() {
-    RED   = round(map(( spectrums[0].mapped_raw + spectrums[1].mapped_raw  + spectrums[2].mapped_raw  ) / 3, 0, 75, 0, 255));
-    GREEN = round(map(( spectrums[3].mapped_raw  + spectrums[4].mapped_raw  ) / 2, 0, 75, 0, 255));
-    BLUE  = round(map(( spectrums[5].mapped_raw  + spectrums[6].mapped_raw ) / 2, 0, 75, 0, 255)); 
+    RED   = round(map(( spectrums[0].value + spectrums[1].value + spectrums[2].value  ) / 3, 0, 100, 0, 255));
+    GREEN = round(map(( spectrums[3].value + spectrums[4].value  ) / 2, 0, 100, 0, 255));
+    BLUE  = round(map(( spectrums[5].value + spectrums[6].value ) / 2, 0, 100, 0, 255)); 
 
     COLOR = color(RED, GREEN, BLUE);
   }
@@ -112,6 +113,7 @@ class AverageListener implements AudioListener {
     mapRanges();
     mapColors();
     mapBPM();
+
   }
 
   void samples(float[] sampsL, float[] sampsR) {
@@ -121,6 +123,7 @@ class AverageListener implements AudioListener {
     mapRanges();
     mapColors();
     mapBPM();
+    volume.set( in.mix.level() );
   }
 }
 
@@ -129,19 +132,19 @@ class AudioSpectrum {
   final int SMOOTH_BUFFER_SIZE = 3;  // the length of the smooth array
   final int FRAME_TRIGGER      = 60; // how many frames must the peak and low values 
   
-  float peak   = 0;    // the peak or max level of the spectrum
+  float raw_peak = 0;    // the peak or max level of the spectrum
   float max_peak = 0;
-  float base   = 9999;    // the base or lowest level of the spectrum
+  float raw_base = 9999;    // the base or lowest level of the spectrum
   float raw    = 0;    // the raw level of the spectrum
-  float smoothed = 0;  // the smoothed over time level of the spectrum 
-  float equalized = 0; // the level equalized or mapped between the base and peak levels
+  //float raw_smoothed = 0;  // the smoothed over time level of the spectrum 
+  //float raw_equalized = 0; // the level equalized or mapped between the base and peak levels
   float dB = 0; 
   float spectrumGain = 1.5;
 
-  float[] smooth_buffer = new float [SMOOTH_BUFFER_SIZE];  // buffer for the smoothed level
+  //float[] smooth_buffer = new float [SMOOTH_BUFFER_SIZE];  // buffer for the smoothed level
   
-  int mapped_raw = 0;
-  int mapped_peak = 0;
+  int value = 0;
+  int peak = 0;
 
   int peak_count = 0, smooth_count = 0;  // counters for peak, base, and smooth
 
@@ -149,60 +152,62 @@ class AudioSpectrum {
 
   AudioSpectrum() {
     // setup the smooth buffer
-    for (int i = 0; i < smooth_buffer.length; i++) {
-      smooth_buffer[i] = 0;
-    }
+    //for (int i = 0; i < smooth_buffer.length; i++) {
+    //  smooth_buffer[i] = 0;
+    //}
   }
 
-  void set(float value) {
+  void set(float v) {
     
-    raw = value * spectrumGain; // set raw
+    raw = v * spectrumGain; // set raw
     
     
-    float peak_check = max(peak, raw); // get the max peak level
-    base = min(base, raw);             // set the min base level
-
-    if (peak_check == peak) peak_count++; // if peak is the same as last time, inc the peak counter
-    
+    float peak_check = max(raw_peak, raw); // get the max peak level
     if (peak_check < 1) peak_check = 1;
     
-    peak = peak_check;  // now that we know if its the same or not, set it
-    max_peak = max(max_peak, peak);
+    raw_base = min(raw_base, raw);             // set the min base level
+
+    if (peak_check == raw_peak) peak_count++; // if peak is the same as last time, inc the peak counter
+    
+    
+    
+    raw_peak = peak_check;  // now that we know if its the same or not, set it
+    max_peak = max(max_peak, raw_peak);
 
     if (peak_count > FRAME_TRIGGER) {  // is our peak count higher the the trigger?
       lowerPeak = true; // start trying to lower the peak
       peak_count = 0;   // and reset the peak counter
     }
 
-    if (lowerPeak == true && raw < peak) { // should we lower the peak?
-      peak -= 0.5;
+    if (lowerPeak == true && raw < raw_peak) { // should we lower the peak?
+      raw_peak -= 0.5;
     } 
-    else if (lowerPeak == true && raw >= peak) { // should we stop trying to lower the peak?
+    else if (lowerPeak == true && raw >= raw_peak) { // should we stop trying to lower the peak?
       lowerPeak = false;
     }
     
-    if (smooth_count == smooth_buffer.length) smooth_count = 0; // carry over to the start of the smooth buffer with new values
-    smooth_buffer[smooth_count] = raw; // add raw to the smooth buffer
+    //if (smooth_count == smooth_buffer.length) smooth_count = 0; // carry over to the start of the smooth buffer with new values
+    //smooth_buffer[smooth_count] = raw; // add raw to the smooth buffer
     
-    float smooth = 0;
-    for ( int i = 0; i < smooth_buffer.length; i++) { // add all the values together in the smooth buffer
-      smooth += smooth_buffer[i];
-    }
-    smoothed = smooth / smooth_buffer.length; // the smoothed value is the sum of all the values in the 
+    //float smooth = 0;
+    //for ( int i = 0; i < smooth_buffer.length; i++) { // add all the values together in the smooth buffer
+    //  smooth += smooth_buffer[i];
+    //}
+    //raw_smoothed = smooth / smooth_buffer.length; // the smoothed value is the sum of all the values in the 
                                               // buffer divided by the size of the buffer
-    equalized = map(smoothed, base, peak, 0, max_peak); // map the eqalize the smoothed level
-    if (equalized < 0) equalized = 0;
+    //raw_equalized = map(raw_smoothed, raw_base, raw_peak, 0, max_peak); // map the eqalize the smoothed level
+    //if (raw_equalized < 0) raw_equalized = 0;
     
     dB = 20*((float)Math.log10(raw)); 
     
-    mapped_raw  = int(map(raw,  0, max_peak, 0, 100));
-    mapped_raw  = int(constrain(mapped_raw, 0, 100));
-    mapped_peak = int(map(peak, 0, max_peak, 0, 100));
-    mapped_peak = int(constrain(mapped_peak, 0, 100));
+    value = int(map(raw,  0, max_peak, 0, 100));
+    value = int(constrain(value, 0, 100));
+    peak  = int(map(raw_peak, 0, max_peak, 0, 100));
+    peak = int(constrain(peak, 0, 100));
     
-    base += 0.025; // keep trying to raise the base level a small amount every loop 
-    max_peak -= 0.025;
-    if (max_peak < 32) max_peak = 32;
+    raw_base += 0.25; // keep trying to raise the base level a small amount every loop 
+    max_peak -= 0.05;
+    if (max_peak < 24) max_peak = 24;
   }
 }
 

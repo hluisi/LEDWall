@@ -35,7 +35,7 @@ class VideoWall {
   PGraphics send_buffer;
 
   VideoWall() {
-    send_buffer = createGraphics(ROWS, COLUMNS, P3D);
+    send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
     for(int i = 0; i < teensyImages.length; i++) {
       teensyImages[i] = createImage(80,16,RGB);
     }
@@ -66,7 +66,7 @@ class VideoWall {
     send_buffer.pushMatrix();
     send_buffer.imageMode(CENTER);
     send_buffer.translate(send_buffer.width / 2, send_buffer.height / 2);
-    send_buffer.rotateZ(radians(90));
+    send_buffer.rotate(radians(90));
     //send_buffer.rotateX(radians(-180));
     send_buffer.image(buffer,0,0);
     send_buffer.popMatrix();

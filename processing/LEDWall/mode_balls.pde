@@ -44,8 +44,8 @@ void doParticles() {
   
   //kinect.updateUser(audio.COLOR[COLOR_MODE_NOBLACK]);
   //if (kinect.user_id != 99999) {
-    //kinect.updateUserBlack();
-    //buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
+    kinect.updateUserBlack();
+    buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
   //}
   //buffer.image(kinect.buffer_image, 0, 0);
   
@@ -57,6 +57,7 @@ void doParticles() {
   }
   buffer.popStyle();
   buffer.endDraw();
+  buffer.blendMode(BLEND);
 }
 
 
@@ -144,6 +145,6 @@ class Particle extends VerletParticle2D {
     buffer.fill(p_color, lifespan);
     buffer.ellipse(x, y, r, r);
     
-    lifespan -= 1;
+    lifespan -= 0.5;
   }
 }
