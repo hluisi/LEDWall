@@ -586,7 +586,7 @@ class valueBar extends baseBar {
     buffer.fill(value_color);           // color bar to value level
     buffer.rect(value_start.x, value_start.y, value_end.x, value_end.y, base_corners);
     buffer.rectMode(CORNER);
-    if (peak_on) {
+    if (peak_on && peak > 4) {
       buffer.stroke(peak_color);
       buffer.strokeWeight(1);
       if (base_align_x == CENTER && base_align_y == CENTER) {

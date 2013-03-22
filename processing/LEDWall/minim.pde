@@ -72,9 +72,9 @@ class AverageListener implements AudioListener {
   }
 
   private void mapColors() {
-    RED   = round(map(( spectrums[0].value + spectrums[1].value + spectrums[2].value  ) / 3, 0, 100, 0, 255));
-    GREEN = round(map(( spectrums[3].value + spectrums[4].value  ) / 2, 0, 100, 0, 255));
-    BLUE  = round(map(( spectrums[5].value + spectrums[6].value ) / 2, 0, 100, 0, 255)); 
+    RED   = round(map(( spectrums[0].value + spectrums[1].value ) / 2, 0, 100, 0, 255));
+    GREEN = round(map(( spectrums[2].value + spectrums[3].value ) / 2, 0, 100, 0, 255));
+    BLUE  = round(map(( spectrums[4].value + spectrums[5].value ) / 2, 0, 100, 0, 255)); 
 
     COLOR = color(RED, GREEN, BLUE);
   }

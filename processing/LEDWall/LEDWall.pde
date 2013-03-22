@@ -2,10 +2,10 @@ int DISPLAY_MODE = 1;
 
 final int DISPLAY_MODE_TEST       = 0;
 final int DISPLAY_MODE_SHOWEQ     = 1;
-final int DISPLAY_MODE_KINECT     = 2;
-final int DISPLAY_MODE_BGCOLOR    = 3;
-final int DISPLAY_MODE_USERBG     = 4;
-final int DISPLAY_MODE_USERAUDIO  = 5;
+final int DISPLAY_MODE_BGCOLOR    = 2;
+final int DISPLAY_MODE_USERBG     = 3;
+final int DISPLAY_MODE_USERAUDIO  = 4;
+final int DISPLAY_MODE_KINECT     = 5;
 final int DISPLAY_MODE_WHEEL      = 6;
 final int DISPLAY_MODE_WHEELAUDIO = 7;
 final int DISPLAY_MODE_BALLS      = 8;
@@ -156,15 +156,15 @@ void keyPressed() {
    // println("Color set to " + COLOR_STR[COLOR_MODE] + " mode ...");
   //}
   
-  if (key == '1') DISPLAY_MODE = DISPLAY_MODE_TEST;
-  if (key == '2') DISPLAY_MODE = DISPLAY_MODE_SHOWEQ;
-  if (key == '3') DISPLAY_MODE = DISPLAY_MODE_KINECT;
-  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_BGCOLOR;
-  if (key == '5') DISPLAY_MODE = DISPLAY_MODE_USERBG;
-  if (key == '6') DISPLAY_MODE = DISPLAY_MODE_USERAUDIO;
-  if (key == '7') DISPLAY_MODE = DISPLAY_MODE_WHEEL;
-  if (key == '8') DISPLAY_MODE = DISPLAY_MODE_WHEELAUDIO;
-  if (key == '9') DISPLAY_MODE = DISPLAY_MODE_BALLS;
+  if (key == '0') DISPLAY_MODE = DISPLAY_MODE_TEST;
+  if (key == '1') DISPLAY_MODE = DISPLAY_MODE_SHOWEQ;
+  if (key == '2') DISPLAY_MODE = DISPLAY_MODE_BGCOLOR;
+  if (key == '3') DISPLAY_MODE = DISPLAY_MODE_USERBG;
+  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_USERAUDIO;
+  if (key == '5') DISPLAY_MODE = DISPLAY_MODE_KINECT;
+  if (key == '6') DISPLAY_MODE = DISPLAY_MODE_WHEEL;
+  if (key == '7') DISPLAY_MODE = DISPLAY_MODE_WHEELAUDIO;
+  if (key == '8') DISPLAY_MODE = DISPLAY_MODE_BALLS;
 
 
   //if (key == 'r') {
