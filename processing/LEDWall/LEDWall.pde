@@ -9,9 +9,10 @@ final int DISPLAY_MODE_KINECT     = 5;
 final int DISPLAY_MODE_WHEEL      = 6;
 final int DISPLAY_MODE_WHEELAUDIO = 7;
 final int DISPLAY_MODE_BALLS      = 8;
+final int DISPLAY_MODE_SPIN       = 9;
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "KINECT", "BACKGROUND", "USER_BG", "USER_AUDIO", "WHEEL_COLORS", "WHEEL_AUDIO", "BALLS"
+  "TEST", "EQ", "KINECT", "BACKGROUND", "USER_BG", "USER_AUDIO", "WHEEL_COLORS", "WHEEL_AUDIO", "BALLS", "SPIN"
 };
 final String[] AUDIO_STR = { 
   "RAW", "SMOOTHED", "BALANCED"
@@ -45,7 +46,9 @@ void setup() {
   
   setupKinect();
   setupParticles();
-  frameRate(30);
+  //frameRate(30);
+  
+  image_buffer = createImage(COLUMNS, ROWS, ARGB);
 }
 
 void draw() {
@@ -86,7 +89,7 @@ void drawDebug() {
   
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
-  //text("color mode: " + COLOR_STR[COLOR_MODE] + " (use arrow keys to change)", 10, DEBUG_WINDOW_START + 185);
+  text("circles: " + circles.theta, 10, DEBUG_WINDOW_START + 185);
   text("Brightness: " + brightness(audio.COLOR) + "   Sat: " + saturation(audio.COLOR), 10, DEBUG_WINDOW_START + 200);
   text("R: " + audio.RED + "  G: " + audio.GREEN + "   B: " + audio.BLUE, 10, DEBUG_WINDOW_START + 215);
   
@@ -122,6 +125,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_USERAUDIO) doUserAudio();
   if (DISPLAY_MODE == DISPLAY_MODE_USERBG)    doUserBg();
   if (DISPLAY_MODE == DISPLAY_MODE_BALLS)     doParticles(); //doBalls();
+  if (DISPLAY_MODE == DISPLAY_MODE_SPIN)      doCircles();
   if (DISPLAY_MODE == DISPLAY_MODE_WHEELAUDIO) {
     if (wheel.use_audio != true) wheel.audioOn();
     doWheel();
@@ -165,6 +169,7 @@ void keyPressed() {
   if (key == '6') DISPLAY_MODE = DISPLAY_MODE_WHEEL;
   if (key == '7') DISPLAY_MODE = DISPLAY_MODE_WHEELAUDIO;
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_BALLS;
+  if (key == '9') DISPLAY_MODE = DISPLAY_MODE_SPIN;
 
 
   //if (key == 'r') {

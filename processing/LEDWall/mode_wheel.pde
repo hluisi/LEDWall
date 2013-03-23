@@ -10,6 +10,7 @@ void doWheel() {
   //if (kinect.user1_center.x < 1 && kinect.user1_center.y < 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
   //if (kinect.user1_center.x == null) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
   wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
+  wheel.setCycle(audio.BPM);
   buffer.beginDraw();
   if (wheel.use_audio) {
     TColor thisColor = TColor.newARGB(audio.COLOR);
@@ -41,6 +42,11 @@ class Wheel {
     resetColors();
     last_cycle = millis();
     use_audio = false;
+  }
+  
+  void setCycle(int t) {
+    int temp = int(map(t, 1, 200, 172, 1));
+    cycle_time = temp;
   }
 
   private void cycleColors() {

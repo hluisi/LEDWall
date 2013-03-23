@@ -14,6 +14,7 @@ void setupMinim() {
   for (int i = 0; i < audio.fft.avgSize(); i++) {
     println("i:" + i + "  f:" + round(audio.fft.getAverageCenterFrequency(i)) );
   }
+  println( audio.fft.specSize() );
 }
 
 class AverageListener implements AudioListener {
@@ -28,7 +29,7 @@ class AverageListener implements AudioListener {
   public int BPM = 0;
   public int bpm_count = 0, sec_count = 0;
   private int[] bpms = new int [15];
-  AudioSpectrum[] spectrums;
+  AudioSpectrum[] averageSpecs, fullSpecs;
   AudioSpectrum volume;
 
   AverageListener() {
@@ -42,10 +43,11 @@ class AverageListener implements AudioListener {
     beat = new BeatDetect();                         // create a new beat detect 
     beat.setSensitivity(280);                        // set it's sensitivity
     
-    spectrums = new AudioSpectrum [ fft.avgSize() ];
-    for (int i = 0; i < spectrums.length; i++) {
-      spectrums[i] = new AudioSpectrum();
-    }
+    averageSpecs = new AudioSpectrum [ fft.avgSize() ];
+    fullSpecs = new AudioSpectrum [ fft.specSize() ];
+    for (int i = 0; i < averageSpecs.length; i++) averageSpecs[i] = new AudioSpectrum();
+    for (int i = 0; i < fullSpecs.length; i++) fullSpecs[i] = new AudioSpectrum();
+    
     volume = new AudioSpectrum();
     
     COLOR = color(0);
@@ -58,23 +60,23 @@ class AverageListener implements AudioListener {
     for (int i = 0; i < bpms.length; i++) bpms[i] = 0;
   }
 
-  private void mapAverages() {
-    for ( int i = 0; i < spectrums.length; i++) {
-      spectrums[i].set( fft.getAvg(i) );
-    }
+  private void mapSpectrums() {
+    for ( int i = 0; i < averageSpecs.length; i++) averageSpecs[i].set( fft.getAvg(i) );
+    for ( int i = 0; i < fullSpecs.length; i++) fullSpecs[i].set( fft.getBand(i) );
+
     volume.set( in.mix.level()*100 );
   }
 
   private void mapRanges() {
-    BASS = round((spectrums[0].value  + spectrums[1].value  + spectrums[2].value ) / 3);
-    MIDS = round((spectrums[3].value  + spectrums[4].value  + spectrums[5].value ) / 3);
-    TREB = round((spectrums[6].value  + spectrums[7].value  + spectrums[8].value ) / 3);
+    BASS = round((averageSpecs[0].value  + averageSpecs[1].value  + averageSpecs[2].value ) / 3);
+    MIDS = round((averageSpecs[3].value  + averageSpecs[4].value  + averageSpecs[5].value ) / 3);
+    TREB = round((averageSpecs[6].value  + averageSpecs[7].value  + averageSpecs[8].value ) / 3);
   }
 
   private void mapColors() {
-    RED   = round(map(( spectrums[0].value + spectrums[1].value ) / 2, 0, 100, 0, 255));
-    GREEN = round(map(( spectrums[2].value + spectrums[3].value ) / 2, 0, 100, 0, 255));
-    BLUE  = round(map(( spectrums[4].value + spectrums[5].value ) / 2, 0, 100, 0, 255)); 
+    RED   = round(map(( averageSpecs[0].value + averageSpecs[1].value ) / 2, 0, 100, 0, 255));
+    GREEN = round(map(( averageSpecs[2].value + averageSpecs[3].value ) / 2, 0, 100, 0, 255));
+    BLUE  = round(map(( averageSpecs[4].value + averageSpecs[5].value ) / 2, 0, 100, 0, 255)); 
 
     COLOR = color(RED, GREEN, BLUE);
   }
@@ -109,7 +111,7 @@ class AverageListener implements AudioListener {
   void samples(float[] samps) {
     fft.forward(in.mix.toArray());
     beat.detect(in.mix.toArray());
-    mapAverages();
+    mapSpectrums();
     mapRanges();
     mapColors();
     mapBPM();
@@ -119,7 +121,7 @@ class AverageListener implements AudioListener {
   void samples(float[] sampsL, float[] sampsR) {
     fft.forward(in.mix.toArray());
     beat.detect(in.mix.toArray());
-    mapAverages();
+    mapSpectrums();
     mapRanges();
     mapColors();
     mapBPM();

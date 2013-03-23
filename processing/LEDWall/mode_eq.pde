@@ -60,8 +60,8 @@ class EQ {
     volume.display(audio.volume.value);
 
     for (int i = 0; i < 9; i++) {
-      spec[i].setPeak( audio.spectrums[i].peak );
-      spec[i].display( audio.spectrums[i].value );
+      spec[i].setPeak( audio.averageSpecs[i].peak );
+      spec[i].display( audio.averageSpecs[i].value );
       //spec[i].display(audio.AVERAGES[i]);
     }
   }

@@ -1,3 +1,5 @@
+PImage image_buffer;
+
 void doBGColor() {
   color thisColor = audio.COLOR; //audio.COLORS[AUDIO_MODE];
   buffer.beginDraw();
@@ -27,11 +29,11 @@ void doUserBg() {
 }
 
 void displayImage(PImage _image) {
-  PImage bufferImage = createImage(COLUMNS, ROWS, ARGB);
-  bufferImage.copy(_image, 0, 0, _image.width, _image.height, 0, 0, bufferImage.width, bufferImage.height);
+  
+  image_buffer.copy(_image, 0, 0, _image.width, _image.height, 0, 0, image_buffer.width, image_buffer.height);
   buffer.beginDraw();
   buffer.background(0);
-  buffer.image(bufferImage, 0, 0);
+  buffer.image(image_buffer, 0, 0);
   buffer.endDraw();
 }
 

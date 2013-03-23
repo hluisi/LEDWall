@@ -5,16 +5,16 @@ import toxi.physics2d.behaviors.*;
 Particle[] particles;
 int p_spectrum_count = 0;
 VerletPhysics2D physics;
-Attractor attractor;
+//Attractor attractor;
 
 void setupParticles() {
   physics = new VerletPhysics2D ();
   physics.setWorldBounds(new Rect(0, 0, buffer.width, buffer.height));
-  //physics.setDrag(0.1);
+  physics.setDrag(0.01);
   
-  attractor = new Attractor(new Vec2D(buffer.width/2,buffer.height/2));
+  //attractor = new Attractor(new Vec2D(buffer.width/2,buffer.height/2));
   
-  particles = new Particle [512];
+  particles = new Particle [256];
   for (int i = 0; i < particles.length; i++) {
     float x = random(buffer.width); float y = random(buffer.height);
     Vec2D loc = new Vec2D(x,y);
@@ -33,7 +33,7 @@ void doParticles() {
   buffer.pushStyle();
   buffer.blendMode(ADD);
   
-  attractor.display();
+  //attractor.display();
   
   for (Particle p: particles) {
     
@@ -60,7 +60,7 @@ void doParticles() {
   buffer.blendMode(BLEND);
 }
 
-
+/*
 class Attractor extends VerletParticle2D {
 
   float r;
@@ -78,7 +78,7 @@ class Attractor extends VerletParticle2D {
     //ellipse (x, y, r*2, r*2);
   }
 }
-
+*/
 class Particle extends VerletParticle2D {
 
   float r;
@@ -95,12 +95,16 @@ class Particle extends VerletParticle2D {
     //physics.addBehavior(new AttractionBehavior(this, r * 2, -0.05));
   }
   
+  void setRadius() {
+    r = map(audio.averageSpecs[spectrum].value, 0, 100, 2, buffer.height / 4);
+  }
+  
   void reset() {
     float test = random(1);
-    if (test < 0.35) update_color = false;
+    if (test < 0.15) update_color = false;
     else update_color = true;
     lifespan = random(255);
-    r = map(audio.spectrums[spectrum].raw, 0, 30, 2, buffer.height / 8);
+    setRadius();
     p_color = audio.COLOR;
     if (update_color == false) {
       if (kinect.user_id != -1) {
@@ -123,7 +127,7 @@ class Particle extends VerletParticle2D {
     
     if (update_color) {
       p_color = audio.COLOR;
-      r = map(audio.spectrums[spectrum].raw, 0, 30, 2, buffer.height / 8);
+      setRadius();
     }
     
     
@@ -135,7 +139,7 @@ class Particle extends VerletParticle2D {
     if (x < 1 || x > buffer.width - 1)  f.x *= -1;
     if (y < 1 || y > buffer.height - 1) f.y *= -1;
     
-    float push = map(audio.spectrums[spectrum].raw, 0, 30, -0.025, 1.25);
+    float push = map(audio.averageSpecs[spectrum].value, 0, 100, 0, 2);
     f = f.scale(spectrum * push );
     //f.jitter(0.1,0.1);
     
@@ -145,6 +149,6 @@ class Particle extends VerletParticle2D {
     buffer.fill(p_color, lifespan);
     buffer.ellipse(x, y, r, r);
     
-    lifespan -= 0.5;
+    lifespan -= 1;
   }
 }
