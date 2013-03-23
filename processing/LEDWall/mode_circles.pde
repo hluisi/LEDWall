@@ -8,10 +8,11 @@ void doCircles() {
   //buffer.rect(0,0,buffer.width, buffer.height);
   
   circles.draw();
-  kinect.updateUserBlack();
-  buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
-  buffer.endDraw();
   buffer.blendMode(BLEND);
+  
+  kinect.updateUserBlack();
+  buffer.image(kinect.buffer_image, 0, 0);
+  buffer.endDraw();
 }
 
 class ConcCircles {

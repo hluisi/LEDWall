@@ -9,8 +9,8 @@ VerletPhysics2D physics;
 
 void setupParticles() {
   physics = new VerletPhysics2D ();
-  physics.setWorldBounds(new Rect(0, 0, buffer.width, buffer.height));
-  physics.setDrag(0.01);
+  //physics.setWorldBounds(new Rect(0, 0, buffer.width, buffer.height));
+  physics.setDrag(0.1);
   
   //attractor = new Attractor(new Vec2D(buffer.width/2,buffer.height/2));
   
@@ -27,12 +27,12 @@ void doParticles() {
   physics.update ();
   
   buffer.beginDraw();
-  buffer.background(0,255);
+ // buffer.background(0,255);
+   buffer.background(audio.COLOR);
   //buffer.fill(0, 10);
   //buffer.rect(0,0,buffer.width, buffer.height);
-  buffer.pushStyle();
   buffer.blendMode(ADD);
-  
+  //circles.draw();
   //attractor.display();
   
   for (Particle p: particles) {
@@ -42,12 +42,10 @@ void doParticles() {
   }
   
   
-  //kinect.updateUser(audio.COLOR[COLOR_MODE_NOBLACK]);
-  //if (kinect.user_id != 99999) {
-    kinect.updateUserBlack();
-    buffer.blend(kinect.buffer_image,0,0,kinect.buffer_image.width,kinect.buffer_image.height,0,0,buffer.width,buffer.height,MULTIPLY);
-  //}
-  //buffer.image(kinect.buffer_image, 0, 0);
+  buffer.blendMode(BLEND);
+  
+  kinect.updateUserBlack();
+  buffer.image(kinect.buffer_image, 0, 0);
   
   buffer.strokeWeight(1);
   buffer.stroke(255);
@@ -55,9 +53,8 @@ void doParticles() {
     buffer.line(i, (buffer.height / 2) + audio.in.left.get(i)*30, i + 1, (buffer.height / 2) + audio.in.left.get(i+1)*30);
     //buffer.line(i, 60 + in.right.get(i)*30, i + 1, 60 + in.right.get(i+1)*30);
   }
-  buffer.popStyle();
   buffer.endDraw();
-  buffer.blendMode(BLEND);
+  
 }
 
 /*
@@ -69,7 +66,7 @@ class Attractor extends VerletParticle2D {
     super (loc);
     r = 24;
     physics.addParticle(this);
-    physics.addBehavior(new AttractionBehavior(this, buffer.width / 2, 0.005));
+    physics.addBehavior(new AttractionBehavior(this, buffer.width / 2, 0.05));
   }
 
   void display () {
@@ -79,6 +76,7 @@ class Attractor extends VerletParticle2D {
   }
 }
 */
+
 class Particle extends VerletParticle2D {
 
   float r;
@@ -92,7 +90,7 @@ class Particle extends VerletParticle2D {
     spectrum = spec + 1;
     reset();
     physics.addParticle(this);
-    //physics.addBehavior(new AttractionBehavior(this, r * 2, -0.05));
+    //physics.addBehavior(new AttractionBehavior(this, r, -0.005));
   }
   
   void setRadius() {
@@ -105,6 +103,7 @@ class Particle extends VerletParticle2D {
     else update_color = true;
     lifespan = random(255);
     setRadius();
+    setWeight(r);
     p_color = audio.COLOR;
     if (update_color == false) {
       if (kinect.user_id != -1) {
@@ -116,6 +115,7 @@ class Particle extends VerletParticle2D {
       float _x = random(buffer.width); float _y = random(buffer.height);
       x = _x; y = _y;
     }
+    clearForce();
     clearVelocity();
     Vec2D v = Vec2D.randomVector();
     addVelocity(v);
@@ -126,29 +126,43 @@ class Particle extends VerletParticle2D {
     if (lifespan < 0) reset();
     
     if (update_color) {
-      p_color = audio.COLOR;
+      //p_color = audio.COLOR;
       setRadius();
+      setWeight(r);
     }
     
-    
+    clearForce();
     Vec2D f = getVelocity();
-    clearVelocity();
     
+    if (x < (r/2) ) {
+      f.x *= -1;
+    }
+    else if (x > (buffer.width - (r/2)) ) {
+      f.x *= -1;
+    }
+    if (y < (r/2) ) {
+      f.y *= -1;
+    }
+    else if (y > (buffer.height - (r/2)) ) {
+      f.y *= -1;
+    }
+    clearVelocity();
+    f.limit(2);
+    addVelocity(f);
     f.normalize();
     
-    if (x < 1 || x > buffer.width - 1)  f.x *= -1;
-    if (y < 1 || y > buffer.height - 1) f.y *= -1;
-    
-    float push = map(audio.averageSpecs[spectrum].value, 0, 100, 0, 2);
-    f = f.scale(spectrum * push );
+    float push = map(audio.averageSpecs[spectrum].value, 0, 100, 0.00025, 0.25);
+    f = f.scale(push );
+    f.limit(2);
     //f.jitter(0.1,0.1);
     
-    addVelocity(f);
+    addForce(f);
+    //addVelocity(f);
     
-    buffer.noStroke();
+    
+    buffer.stroke(0, lifespan);
     buffer.fill(p_color, lifespan);
     buffer.ellipse(x, y, r, r);
-    
     lifespan -= 1;
   }
 }

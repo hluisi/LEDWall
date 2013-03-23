@@ -86,7 +86,8 @@ void drawDebug() {
   text("PEAK: " + audio.volume.peak, 80, DEBUG_WINDOW_START + 125);
   text("MAX PEAK: " + audio.volume.max_peak, 150, DEBUG_WINDOW_START + 125);
   text("dB: " + audio.volume.dB, 10, DEBUG_WINDOW_START + 140);
-  
+  //text("p.x: " + particles[0].x, 10, DEBUG_WINDOW_START + 140);
+
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
   text("circles: " + circles.theta, 10, DEBUG_WINDOW_START + 185);
