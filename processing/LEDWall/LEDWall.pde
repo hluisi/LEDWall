@@ -1,18 +1,18 @@
 int DISPLAY_MODE = 1;
 
-final int DISPLAY_MODE_TEST       = 0;
-final int DISPLAY_MODE_SHOWEQ     = 1;
-final int DISPLAY_MODE_BGCOLOR    = 2;
-final int DISPLAY_MODE_USERBG     = 3;
-final int DISPLAY_MODE_USERAUDIO  = 4;
-final int DISPLAY_MODE_KINECT     = 5;
-final int DISPLAY_MODE_WHEEL      = 6;
-final int DISPLAY_MODE_WHEELAUDIO = 7;
-final int DISPLAY_MODE_BALLS      = 8;
-final int DISPLAY_MODE_SPIN       = 9;
+final int DISPLAY_MODE_TEST    = 0;
+final int DISPLAY_MODE_SHOWEQ  = 1;
+final int DISPLAY_MODE_BGCOLOR = 2;
+final int DISPLAY_MODE_USERBG  = 3;
+final int DISPLAY_MODE_WHEEL   = 4;
+final int DISPLAY_MODE_BALLS   = 5;
+final int DISPLAY_MODE_SPIN    = 6;
+final int DISPLAY_MODE_PULSAR  = 7;
+final int DISPLAY_MODE_CITY    = 8;
+
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "KINECT", "BACKGROUND", "USER_BG", "USER_AUDIO", "WHEEL_COLORS", "WHEEL_AUDIO", "BALLS", "SPIN"
+  "TEST", "EQ", "BACKGROUND", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY"
 };
 final String[] AUDIO_STR = { 
   "RAW", "SMOOTHED", "BALANCED"
@@ -46,6 +46,7 @@ void setup() {
   
   setupKinect();
   setupParticles();
+  setupCircles();
   //frameRate(30);
   
   image_buffer = createImage(COLUMNS, ROWS, ARGB);
@@ -119,22 +120,15 @@ void drawDebug() {
 }
 
 void doMode() {
-  if (DISPLAY_MODE == DISPLAY_MODE_TEST)      doTest();
-  if (DISPLAY_MODE == DISPLAY_MODE_BGCOLOR)   doBGColor();
-  if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)    doEQ();
-  if (DISPLAY_MODE == DISPLAY_MODE_KINECT)    doKinect();
-  if (DISPLAY_MODE == DISPLAY_MODE_USERAUDIO) doUserAudio();
-  if (DISPLAY_MODE == DISPLAY_MODE_USERBG)    doUserBg();
-  if (DISPLAY_MODE == DISPLAY_MODE_BALLS)     doParticles(); //doBalls();
-  if (DISPLAY_MODE == DISPLAY_MODE_SPIN)      doCircles();
-  if (DISPLAY_MODE == DISPLAY_MODE_WHEELAUDIO) {
-    if (wheel.use_audio != true) wheel.audioOn();
-    doWheel();
-  }
-  if (DISPLAY_MODE == DISPLAY_MODE_WHEEL) {
-    if (wheel.use_audio != false) wheel.audioOff();
-    doWheel();
-  }
+  if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
+  if (DISPLAY_MODE == DISPLAY_MODE_BGCOLOR) doBGColor();
+  if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)  doEQ();
+  if (DISPLAY_MODE == DISPLAY_MODE_USERBG)  doUserBg();
+  if (DISPLAY_MODE == DISPLAY_MODE_BALLS)   doParticles(); 
+  if (DISPLAY_MODE == DISPLAY_MODE_SPIN)    doCircles();
+  if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)  doPulsar();
+  if (DISPLAY_MODE == DISPLAY_MODE_CITY)    doCity();
+  if (DISPLAY_MODE == DISPLAY_MODE_WHEEL)   doWheel();
 }
 
 void stop() {
@@ -165,12 +159,14 @@ void keyPressed() {
   if (key == '1') DISPLAY_MODE = DISPLAY_MODE_SHOWEQ;
   if (key == '2') DISPLAY_MODE = DISPLAY_MODE_BGCOLOR;
   if (key == '3') DISPLAY_MODE = DISPLAY_MODE_USERBG;
-  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_USERAUDIO;
-  if (key == '5') DISPLAY_MODE = DISPLAY_MODE_KINECT;
-  if (key == '6') DISPLAY_MODE = DISPLAY_MODE_WHEEL;
-  if (key == '7') DISPLAY_MODE = DISPLAY_MODE_WHEELAUDIO;
-  if (key == '8') DISPLAY_MODE = DISPLAY_MODE_BALLS;
-  if (key == '9') DISPLAY_MODE = DISPLAY_MODE_SPIN;
+  
+  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_WHEEL;
+  //if (key == '7') DISPLAY_MODE = DISPLAY_MODE_WHEELAUDIO;
+  if (key == '5') DISPLAY_MODE = DISPLAY_MODE_BALLS;
+  if (key == '6') DISPLAY_MODE = DISPLAY_MODE_SPIN;
+  if (key == '7') DISPLAY_MODE = DISPLAY_MODE_PULSAR;
+  if (key == '8') DISPLAY_MODE = DISPLAY_MODE_CITY;
+
 
 
   //if (key == 'r') {
