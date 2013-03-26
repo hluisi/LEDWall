@@ -7,7 +7,7 @@ int CIRCLE_MODE = 0;
 void setupCircles() {
   circles = new ConcCircles();
   city = new SpecCity();
-  pulsar = new Pulsar(buffer.width/2,buffer.height/2);
+  pulsar = new Pulsar();
 }
 
 void doCircles() {
@@ -76,7 +76,7 @@ class ConcCircles {
         float kx, ky;
         if (kinect.user_id != -1) {
           kx = kinect.user_center.x; 
-          ky = kinect.user_center.y;
+          ky = kinect.user_center.y - 12;
         } 
         else {
           kx = buffer.width / 2; 
@@ -113,6 +113,7 @@ class SpecCity {
       int value_up = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, 0));
       int value_down = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, buffer.height));
       buffer.stroke(RED, GREEN, BLUE);
+      buffer.strokeWeight(1);
       buffer.line(i + (buffer.width / 2), buffer.height / 3, i + (buffer.width / 2), value_up);
       buffer.line(i + (buffer.width / 2), buffer.height / 3, buffer.width - i, value_down);
       buffer.line((buffer.width / 2) - i, buffer.height / 3, (buffer.width / 2) - i, value_up);
@@ -122,13 +123,12 @@ class SpecCity {
 }
 
 class Pulsar {
-  PVector location;
   int SpecStart = 0, SpecEnd = 256;
   int MIN, MAX;
   color lineColor;
+  float kx, ky;
 
-  Pulsar(float x, float y) {
-    location = new PVector(x, y);
+  Pulsar() {
     MIN = 1; MAX = 160;
   }
   
@@ -140,10 +140,6 @@ class Pulsar {
     MAX = i;
   }
   
-  void move(PVector loc) {
-    location = loc;
-  }
-  
   color setColor(int i) {
     int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
     int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
@@ -152,18 +148,28 @@ class Pulsar {
   }
   
   void drawLine(float radius, float angle) {
-    float x = location.x + ( radius * cos( radians(angle) ) );
-    float y = location.y + ( radius * sin( radians(angle) ) );
-    buffer.line(location.x, location.y, x , y);
+    float x = kx + ( radius * cos( radians(angle) ) );
+    float y = ky + ( radius * sin( radians(angle) ) );
+    buffer.line(kx, ky, x , y);
   }
 
   void draw() {
     buffer.noFill();
+    
+    if (kinect.user_id != -1) {
+      kx = kinect.user_center.x; 
+      ky = kinect.user_center.y - 12;
+    } 
+    else {
+      kx = buffer.width / 2; 
+      ky = buffer.height / 2;
+    }
     for (int i = 0; i < (audio.fullSpecs.length - 1) / 2 ; i++) {
+      buffer.strokeWeight(2);
       buffer.stroke( setColor(i) );
 
       float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 8, 0, 180);
-      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width);
+      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width*3);
       float spin   = map(audio.volume.value, 0, 100, 0, 360);
       
       drawLine(radius, angle + spin);
