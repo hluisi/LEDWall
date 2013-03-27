@@ -1,26 +1,18 @@
-
 AtariVideoMusic atari; 
 
 void setupAtari() {
   atari = new AtariVideoMusic();
-  
 }
 
 void doAtari() {
   buffer.beginDraw();
   buffer.background(audio.COLOR);
-  //buffer.background(0);
   buffer.blendMode(ADD);
-
-
   atari.draw();
   buffer.blendMode(BLEND);
-
   //kinect.updateUserBlack();
   //buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
-  
-  
 }
 
 class AtariVideoMusic {
@@ -40,7 +32,7 @@ class AtariVideoMusic {
   }
   
   void changeDisplay() {                 // 1x1 - 1
-    int count = int(random(0,5));
+    int count = int(random(0,6));
     if (count == 0) {
       alist[0].set(80, 40, 160, 80);
       display_count = 1;
@@ -112,14 +104,14 @@ class AtariVideoMusic {
       alist[21].set(110,50,30,20);
       alist[22].set(130,50,30,20);
       alist[23].set(150,50,30,20);
-      alist[0].set(10,70,30,20);
-      alist[1].set(30,70,30,20);
-      alist[2].set(50,70,30,20);
-      alist[3].set(70,70,30,20);
-      alist[4].set(90,70,30,20);
-      alist[5].set(110,70,30,20);
-      alist[6].set(130,70,30,20);
-      alist[7].set(150,70,30,20);
+      alist[24].set(10,70,30,20);
+      alist[25].set(30,70,30,20);
+      alist[26].set(50,70,30,20);
+      alist[27].set(70,70,30,20);
+      alist[28].set(90,70,30,20);
+      alist[29].set(110,70,30,20);
+      alist[30].set(130,70,30,20);
+      alist[31].set(150,70,30,20);
       display_count = 32;
     }
   }
@@ -146,7 +138,7 @@ class AtariSingle {
   final int HOLE  = 1;
   final int RING  = 2;
   int mode = 0;
-  float x, y, w, h, stroke_weight = 1;
+  float x, y, w, h, stroke_weight = 2;
   
   AtariSingle() {
     

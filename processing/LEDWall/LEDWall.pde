@@ -13,7 +13,7 @@ final int DISPLAY_MODE_ATARI   = 9;
 
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "BACKGROUND", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "MOUTH"
+  "TEST", "EQ", "BACKGROUND", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "ATARI"
 };
 final String[] AUDIO_STR = { 
   "RAW", "SMOOTHED", "BALANCED"
@@ -91,7 +91,7 @@ void drawDebug() {
   text("MAX PEAK: " + audio.volume.max_peak, 150, DEBUG_WINDOW_START + 125);
   text("dB: " + audio.volume.dB, 10, DEBUG_WINDOW_START + 140);
   
-  text("atari - mode:" + atari.mode + "  display:" + atari.display_count + " s:" + atari.alist[0].stroke_weight, 10, DEBUG_WINDOW_START + 155);
+  text("atari - x:" + atari.alist[0].x + "  y:" + atari.alist[0].y + " s:" + atari.alist[0].stroke_weight, 10, DEBUG_WINDOW_START + 155);
 
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
