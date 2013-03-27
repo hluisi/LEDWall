@@ -9,10 +9,11 @@ final int DISPLAY_MODE_BALLS   = 5;
 final int DISPLAY_MODE_SPIN    = 6;
 final int DISPLAY_MODE_PULSAR  = 7;
 final int DISPLAY_MODE_CITY    = 8;
+final int DISPLAY_MODE_ATARI   = 9;
 
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "BACKGROUND", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY"
+  "TEST", "EQ", "BACKGROUND", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "MOUTH"
 };
 final String[] AUDIO_STR = { 
   "RAW", "SMOOTHED", "BALANCED"
@@ -36,9 +37,10 @@ void setup() {
   wall_image = createImage(COLUMNS, ROWS, RGB);
 
   //setupAudio();
+  setupBuffer();
   setupMinim();
   //setupSerial();
-  setupBuffer();
+  
   setupWall();
   setupWheel();
   setupEQ();
@@ -47,6 +49,7 @@ void setup() {
   setupKinect();
   setupParticles();
   setupCircles();
+  setupAtari();
   //frameRate(30);
   
   image_buffer = createImage(COLUMNS, ROWS, ARGB);
@@ -87,7 +90,8 @@ void drawDebug() {
   text("PEAK: " + audio.volume.peak, 80, DEBUG_WINDOW_START + 125);
   text("MAX PEAK: " + audio.volume.max_peak, 150, DEBUG_WINDOW_START + 125);
   text("dB: " + audio.volume.dB, 10, DEBUG_WINDOW_START + 140);
-  //text("p.x: " + particles[0].x, 10, DEBUG_WINDOW_START + 140);
+  
+  text("atari - mode:" + atari.mode + "  display:" + atari.display_count + " s:" + atari.alist[0].stroke_weight, 10, DEBUG_WINDOW_START + 155);
 
   text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
@@ -129,6 +133,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)  doPulsar();
   if (DISPLAY_MODE == DISPLAY_MODE_CITY)    doCity();
   if (DISPLAY_MODE == DISPLAY_MODE_WHEEL)   doWheel();
+  if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
 }
 
 void stop() {
@@ -166,6 +171,7 @@ void keyPressed() {
   if (key == '6') DISPLAY_MODE = DISPLAY_MODE_SPIN;
   if (key == '7') DISPLAY_MODE = DISPLAY_MODE_PULSAR;
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_CITY;
+  if (key == '9') DISPLAY_MODE = DISPLAY_MODE_ATARI;
 
 
 

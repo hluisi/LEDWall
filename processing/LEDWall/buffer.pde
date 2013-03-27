@@ -1,9 +1,10 @@
+import processing.opengl.*;
 
 Buffer buffer;
 
 
 void setupBuffer() {
-  buffer = new Buffer(this); //createGraphics(COLUMNS, ROWS, JAVA2D);
+  buffer = new Buffer(this); //new Buffer(this); //createGraphics(COLUMNS, ROWS, JAVA2D);
   //buffer.beginDraw();
   //buffer.background(255,0,0);
   //buffer.endDraw();

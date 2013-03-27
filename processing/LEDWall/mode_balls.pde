@@ -51,6 +51,7 @@ void doParticles() {
 
   kinect.updateUserBlack();
   buffer.image(kinect.buffer_image, 0, 0);
+  //buffer.filter(BLUR);
 
   //buffer.strokeWeight(1);
   //buffer.stroke(255);
@@ -172,7 +173,7 @@ class Particle extends VerletParticle2D {
       addVelocity(f);
       f.normalize();
 
-      float push = map(audio.averageSpecs[spectrum].value, 0, 100, 0.00025, 0.25);
+      float push = map(audio.averageSpecs[spectrum].value, 0, 100, 0.00025, 0.5);
       f = f.scale(push );
       f.limit(2);
       addForce(f);
