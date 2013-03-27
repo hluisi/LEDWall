@@ -8,6 +8,7 @@ void doAtari() {
   buffer.beginDraw();
   buffer.background(audio.COLOR);
   buffer.blendMode(ADD);
+  //city.draw();
   atari.draw();
   buffer.blendMode(BLEND);
   //kinect.updateUserBlack();
@@ -43,75 +44,75 @@ class AtariVideoMusic {
       display_count = 2;
     }
     if (count == 2) {                 // 2x2 - 4
-      alist[0].set(40,20,90,40);
-      alist[1].set(120,20,90,40);
-      alist[2].set(40,60,90,40);
-      alist[3].set(120,60,90,40);
+      alist[0].set(40,20,90,50);
+      alist[1].set(120,20,90,50);
+      alist[2].set(40,60,90,50);
+      alist[3].set(120,60,90,50);
       display_count = 4;
     }
     if (count == 3) {                // 4x2 - 8
-      alist[0].set(20,20,60,40);
-      alist[1].set(60,20,60,40);
-      alist[2].set(100,20,60,40);
-      alist[3].set(140,20,60,40);
-      alist[4].set(20,60,60,40);
-      alist[5].set(60,60,60,40);
-      alist[6].set(100,60,60,40);
-      alist[7].set(140,60,60,40);
+      alist[0].set(20,20,60,50);
+      alist[1].set(60,20,60,50);
+      alist[2].set(100,20,60,50);
+      alist[3].set(140,20,60,50);
+      alist[4].set(20,60,60,50);
+      alist[5].set(60,60,60,50);
+      alist[6].set(100,60,60,50);
+      alist[7].set(140,60,60,50);
       display_count = 8;
     }
     if (count == 4) {               // 4x4 - 16
-      alist[0].set(20,10,50,20);
-      alist[1].set(60,10,50,20);
-      alist[2].set(100,10,50,20);
-      alist[3].set(140,10,50,20);
-      alist[4].set(20,30,50,20);
-      alist[5].set(60,30,50,20);
-      alist[6].set(100,30,50,20);
-      alist[7].set(140,30,50,20);
-      alist[8].set(20,50,50,20);
-      alist[9].set(60,50,50,20);
-      alist[10].set(100,50,50,20);
-      alist[11].set(140,50,50,20);
-      alist[12].set(20,70,50,20);
-      alist[13].set(60,70,50,20);
-      alist[14].set(100,70,50,20);
-      alist[15].set(140,70,50,20);
+      alist[0].set(20,10,50,30);
+      alist[1].set(60,10,50,30);
+      alist[2].set(100,10,50,30);
+      alist[3].set(140,10,50,30);
+      alist[4].set(20,30,50,30);
+      alist[5].set(60,30,50,30);
+      alist[6].set(100,30,50,30);
+      alist[7].set(140,30,50,30);
+      alist[8].set(20,50,50,30);
+      alist[9].set(60,50,50,30);
+      alist[10].set(100,50,50,30);
+      alist[11].set(140,50,50,30);
+      alist[12].set(20,70,50,30);
+      alist[13].set(60,70,50,30);
+      alist[14].set(100,70,50,30);
+      alist[15].set(140,70,50,30);
       display_count = 16;
     }
     if (count == 5) {               // 8x4 - 32
-      alist[0].set(10,10,30,20);
-      alist[1].set(30,10,30,20);
-      alist[2].set(50,10,30,20);
-      alist[3].set(70,10,30,20);
-      alist[4].set(90,10,30,20);
-      alist[5].set(110,10,30,20);
-      alist[6].set(130,10,30,20);
-      alist[7].set(150,10,30,20);
-      alist[8].set(10,30,30,20);
-      alist[9].set(30,30,30,20);
-      alist[10].set(50,30,30,20);
-      alist[11].set(70,30,30,20);
-      alist[12].set(90,30,30,20);
-      alist[13].set(110,30,30,20);
-      alist[14].set(130,30,30,20);
-      alist[15].set(150,30,30,20);
-      alist[16].set(10,50,30,20);
-      alist[17].set(30,50,30,20);
-      alist[18].set(50,50,30,20);
-      alist[19].set(70,50,30,20);
-      alist[20].set(90,50,30,20);
-      alist[21].set(110,50,30,20);
-      alist[22].set(130,50,30,20);
-      alist[23].set(150,50,30,20);
-      alist[24].set(10,70,30,20);
-      alist[25].set(30,70,30,20);
-      alist[26].set(50,70,30,20);
-      alist[27].set(70,70,30,20);
-      alist[28].set(90,70,30,20);
-      alist[29].set(110,70,30,20);
-      alist[30].set(130,70,30,20);
-      alist[31].set(150,70,30,20);
+      alist[0].set(10,10,30,30);
+      alist[1].set(30,10,30,30);
+      alist[2].set(50,10,30,30);
+      alist[3].set(70,10,30,30);
+      alist[4].set(90,10,30,30);
+      alist[5].set(110,10,30,30);
+      alist[6].set(130,10,30,30);
+      alist[7].set(150,10,30,30);
+      alist[8].set(10,30,30,30);
+      alist[9].set(30,30,30,30);
+      alist[10].set(50,30,30,30);
+      alist[11].set(70,30,30,30);
+      alist[12].set(90,30,30,30);
+      alist[13].set(110,30,30,30);
+      alist[14].set(130,30,30,30);
+      alist[15].set(150,30,30,30);
+      alist[16].set(10,50,30,30);
+      alist[17].set(30,50,30,30);
+      alist[18].set(50,50,30,30);
+      alist[19].set(70,50,30,30);
+      alist[20].set(90,50,30,30);
+      alist[21].set(110,50,30,30);
+      alist[22].set(130,50,30,30);
+      alist[23].set(150,50,30,30);
+      alist[24].set(10,70,30,30);
+      alist[25].set(30,70,30,30);
+      alist[26].set(50,70,30,30);
+      alist[27].set(70,70,30,30);
+      alist[28].set(90,70,30,30);
+      alist[29].set(110,70,30,30);
+      alist[30].set(130,70,30,30);
+      alist[31].set(150,70,30,30);
       display_count = 32;
     }
   }
@@ -153,7 +154,7 @@ class AtariSingle {
   
   void set(float _x, float _y, float _w, float _h) {
     x = _x; y = _y;
-    w = _w / 8; h = _h;
+    w = _w; h = _h;
   }
   
   void setMode(int i) {
@@ -174,7 +175,8 @@ class AtariSingle {
     }
     
     for (int i = 0; i < (audio.averageSpecs.length - 1) ; i++) {
-      float thisWidth  = w * (i + 1);
+      float thisWidth  = (w/8) * (i);
+      thisWidth += map(audio.averageSpecs[i].value, 0, 100, 0, (w/8));
       float thisHeight = map(audio.averageSpecs[i].value, 0, 100, 0, h);
       color thisColor  = setColor(i);
 
