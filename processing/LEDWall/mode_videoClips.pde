@@ -4,7 +4,7 @@ Movie m;
 float mspeed;
 
 void setupClips() {
-  m = new Movie(this, "holly2.mov");
+  m = new Movie(this, "videos/hackers_1.mov");
   m.loop();
   mspeed = 1.0;
 }
@@ -26,8 +26,8 @@ void doClips() {
   buffer.image(m, 0, 0, buffer.width, buffer.height);
   
   buffer.blendMode(BLEND);
-  //kinect.updateUserBlack();
-  //buffer.image(kinect.buffer_image, 0, 0);
+  kinect.updateUserBlack();
+  buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }
 
