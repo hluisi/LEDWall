@@ -11,8 +11,8 @@ void doAtari() {
   //city.draw();
   atari.draw();
   buffer.blendMode(BLEND);
-  //kinect.updateUserBlack();
-  //buffer.image(kinect.buffer_image, 0, 0);
+  kinect.updateUserBlack();
+  buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }
 

@@ -1,13 +1,5 @@
 PImage image_buffer;
 
-void doBGColor() {
-  color thisColor = audio.COLOR; //audio.COLORS[AUDIO_MODE];
-  buffer.beginDraw();
-  buffer.background(thisColor);
-  //eq.volume.display(audio.VOLUME);
-  buffer.endDraw();
-}
-
 void doUserAudio() {
   //color thisColor = audio.COLOR; //audio.COLORS[AUDIO_MODE];
   kinect.setDepthImageColor(audio.COLOR);

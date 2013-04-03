@@ -13,14 +13,9 @@ final int DISPLAY_MODE_CLIPS   = 9;
 
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "BACKGROUND", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
+  "TEST", "EQ", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
 };
-final String[] AUDIO_STR = { 
-  "RAW", "SMOOTHED", "BALANCED"
-};
-final String[] COLOR_STR = { 
-  "RAW", "SMOOTH", "BRIGHT", "COMPLEMENT" //, "INVERTED"
-};
+
 
 PImage smpte, test, wall_image;
 
@@ -36,7 +31,6 @@ void setup() {
   test  = loadImage("test_640x320.png");
   wall_image = createImage(COLUMNS, ROWS, RGB);
 
-  //setupAudio();
   setupBuffer();
   setupMinim();
   //setupSerial();
@@ -44,7 +38,6 @@ void setup() {
   setupWall();
   setupWheel();
   setupEQ();
-  //setupBalls();
   
   setupKinect();
   setupParticles();
