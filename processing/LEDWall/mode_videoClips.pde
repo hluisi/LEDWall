@@ -1,15 +1,9 @@
 import processing.video.*;
 
-//Movie m;
-//float mspeed;
-
 MovieClips movies;
 
 void setupClips() {
   movies = new MovieClips(this, "videos");
-  //m = new Movie(this, "videos/hackers_1.mov");
- // m.loop();
-  //mspeed = 1.0;
 }
 
 void doClips() {
@@ -52,13 +46,13 @@ class MovieClips {
     // switch clips?
     if ( audio.beat.isOnset() ) {
       float test = random(0, 1);
-      if (test < 0.5) {
-        // stop the current clip to reset it
-        clips[current].stop();
-        clips[current].loop();
-        // randomly pick a new clip
+      if (test < 0.35) {
+        clips[current].jump( random( clips[current].duration() ) );
+        println("jummped to: " + clips[current].time());
+      }
+      else if (test < 0.85) {
         current = int(random(clips.length - 1));
-        //println("new current: " + current);
+        println("new current: " + current);
         
       }
     }
@@ -78,21 +72,4 @@ class MovieClips {
     buffer.image(clips[current], 0, 0, buffer.width, buffer.height);
   }
 }
-    
-    
 
-// This function returns all the files in a directory as an array of Strings  
-String[] listFileNames(String dir) {
-  File file = new File(dir);
-  if (file.isDirectory()) {
-    String names[] = file.list();
-    return names;
-  } else {
-    // If it's not a directory
-    return null;
-  }
-}
-
-//void movieEvent( Movie m ) {
-//  m.read();
-//}

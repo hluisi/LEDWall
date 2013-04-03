@@ -120,7 +120,7 @@ class AtariVideoMusic {
   void update() {
     if ( audio.beat.isOnset() ) {
       float test = random(0, 1);
-      if (test < 0.1) changeDisplay();
+      if (test < 0.25) changeDisplay();
       if (test > 0.75) mode = int(random(0,3));
     }
   }
