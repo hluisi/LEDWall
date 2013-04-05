@@ -47,13 +47,12 @@ class MovieClips {
     if ( audio.beat.isOnset() ) {
       float test = random(0, 1);
       if (test < 0.35) {
-        clips[current].jump( random( clips[current].duration() ) );
-        println("jummped to: " + clips[current].time());
-      }
-      else if (test < 0.85) {
         current = int(random(clips.length - 1));
         println("new current: " + current);
-        
+      }
+      else  {
+        clips[current].jump( random( clips[current].duration() ) );
+        println("jummped to: " + clips[current].time());
       }
     }
     
@@ -63,7 +62,7 @@ class MovieClips {
     }
     
     // set the speed of the next frame according to the current BPM
-    current_speed = map(audio.BPM, 0, 200, 0.25, 2.5);
+    current_speed = map(audio.BPM, 0, 200, 0.25, 2.0);
     clips[current].speed(current_speed);
   }
   
