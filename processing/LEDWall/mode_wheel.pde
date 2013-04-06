@@ -12,13 +12,13 @@ void doWheel() {
   wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
   wheel.setCycle(audio.BPM);
   buffer.beginDraw();
-  if (wheel.use_audio) {
-    TColor thisColor = TColor.newARGB(audio.COLOR);
-    thisColor.complement();
-    kinect.updateUser(thisColor.toARGB());
-  }
-  else kinect.updateUserBlack();
+  buffer.blendMode(ADD);
+  
+  buffer.background(audio.COLOR);
+  
   wheel.display();
+  buffer.blendMode(BLEND);
+  kinect.updateUserBlack();
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }

@@ -46,7 +46,7 @@ class MovieClips {
     // switch clips?
     if ( audio.beat.isOnset() ) {
       float test = random(0, 1);
-      if (test < 0.35) {
+      if (test < 0.5) {
         current = int(random(clips.length - 1));
         println("new current: " + current);
       }
