@@ -1,20 +1,36 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
-import toxi.color.*;
-import toxi.color.theory.*;
-import toxi.util.datatypes.*;
+import javax.sound.sampled.*;
 
 Minim minim;
+FloatControl micControl;
 AverageListener audio;
+Mixer.Info[] mixerInfo;
+Line inLine;
 
 void setupMinim() {
   minim = new Minim(this);
+  //minim.debugOn();
+  
+  mixerInfo = AudioSystem.getMixerInfo();
+  println(mixerInfo);
+  Mixer mixer = AudioSystem.getMixer(mixerInfo[6]);
+  minim.setInputMixer(mixer);
+  
+  //println(mixer.getTargetLineInfo()[0]);
+  //inLine = mixer.getTargetLines()[0];
+  //println(inLine);
+  
+  
   audio = new AverageListener();
-  for (int i = 0; i < audio.fft.avgSize(); i++) {
-    println("i:" + i + "  f:" + round(audio.fft.getAverageCenterFrequency(i)) );
-  }
-  println( audio.fft.specSize() );
+  micControl = audio.in.gain();
+  
+  //println(audio.in.getVolume());
+  
+  //println("-------------");
+ 
+  
 }
 
 class AverageListener implements AudioListener {
@@ -68,9 +84,12 @@ class AverageListener implements AudioListener {
   }
 
   private void mapRanges() {
-    BASS = round((averageSpecs[0].value  + averageSpecs[1].value  + averageSpecs[2].value ) / 3);
-    MIDS = round((averageSpecs[3].value  + averageSpecs[4].value  + averageSpecs[5].value ) / 3);
-    TREB = round((averageSpecs[6].value  + averageSpecs[7].value  + averageSpecs[8].value ) / 3);
+    //BASS = round((averageSpecs[0].value + averageSpecs[1].value + averageSpecs[2].value ) / 3);
+    //MIDS = round((averageSpecs[3].value + averageSpecs[4].value + averageSpecs[5].value ) / 3);
+    //TREB = round((averageSpecs[6].value + averageSpecs[7].value + averageSpecs[8].value ) / 3);
+    BASS = round(( averageSpecs[0].value + averageSpecs[1].value ) / 2);
+    MIDS = round(( averageSpecs[2].value + averageSpecs[3].value ) / 2);
+    TREB = round(( averageSpecs[4].value + averageSpecs[5].value ) / 2); 
   }
 
   private void mapColors() {

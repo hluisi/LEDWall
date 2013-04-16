@@ -19,7 +19,6 @@ final String[] DISPLAY_STR = {
 
 PImage smpte, test, wall_image;
 
-
 void setup() {
   int x = DEBUG_WINDOW_XSIZE, y;
   if (DEBUG_SHOW_WALL) y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
@@ -33,7 +32,7 @@ void setup() {
 
   setupBuffer();
   setupMinim();
-  //setupSerial();
+  setupSerial();
   
   setupWall();
   setupWheel();
@@ -44,12 +43,15 @@ void setup() {
   setupCircles();
   setupAtari();
   setupClips();
+  // must be last
+  setupControl();
   //frameRate(30);
   
   image_buffer = createImage(COLUMNS, ROWS, ARGB);
 }
 
 void draw() {
+  //console = cp5.addConsole(myTextarea);
   //updateMinim();
   doMode();
   //minimTest();
@@ -58,6 +60,7 @@ void draw() {
 }
 
 void drawDebug() {
+  textSize(11);
   // fill debug window dary grey
   fill(#313131);
   rectMode(CORNER);
@@ -65,33 +68,38 @@ void drawDebug() {
   
   // fill text display background
   fill(#212121);
-  rect(5, DEBUG_WINDOW_START + 5, 300, 210);
+  rect(5, DEBUG_WINDOW_START + 5, 200, 210);
   
   fill(255);
-  text("FPS: " + frameRate, 10, DEBUG_WINDOW_START + 20);
-  text("display mode: " + DISPLAY_STR[DISPLAY_MODE] + "  (use number keys to change)", 10, DEBUG_WINDOW_START + 35);
-  //text("audio mode: " + AUDIO_STR[AUDIO_MODE] + "  (use: r, s, or b to change)", 10, DEBUG_WINDOW_START + 65);
-  //text("audio volume: " + audio.VOLUME, 10, DEBUG_WINDOW_START + 80);
-  text("BASS: " + audio.BASS, 10, DEBUG_WINDOW_START + 65); 
-  text("MIDS: " + audio.MIDS, 80, DEBUG_WINDOW_START + 65);
-  text("TREB: " + audio.TREB, 150, DEBUG_WINDOW_START + 65);
-  text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 80);
-  text("GAIN: " + audio.in.gain(), 10, DEBUG_WINDOW_START + 95);
+  text("FPS: " + String.format("%.2f", frameRate), 10, DEBUG_WINDOW_START + 20);
+  text("Display Mode:  " + DISPLAY_STR[DISPLAY_MODE] , 10, DEBUG_WINDOW_START + 35);
   
-  text("RAW: " + audio.volume.value, 10, DEBUG_WINDOW_START + 125);
-  //text("SMO: " + audio.spectrums[0].raw_smoothed, 150, DEBUG_WINDOW_START + 125);
-  //text("EQL: " + audio.spectrums[0].raw_equalized, 290, DEBUG_WINDOW_START + 125);
-  text("PEAK: " + audio.volume.peak, 80, DEBUG_WINDOW_START + 125);
-  text("MAX PEAK: " + audio.volume.max_peak, 150, DEBUG_WINDOW_START + 125);
-  text("dB: " + audio.volume.dB, 10, DEBUG_WINDOW_START + 140);
+  text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 65);
+  text("BASS: " + audio.BASS, 10, DEBUG_WINDOW_START + 80); 
+  text("MIDS: " + audio.MIDS, 70, DEBUG_WINDOW_START + 80);
+  text("TREB: " + audio.TREB, 140, DEBUG_WINDOW_START + 80);
   
-  text("atari - x:" + atari.alist[0].x + "  y:" + atari.alist[0].y + " s:" + atari.alist[0].stroke_weight, 10, DEBUG_WINDOW_START + 155);
+  //text("GAIN: " + audio.in.gain(), 10, DEBUG_WINDOW_START + 95);
+  
+  //text("RAW: " + audio.volume.value, 10, DEBUG_WINDOW_START + 95);
+  //text("PEAK: " + audio.volume.peak, 70, DEBUG_WINDOW_START + 95);
+  //text("MAX PEAK: " + String.format("%.2f", audio.volume.max_peak), 140, DEBUG_WINDOW_START + 95);
+  text("dB: " + String.format("%.2f", audio.volume.dB), 10, DEBUG_WINDOW_START + 95);
+  
+  if (buffer.wattage > 3000) fill(255,0,0);
+  text("WATTS: " + String.format("%.2f", buffer.wattage), 10, DEBUG_WINDOW_START + 125);
+  text("Max: "   + String.format("%.2f", buffer.max_watts), 115, DEBUG_WINDOW_START + 125);
+  fill(255);
+  //text("Brightness: " + String.format("%.2f", brightness(audio.COLOR)), 10, DEBUG_WINDOW_START + 140);
+  //text("Sat: " + String.format("%.2f", saturation(audio.COLOR)), 120, DEBUG_WINDOW_START + 140);
+  text("R: " + audio.RED, 10, DEBUG_WINDOW_START + 140);
+  text("G: " + audio.GREEN, 50, DEBUG_WINDOW_START + 140);
+  text("B: " + audio.BLUE, 90, DEBUG_WINDOW_START + 140);
+  
+  //text("atari - x:" + atari.alist[0].x + "  y:" + atari.alist[0].y + " s:" + atari.alist[0].stroke_weight, 10, DEBUG_WINDOW_START + 155);
 
-  text("kinect user  X: " + (kinect.user_center.x) + "  Y: " + (kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
+  //text("kinect user  X: " + String.format("%.2f", kinect.user_center.x) + "  Y: " + String.format("%.2f", kinect.user_center.y), 10, DEBUG_WINDOW_START + 170);
   
-  text("circles: " + circles.theta, 10, DEBUG_WINDOW_START + 185);
-  text("Brightness: " + brightness(audio.COLOR) + "   Sat: " + saturation(audio.COLOR), 10, DEBUG_WINDOW_START + 200);
-  text("R: " + audio.RED + "  G: " + audio.GREEN + "   B: " + audio.BLUE, 10, DEBUG_WINDOW_START + 215);
   
   
   //image(buffer, DEBUG_WINDOW_XSIZE - (buffer.width + 10) - 170, DEBUG_WINDOW_START + 10);
@@ -130,14 +138,22 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
 }
 
-void stop() {
+void exit() {
+  println("CLOSING DOWN!!!");
+  buffer.beginDraw();
+  buffer.background(0);
+  buffer.endDraw();
+  wall.display();
   
   kinect.close();
   
   // always close Minim audio classes when you are done with them
   audio.close();
   minim.stop();
-  super.stop();
+  
+  
+  
+  super.exit();
 }
 
 void keyPressed() {

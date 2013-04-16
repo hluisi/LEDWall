@@ -22,6 +22,7 @@ class AtariVideoMusic {
   final int RING  = 2;
   int mode = 0;
   int display_count = 1;
+  float xoff = 0.0;
   
   AtariSingle[] alist = new AtariSingle [32];
   
@@ -33,7 +34,8 @@ class AtariVideoMusic {
   }
   
   void changeDisplay() {                 // 1x1 - 1
-    int count = int(random(0,6));
+    //int count = int(random(0,6));
+    int count = int( noise(xoff) * 6 );
     if (count == 0) {
       alist[0].set(80, 40, 160, 80);
       display_count = 1;
@@ -79,6 +81,7 @@ class AtariVideoMusic {
       alist[14].set(100,70,50,30);
       alist[15].set(140,70,50,30);
       display_count = 16;
+      
     }
     if (count == 5) {               // 8x4 - 32
       alist[0].set(10,10,30,30);
@@ -115,13 +118,19 @@ class AtariVideoMusic {
       alist[31].set(150,70,30,30);
       display_count = 32;
     }
+    println("ATARI - displaying: " + display_count);
   }
   
   void update() {
     if ( audio.beat.isOnset() ) {
       float test = random(0, 1);
       if (test < 0.25) changeDisplay();
-      if (test > 0.75) mode = int(random(0,3));
+      if (test > 0.75) {
+        //mode = int(random(0,3));
+        mode = int( noise(xoff) * 3 );
+        println("ATARI - mode: " + mode);
+      }
+      xoff += 0.2;
     }
   }
   
@@ -166,7 +175,7 @@ class AtariSingle {
       buffer.noStroke();
     }
     else if (mode == HOLE) {
-      stroke_weight = map(audio.volume.value, 0, 100, 1, (h / 5) + 1);
+      stroke_weight = map(audio.volume.value, 0, 100, 1, (h / 5) /* + 1 */);
       buffer.strokeWeight(stroke_weight);
     } 
     else {

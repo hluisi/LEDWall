@@ -34,10 +34,11 @@ class VideoWall {
   PImage[] teensyImages = new PImage [10];
   PGraphics send_buffer;
 
+
   VideoWall() {
     send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
-    for(int i = 0; i < teensyImages.length; i++) {
-      teensyImages[i] = createImage(80,16,RGB);
+    for (int i = 0; i < teensyImages.length; i++) {
+      teensyImages[i] = createImage(80, 16, RGB);
     }
   }
 
@@ -67,22 +68,41 @@ class VideoWall {
     send_buffer.imageMode(CENTER);
     send_buffer.translate(send_buffer.width / 2, send_buffer.height / 2);
     send_buffer.rotate(radians(90));
-    //send_buffer.rotateX(radians(-180));
-    send_buffer.image(buffer,0,0);
+    send_buffer.image(buffer, 0, 0);
     send_buffer.popMatrix();
     send_buffer.endDraw();
-    
+
     send_buffer.loadPixels();
-    
+
     // set the teensy image array
-    for(int i = 0; i < teensyImages.length; i++) {
+    for (int i = 0; i < teensyImages.length; i++) {
       teensyImages[i].loadPixels();
       arrayCopy(send_buffer.pixels, i * (80 * 16), teensyImages[i].pixels, 0, 80 * 16);
       teensyImages[i].updatePixels();
+      //image2data(teensyImages[i], ledData, ledLayout[i]);
+      //if (i == 0) {
+      //  ledData[0] = '*';  // first Teensy is the frame sync master
+      //  int usec = (int)((1000000.0 / frameRate) * 0.75);
+      //  ledData[1] = (byte)(usec);   // request the frame sync pulse
+      //  ledData[2] = (byte)(usec >> 8); // at 75% of the frame time
+      //} 
+      //else {
+      //  ledData[0] = '%';  // others sync to the master board
+      //  ledData[1] = 0;
+      //  ledData[2] = 0;
+      //}
+      // send the raw data to the LEDs  :-)
+      //ledSerial[i].write(ledData);
     }
     
+    image2data(teensyImages[1], ledData, ledLayout[0]);
+    ledData[0] = '*';  // first Teensy is the frame sync master
+    int usec = (int)((1000000.0 / frameRate) * 0.75);
+    ledData[1] = (byte)(usec);   // request the frame sync pulse
+    ledData[2] = (byte)(usec >> 8); // at 75% of the frame time
+    ledSerial[0].write(ledData);
+
     // add serial send code here
-    
   }
 
   void display() {

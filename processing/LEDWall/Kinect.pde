@@ -32,30 +32,34 @@ void doKinect() {
   //kinect.display();
 }
 
-
+/*
 public void onNewUser(int userId) {
-  println("KINECT - onNewUser - found new user: " + userId);
-  println(" - starting pose detection");
-  kinect.requestCalibrationSkeleton(userId, true);
+  //println("KINECT - onNewUser - found new user: " + userId);
+  //println(" - starting pose detection");
+  //kinect.requestCalibrationSkeleton(userId, true);
+  //console = cp5.addConsole(myTextarea);
 }
 
 public void onLostUser(int userId) {
-  println("KINECT - onLostUser - lost user: " + userId);
-  
+  //println("KINECT - onLostUser - lost user: " + userId);
+  //console = cp5.addConsole(myTextarea);
   
 }
 
 public void onExitUser(int userId) {
-  println("KINECT - onExitUser - user " + userId + " has exited.");
-  println(" - stopping pose detection");
-  kinect.stopPoseDetection(userId);
+  //println("KINECT - onExitUser - user " + userId + " has exited.");
+ // println(" - stopping pose detection");
+  //kinect.stopPoseDetection(userId);
+  //console = cp5.addConsole(myTextarea);
 }
 
 public void onReEnterUser(int userId) {
-  println("KINECT - onReEnterUser - user " + userId + " has come back.");
-  kinect.requestCalibrationSkeleton(userId, true);
-  println(" - starting pose detection");
+  //println("KINECT - onReEnterUser - user " + userId + " has come back.");
+  //kinect.requestCalibrationSkeleton(userId, true);
+  //println(" - starting pose detection");
+  //console = cp5.addConsole(myTextarea);
 }
+
 
 public void onStartCalibration(int userId) {
   println("KINECT - onStartCalibration - starting calibration on user: " + userId);
@@ -85,6 +89,7 @@ public void onStartPose(String pose, int userId) {
 public void onEndPose(String pose, int userId) {
   println("onEndPose - userId: " + userId + ", pose: " + pose);
 }
+*/
 
 class Kinect extends SimpleOpenNI {
   final int KINECT_X_START = 0;
@@ -146,7 +151,7 @@ class Kinect extends SimpleOpenNI {
     //}
 
     // enable user
-    if (enableUser(SimpleOpenNI.SKEL_PROFILE_ALL) == false) {
+    if (enableUser(SimpleOpenNI.SKEL_PROFILE_NONE) == false) {
       println("KINECT - ERROR opening the userMap! Is the kinect connected?!?!");
       exit();
       return;
@@ -230,7 +235,7 @@ class Kinect extends SimpleOpenNI {
 
   void updateUser(color c) {
     update();
-    updateSingle(c, true);
+    updateSingle(c, false);
   }
 
   void updateUserBlack() {

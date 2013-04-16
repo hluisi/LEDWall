@@ -12,10 +12,17 @@ void doUserAudio() {
 }
 
 void doUserBg() {
-  color thisColor = audio.COLOR; //audio.COLORS[AUDIO_MODE];
   kinect.updateUserBlack();
   buffer.beginDraw();
-  buffer.background(thisColor);
+  buffer.background(audio.COLOR);
+  buffer.stroke(255);
+  buffer.strokeWeight(1);
+  for (int i = 0; i < 160 - 1; i++) {
+    //buffer.line(i, (buffer.height / 2) + audio.in.left.get(i)*30, i + 1, (buffer.height / 2) + audio.in.left.get(i+1)*30);
+    
+    buffer.line(i, 40 + audio.in.mix.get(i)*60, i + 1, 40 + audio.in.mix.get(i+1)*60); 
+  }
+  buffer.noStroke();
   buffer.image(kinect.buffer_image, 0, 0);
   //if (audio.VOLUME < 70) buffer.filter(POSTERIZE,5);
   buffer.endDraw();
