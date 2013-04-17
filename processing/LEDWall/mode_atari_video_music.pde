@@ -8,7 +8,6 @@ void doAtari() {
   buffer.beginDraw();
   buffer.background(audio.COLOR);
   buffer.blendMode(ADD);
-  //city.draw();
   atari.draw();
   buffer.blendMode(BLEND);
   kinect.updateUserBlack();
@@ -22,7 +21,6 @@ class AtariVideoMusic {
   final int RING  = 2;
   int mode = 0;
   int display_count = 1;
-  float xoff = 0.0;
   
   AtariSingle[] alist = new AtariSingle [32];
   
@@ -130,7 +128,6 @@ class AtariVideoMusic {
         mode = int( noise(xoff) * 3 );
         println("ATARI - mode: " + mode);
       }
-      xoff += 0.2;
     }
   }
   

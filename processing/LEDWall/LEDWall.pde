@@ -1,4 +1,5 @@
 int DISPLAY_MODE = 1;
+float xoff = 0.0;
 
 final int DISPLAY_MODE_TEST    = 0;
 final int DISPLAY_MODE_SHOWEQ  = 1;
@@ -51,12 +52,20 @@ void setup() {
 }
 
 void draw() {
-  //console = cp5.addConsole(myTextarea);
-  //updateMinim();
+  if ( audio.beat.isOnset() ) {
+    float test = random(1);
+    if (test < 0.25) {
+      int count = int(random(2, 10));
+      DISPLAY_MODE = count;
+      r.activate(count);
+      println("MODE - " + DISPLAY_STR[count]);
+    }
+  }
   doMode();
   //minimTest();
   wall.display();
   drawDebug();
+  xoff += 0.2;
 }
 
 void drawDebug() {

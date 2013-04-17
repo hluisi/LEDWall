@@ -32,8 +32,8 @@ class Wheel {
   int cycle_time = 100;                // the time between cycling colors
   color[] colors = new color [8];
   color[] default_colors = {
-    color(255, 0, 0), color(255, 128, 0), color(255, 255, 0), color(128, 255, 0), 
-    color(0, 255, 0), color(0, 255, 128), color(0, 128, 255), color(0, 0, 255)
+    color(128, 0, 0), color(128, 64, 0), color(128, 128, 0), color(64, 128, 0), 
+    color(0, 128, 0), color(0, 128, 64), color(0, 64, 128), color(0, 0, 128)
   };
 
 

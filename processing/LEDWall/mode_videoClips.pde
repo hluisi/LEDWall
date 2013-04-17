@@ -35,7 +35,6 @@ class myMovie extends Movie {
 class MovieClips {
   float current_speed = 1.0;
   int current = 0;
-  float xoff = 0.0;
   myMovie[] clips;
   
   MovieClips(PApplet app, String dir) {
@@ -70,7 +69,6 @@ class MovieClips {
         clips[current].jump( spot );
         println("  -  jummped to: " + clips[current].time());
       }
-      xoff += 0.2;
     }
     
     // read the new frame
