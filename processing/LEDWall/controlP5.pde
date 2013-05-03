@@ -1,25 +1,29 @@
 import controlP5.*;
 
 ControlP5 cp5;
-//Textarea myTextarea;
 Println console;
 RadioButton r;
+Toggle amode;
+Slider bright;
 
 void setupControl() {
   strokeWeight(1);
   stroke(0);
   cp5 = new ControlP5(this);
   
-  cp5.addKnob("Brightness")
-    .setPosition( 10, height - 65)
-    .setRange(0,255)
-    .setValue(255)
-    .setRadius(20)
-    .setDragDirection(Knob.HORIZONTAL)
-    .setColorForeground(color(255))
-    .setColorBackground(color(#212121))
-    .setColorActive(color(255,255,0))
-  ;
+  bright = cp5.addSlider("Brightness")
+             .setSize(400, 20)
+             .setPosition(225, DEBUG_WINDOW_START + 100)
+             .setRange(0,255)
+             .setValue(245)
+             .setColorForeground(color(255))
+             .setColorBackground(color(#212121))
+             .setColorActive(color(255,255,0))
+             .setSliderMode(Slider.FLEXIBLE)
+             //.setHandleSize(10)
+           ;
+  bright.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);
+  bright.captionLabel().setPaddingY(3);
   
   r = cp5.addRadioButton("modeButton")
         .setPosition(225, DEBUG_WINDOW_START + 10)
@@ -48,22 +52,19 @@ void setupControl() {
      t.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);
      t.captionLabel().setPaddingY(3);
   }
-    
   
-  /*
-  myTextarea = cp5.addTextarea("txt")
-    .setPosition(210, DEBUG_WINDOW_START + 5)
-    .setSize(435, 210)
-    .setFont(createFont("", 11))
-    .setLineHeight(14)
-    .setColor(color(200))
-    .setColorBackground(color(#111111))
-    .setColorForeground(color(255, 100));
+  amode = cp5.addToggle("auto_mode")
+    .setPosition(225, DEBUG_WINDOW_START + 150)
+    .setSize(40,20)
+    .setColorBackground(color(#212121))
+    .setColorForeground(color(#515151))
+    .setColorActive(color(255))
+    .setColorLabel(color(255))
+    .setValue(false)
+    .setMode(ControlP5.SWITCH)
   ;
-  console = cp5.addConsole(myTextarea);
-  */
-
-  
+    
+  amode.captionLabel().setText("Auto Mode");
 }
 
 public void Brightness(int value) {
@@ -74,15 +75,13 @@ public void modeButton(int v) {
   DISPLAY_MODE = v;
 }
 
-//void controlEvent(ControlEvent theControlEvent) {
-  //if(theControlEvent.isFrom("Brightness")) {
-    
-    //buffer.maxBrightness( int(theControlEvent.getController().getValue()) );
-    
-    //colorMin = int(theControlEvent.getController().getArrayValue(0));
-    //colorMax = int(theControlEvent.getController().getArrayValue(1));
-    //println("range update, done.");
-  //}
-  
-//}
+void auto_mode(boolean theFlag) {
+  if(theFlag==true) {
+    AUTOMODE = true;
+    println("Auto Mode: ON");
+  } else {
+    AUTOMODE = false;
+    println("Auto Mode: OFF");
+  }
+}
 

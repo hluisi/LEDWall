@@ -36,22 +36,38 @@ class MovieClips {
   float current_speed = 1.0;
   int current = 0;
   myMovie[] clips;
+  int switch_count = 0;
+  String[] names;
   
   MovieClips(PApplet app, String dir) {
     String thisdir = sketchPath + "\\data\\" + dir;
     File file = new File(thisdir);
     String[] file_names = file.list();
     clips = new myMovie [file_names.length];
+    
+    int j = 0;
     for (int i = 0; i < file_names.length; i++) {
       String[] fname = file_names[i].split("\\.(?=[^\\.]+$)");
       if (fname[fname.length - 1].equals("mov") == true) {
-        String fullname = thisdir + "\\" + file_names[i];
-        println("" + i + ": " + fullname);
-        clips[i] = new myMovie(app, fullname, fname[0]);
-        clips[i].loop();
+        j++;
       }
     }
-    println(clips.length);
+    clips = new myMovie [j];
+    names = new String [j];
+    
+    j = 0;
+    for (int i = 0; i < file_names.length; i++) {
+      String[] fname = file_names[i].split("\\.(?=[^\\.]+$)");
+      if (fname[fname.length - 1].equals("mov") == true) {
+        names[j] = thisdir + "\\" + file_names[i];
+        println("CLIPS - loading clip - " + i + ": " + names[j]);
+        clips[j] = new myMovie(app, names[j], fname[0]);
+        clips[j].loop();
+        j++;
+      }
+    }
+    //println(clips.length);
+    //println(clips[clips.length - 1].name);
   }
   
   void update() {
@@ -59,15 +75,22 @@ class MovieClips {
     if ( audio.beat.isOnset() ) {
       float test = random(0, 1);
       if (test < 0.5) {
-        int next = int( noise(xoff) * (clips.length - 2) );
+        int next = int( random(clips.length) );
+        if (next >= clips.length) next--;
         current = next;
         println("CLIPS - new clip: " + clips[current].name);
-        
+        switch_count++;
       }
       else  {
         float spot = noise(xoff) * clips[current].duration();
         clips[current].jump( spot );
         println("  -  jummped to: " + clips[current].time());
+      }
+      if (switch_count > 6) {
+        switch_count = 0;
+        int seed = int(random(frameCount));
+        randomSeed(seed);
+        println("  -  new seed: " + seed);
       }
     }
     

@@ -8,8 +8,8 @@ final int SERIAL_HEIGHT = 16;
 int portNumber = 0;
 
 int errorCount = 0;
-boolean[] ledLayout = new boolean[SERIAL_PORTS];
-byte[] ledData =  new byte[(SERIAL_WIDTH * SERIAL_HEIGHT * 3) + 3];
+//boolean[] ledLayout = new boolean[SERIAL_PORTS];
+byte[][] ledData =  new byte[10][(SERIAL_WIDTH * SERIAL_HEIGHT * 3) + 3];
 
 Serial[] ledSerial;
 
@@ -58,7 +58,7 @@ void serialConfigure(String portName) {
     return;
   }
   // only store the info and increase numPorts if Teensy responds properly
-  ledLayout[portNumber] = (Integer.parseInt(param[5]) == 0);
+  //ledLayout[portNumber] = (Integer.parseInt(param[5]) == 0);
   portNumber++;
 }
 

@@ -1,6 +1,7 @@
-import processing.opengl.*;
+//import processing.opengl.*;
 
 Buffer buffer;
+//PGraphics buffer;
 
 
 void setupBuffer() {
@@ -11,7 +12,7 @@ void setupBuffer() {
 
 class Buffer extends PGraphicsJava2D {
 
-  int max_brightness = 255;
+  int max_brightness = 245;
   float wattage = 0;
   float max_watts = 0;
 
@@ -49,5 +50,6 @@ class Buffer extends PGraphicsJava2D {
     max_watts = max(max_watts, wattage);
     updatePixels();
   }
+  
 }
 

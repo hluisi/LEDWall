@@ -4,31 +4,14 @@ import ddf.minim.effects.*;
 import javax.sound.sampled.*;
 
 Minim minim;
-FloatControl micControl;
 AverageListener audio;
-Mixer.Info[] mixerInfo;
-Line inLine;
+
 
 void setupMinim() {
   minim = new Minim(this);
   //minim.debugOn();
   
-  mixerInfo = AudioSystem.getMixerInfo();
-  println(mixerInfo);
-  Mixer mixer = AudioSystem.getMixer(mixerInfo[6]);
-  minim.setInputMixer(mixer);
-  
-  //println(mixer.getTargetLineInfo()[0]);
-  //inLine = mixer.getTargetLines()[0];
-  //println(inLine);
-  
-  
   audio = new AverageListener();
-  micControl = audio.in.gain();
-  
-  //println(audio.in.getVolume());
-  
-  //println("-------------");
  
   
 }

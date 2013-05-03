@@ -12,6 +12,7 @@ final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
 
+boolean AUTOMODE = false;
 
 final String[] DISPLAY_STR = { 
   "TEST", "EQ", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
@@ -46,21 +47,25 @@ void setup() {
   setupClips();
   // must be last
   setupControl();
-  //frameRate(30);
+  frameRate(60);
   
   image_buffer = createImage(COLUMNS, ROWS, ARGB);
 }
 
-void draw() {
+void autoMode() {
   if ( audio.beat.isOnset() ) {
     float test = random(1);
-    if (test < 0.25) {
+    if (test < 0.2) {
       int count = int(random(2, 10));
       DISPLAY_MODE = count;
       r.activate(count);
       println("MODE - " + DISPLAY_STR[count]);
     }
   }
+}
+
+void draw() {
+  if (AUTOMODE) autoMode();
   doMode();
   //minimTest();
   wall.display();

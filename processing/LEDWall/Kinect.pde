@@ -32,32 +32,27 @@ void doKinect() {
   //kinect.display();
 }
 
-/*
+
 public void onNewUser(int userId) {
-  //println("KINECT - onNewUser - found new user: " + userId);
+  println("KINECT - onNewUser - found new user: " + userId);
   //println(" - starting pose detection");
   //kinect.requestCalibrationSkeleton(userId, true);
-  //console = cp5.addConsole(myTextarea);
 }
 
 public void onLostUser(int userId) {
-  //println("KINECT - onLostUser - lost user: " + userId);
-  //console = cp5.addConsole(myTextarea);
-  
+  println("KINECT - onLostUser - lost user: " + userId);
 }
 
 public void onExitUser(int userId) {
-  //println("KINECT - onExitUser - user " + userId + " has exited.");
- // println(" - stopping pose detection");
+  println("KINECT - onExitUser - user " + userId + " has exited.");
+  //println(" - stopping pose detection");
   //kinect.stopPoseDetection(userId);
-  //console = cp5.addConsole(myTextarea);
 }
 
 public void onReEnterUser(int userId) {
-  //println("KINECT - onReEnterUser - user " + userId + " has come back.");
+  println("KINECT - onReEnterUser - user " + userId + " has come back.");
   //kinect.requestCalibrationSkeleton(userId, true);
   //println(" - starting pose detection");
-  //console = cp5.addConsole(myTextarea);
 }
 
 
@@ -89,7 +84,6 @@ public void onStartPose(String pose, int userId) {
 public void onEndPose(String pose, int userId) {
   println("onEndPose - userId: " + userId + ", pose: " + pose);
 }
-*/
 
 class Kinect extends SimpleOpenNI {
   final int KINECT_X_START = 0;
@@ -100,11 +94,10 @@ class Kinect extends SimpleOpenNI {
   int mode = 0;
 
   final int MODE_DEPTH      = 0;
-  final int MODE_IRCAMERA   = 1;
+  final int MODE_USERSBLACK = 1;
   final int MODE_USERSCOLOR = 2;
-  final int MODE_USERSBLACK = 3;
-  final int MODE_USERSSKELL = 4;
-  final int MODE_HANDS      = 5;
+  final int MODE_USERSSKELL = 3;
+  final int MODE_HANDS      = 4;
 
 
   PVector user_center = new PVector();
@@ -139,17 +132,6 @@ class Kinect extends SimpleOpenNI {
       println("KINECT - depth enabled!");
     }
 
-    // enable IR
-    //if (enableIR() == false) {
-    //  println("KINECT - ERROR opening the IR Camera! Is the kinect connected?!?!");
-    //  exit();
-    //  return;
-    //} 
-    //else {
-      //depth_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
-    //  println("KINECT - IR enabled!");
-    //}
-
     // enable user
     if (enableUser(SimpleOpenNI.SKEL_PROFILE_NONE) == false) {
       println("KINECT - ERROR opening the userMap! Is the kinect connected?!?!");
@@ -183,9 +165,7 @@ class Kinect extends SimpleOpenNI {
     super.setDepthImageColor(r, g, b);
   }
 
-  //void updateUser() {
-
-
+  
   void updateSingle(color c, boolean map_depth) {
     if (getNumberOfUsers() > 0) {
       user_id = -1;
@@ -193,14 +173,23 @@ class Kinect extends SimpleOpenNI {
       depth_map = depthMap();
 
       user_image.loadPixels();
+      depth_image = depthImage();
+      
+      
+            
+      int user_red   = (c >> 16) & 0xFF; 
+      int user_green = (c >> 8) & 0xFF;   
+      int user_blue  = c & 0xFF;         
+      
+      
       for (int i = 0; i < user_image.pixels.length; i++) {
         if (user_map[i] != 0) {
           user_id = max(user_map[i], user_id);
           if (map_depth) {
-            float bright = brightness(depthImage().pixels[i]);
-            float r = map(bright, 0, 255, 0, red(c));
-            float g = map(bright, 0, 255, 0, green(c));
-            float b = map(bright, 0, 255, 0, blue(c));
+            float depth_brightness = brightness(depth_image.pixels[i]);
+            float r = map(depth_brightness, 0, 255, 0, user_red);
+            float g = map(depth_brightness, 0, 255, 0, user_green);
+            float b = map(depth_brightness, 0, 255, 0, user_blue);
             user_image.pixels[i] = color(r, g, b);
           } 
           else {
