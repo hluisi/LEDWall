@@ -10,7 +10,7 @@ void doAtari() {
   buffer.blendMode(ADD);
   atari.draw();
   buffer.blendMode(BLEND);
-  kinect.updateUserBlack();
+  kinect.updateUser();
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }

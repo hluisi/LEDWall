@@ -19,6 +19,7 @@ void setupKinect() {
   println("KINECT - setup finished!");
 }
 
+/*
 void doKinect() {
   kinect.setDepthImageColor(audio.COLOR);
   kinect.bufferDepth();
@@ -31,7 +32,7 @@ void doKinect() {
   buffer.endDraw();
   //kinect.display();
 }
-
+*/
 
 public void onNewUser(int userId) {
   println("KINECT - onNewUser - found new user: " + userId);
@@ -105,6 +106,11 @@ class Kinect extends SimpleOpenNI {
   int[] depth_map;
   int[] user_map;
   int user_id = -1;
+  int rc = 0;
+  
+  color user_color = color(0);
+  
+  boolean mapUser = false;
 
   PImage buffer_image, depth_image, user_image;
 
@@ -156,13 +162,20 @@ class Kinect extends SimpleOpenNI {
     setMirror(false);
     println("KINECT - mirroring is now OFF ...");
   }
-
-  void setDepthImageColor(color c) {
-    int r = (c >> 16) & 0xFF;  // Faster way of getting red(argb)
-    int g = (c >> 8) & 0xFF;   // Faster way of getting green(argb)
-    int b = c & 0xFF;          // Faster way of getting blue(argb)
-
-    super.setDepthImageColor(r, g, b);
+  
+  void setUserColor() {
+    if ( audio.beat.isOnset() ) {
+      float test = random(1);
+      if (test < 0.25) {
+        rc = int(random(0, 5));
+        println("KINECT - changed user color to: " + hex(user_color) );
+      }
+    }
+    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
+    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
+    int BLUE  = int(map(audio.fullSpecs[rc].value, 0, 100, 0, 255));
+    if (audio.volume.value < 25) user_color = color(64 + audio.volume.value);
+    else user_color = color(RED, GREEN, BLUE);
   }
 
   
@@ -170,16 +183,18 @@ class Kinect extends SimpleOpenNI {
     if (getNumberOfUsers() > 0) {
       user_id = -1;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
-      depth_map = depthMap();
+      //depth_map = depthMap();
 
       user_image.loadPixels();
-      depth_image = depthImage();
       
-      
+      int user_red = 0, user_green = 0, user_blue = 0;
             
-      int user_red   = (c >> 16) & 0xFF; 
-      int user_green = (c >> 8) & 0xFF;   
-      int user_blue  = c & 0xFF;         
+      if (map_depth) {
+        user_red   = (c >> 16) & 0xFF; 
+        user_green = (c >> 8) & 0xFF;   
+        user_blue  = c & 0xFF;
+        depth_image = depthImage();
+      }
       
       
       for (int i = 0; i < user_image.pixels.length; i++) {
@@ -222,43 +237,14 @@ class Kinect extends SimpleOpenNI {
     }
   }
 
-  void updateUser(color c) {
+  
+  
+  void updateUser() {
     update();
-    updateSingle(c, false);
+    setUserColor();
+    updateSingle(user_color, mapUser);
   }
-
-  void updateUserBlack() {
-    update();
-    updateSingle(color(0), false);
-  }
-
-  void updateUserAudio() {
-    update();
-    updateSingle(audio.COLOR, false);
-  }
-
-
-
-  //void bufferUserColor() {
-
-
-  void bufferIR() {
-    update();
-    buffer_image.copy(irImage(), 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
-  }
-
-  void bufferDepth() {
-    update();
-    buffer_image.copy(depthImage(), 8, 4, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
-  }
-
-  //void update() {
-  //super.update();
-  //if (mode == MODE_DEPTH) bufferDepth();
-  //}
-
-  void display() {
-    //displayDepth();
-  }
+  
+  
 }
 

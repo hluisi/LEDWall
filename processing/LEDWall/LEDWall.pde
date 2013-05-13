@@ -37,10 +37,12 @@ void setup() {
   setupSerial();
   
   setupWall();
+  setupKinect();
+  
   setupWheel();
   setupEQ();
   
-  setupKinect();
+  
   setupParticles();
   setupCircles();
   setupAtari();

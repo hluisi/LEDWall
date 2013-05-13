@@ -117,7 +117,7 @@ class AverageListener implements AudioListener {
     mapRanges();
     mapColors();
     mapBPM();
-
+    //volume.set( in.mix.level() );
   }
 
   void samples(float[] sampsL, float[] sampsR) {
@@ -127,7 +127,7 @@ class AverageListener implements AudioListener {
     mapRanges();
     mapColors();
     mapBPM();
-    volume.set( in.mix.level() );
+    //volume.set( in.mix.level() );
   }
 }
 

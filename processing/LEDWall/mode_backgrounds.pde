@@ -1,18 +1,15 @@
 PImage image_buffer;
 
 void doUserAudio() {
-  //color thisColor = audio.COLOR; //audio.COLORS[AUDIO_MODE];
-  kinect.setDepthImageColor(audio.COLOR);
-  kinect.updateUser(audio.COLOR);
+  kinect.updateUser();
   buffer.beginDraw();
   buffer.background(0);
   buffer.image(kinect.buffer_image, 0, 0);
-  //if (audio.VOLUME < 70) buffer.filter(INVERT);
   buffer.endDraw();
 }
 
 void doUserBg() {
-  kinect.updateUserBlack();
+  kinect.updateUser();
   buffer.beginDraw();
   buffer.background(audio.COLOR);
   buffer.stroke(255);

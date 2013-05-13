@@ -7,8 +7,7 @@ void setupWheel() {
 }
 
 void doWheel() {
-  //if (kinect.user1_center.x < 1 && kinect.user1_center.y < 1) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
-  //if (kinect.user1_center.x == null) kinect.enableUser(SimpleOpenNI.SKEL_PROFILE_NONE);
+  kinect.updateUser();
   wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
   wheel.setCycle(audio.BPM);
   buffer.beginDraw();
@@ -18,7 +17,7 @@ void doWheel() {
   
   wheel.display();
   buffer.blendMode(BLEND);
-  kinect.updateUserBlack();
+
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }

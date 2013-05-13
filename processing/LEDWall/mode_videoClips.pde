@@ -9,16 +9,15 @@ void setupClips() {
 }
 
 void doClips() {
+  kinect.updateUser();
   buffer.beginDraw();
   buffer.background(audio.COLOR);
-  //buffer.background(0);
   buffer.blendMode(ADD);
   
   movies.draw();
   
   buffer.blendMode(BLEND);
-  kinect.updateUserBlack();
-  //kinect.updateUser( getCircleColor( int( random(6) ) ) );
+
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }

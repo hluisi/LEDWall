@@ -12,6 +12,7 @@ void setupCircles() {
 }
 
 void doCircles() {
+  kinect.updateUser();
   buffer.beginDraw();
   buffer.blendMode(ADD);
   buffer.background(audio.COLOR);
@@ -20,12 +21,12 @@ void doCircles() {
 
   buffer.blendMode(BLEND);
 
-  kinect.updateUserBlack();
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }
 
 void doPulsar() {
+  kinect.updateUser();
   buffer.beginDraw();
   buffer.blendMode(ADD);
   buffer.background(audio.COLOR);
@@ -34,12 +35,13 @@ void doPulsar() {
 
   buffer.blendMode(BLEND);
 
-  kinect.updateUserBlack();
+
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }
 
 void doCity() {
+  kinect.updateUser();
   buffer.beginDraw();
   buffer.background(audio.COLOR);
   //buffer.background(0);
@@ -49,33 +51,11 @@ void doCity() {
   city.draw();
   buffer.blendMode(BLEND);
 
-  kinect.updateUserBlack();
   buffer.image(kinect.buffer_image, 0, 0);
   buffer.endDraw();
 }
 
-/*
-void doMouth() {
-  buffer.beginDraw();
-  buffer.background(audio.COLOR);
-  //buffer.background(0);
-  buffer.blendMode(ADD);
 
-
-  mouth.draw();
-  buffer.blendMode(BLEND);
-
-  //kinect.updateUserBlack();
-  //buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
-}
-*/
-color getCircleColor(int i) {
-  int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-  int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-  int BLUE  = int(map(audio.averageSpecs[i].value, 0, 100, 0, 255));
-  return color(RED, GREEN, BLUE, 255);
-}
 
 class ConcCircles {
   float r = 16;
@@ -83,6 +63,13 @@ class ConcCircles {
   float numCircles = 32;
 
   ConcCircles() {
+  }
+  
+  color getCircleColor(int i) {
+    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
+    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
+    int BLUE  = int(map(audio.averageSpecs[i].value, 0, 100, 0, 255));
+    return color(RED, GREEN, BLUE, 255);
   }
 
   void draw() {
@@ -210,7 +197,7 @@ class Pulsar {
       ky = buffer.height / 2;
     }
     for (int i = 0; i < (audio.fullSpecs.length - 1) / 2 ; i++) {
-      buffer.strokeWeight(2);
+      buffer.strokeWeight(1);
       buffer.stroke( setColor(i) );
 
       float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 8, 0, 180);

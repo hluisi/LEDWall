@@ -26,19 +26,10 @@ void setupParticles() {
 
 void doParticles() {
   physics.update ();
+  kinect.updateUser();
 
   buffer.beginDraw();
-  //if ( audio.beat.isOnset() ) {
-    buffer.background(audio.COLOR);
-  //} else {
-  //  buffer.background(0, 255);
-  //}
-  //buffer.background(audio.COLOR);
-  //buffer.fill(0, 10);
-  //buffer.rect(0,0,buffer.width, buffer.height);
-  //buffer.blendMode(ADD);
-  //circles.draw();
-  //attractor.display();
+  buffer.background(audio.COLOR);
 
   for (Particle p: particles) {
     if (p.lifespan < 128) buffer.blendMode(BLEND);
@@ -46,19 +37,8 @@ void doParticles() {
     p.display();
   }
 
-  //circles.draw();
   buffer.blendMode(BLEND);
-
-  kinect.updateUserBlack();
   buffer.image(kinect.buffer_image, 0, 0);
-  //buffer.filter(BLUR);
-
-  //buffer.strokeWeight(1);
-  //buffer.stroke(255);
-  //for (int i = 0; i < 160 - 1; i++) {
-  //  buffer.line(i, (buffer.height / 2) + audio.in.left.get(i)*30, i + 1, (buffer.height / 2) + audio.in.left.get(i+1)*30);
-    //buffer.line(i, 60 + in.right.get(i)*30, i + 1, 60 + in.right.get(i+1)*30);
-  //}
   buffer.endDraw();
 }
 

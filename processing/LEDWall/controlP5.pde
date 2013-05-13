@@ -4,6 +4,7 @@ ControlP5 cp5;
 Println console;
 RadioButton r;
 Toggle amode;
+Toggle mUser;
 Slider bright;
 
 void setupControl() {
@@ -65,6 +66,19 @@ void setupControl() {
   ;
     
   amode.captionLabel().setText("Auto Mode");
+  
+  mUser = cp5.addToggle("map_user")
+    .setPosition(275, DEBUG_WINDOW_START + 150)
+    .setSize(40,20)
+    .setColorBackground(color(#212121))
+    .setColorForeground(color(#515151))
+    .setColorActive(color(255))
+    .setColorLabel(color(255))
+    .setValue(false)
+    .setMode(ControlP5.SWITCH)
+  ;
+    
+  mUser.captionLabel().setText("User Map");
 }
 
 public void Brightness(int value) {
@@ -82,6 +96,16 @@ void auto_mode(boolean theFlag) {
   } else {
     AUTOMODE = false;
     println("Auto Mode: OFF");
+  }
+}
+
+void map_user(boolean theFlag) {
+  if(theFlag==true) {
+    kinect.mapUser = true;
+    println("User Map: ON");
+  } else {
+    kinect.mapUser = false;
+    println("User Map: OFF");
   }
 }
 
