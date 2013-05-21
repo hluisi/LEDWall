@@ -83,9 +83,9 @@ class Particle extends VerletParticle2D {
   }
 
   void setColor() {
-    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-    int BLUE  = int(map(audio.averageSpecs[spectrum].value, 0, 100, 0, 255));
+    int RED   = audio.averageSpecs[1].gray;
+    int GREEN = audio.averageSpecs[3].gray;
+    int BLUE  = audio.averageSpecs[spectrum].gray;
     p_color = color(RED, GREEN, BLUE);
   }
 

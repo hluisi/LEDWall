@@ -66,10 +66,10 @@ class ConcCircles {
   }
   
   color getCircleColor(int i) {
-    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-    int BLUE  = int(map(audio.averageSpecs[i].value, 0, 100, 0, 255));
-    return color(RED, GREEN, BLUE, 255);
+    int RED   = audio.averageSpecs[1].gray;
+    int GREEN = audio.averageSpecs[3].gray;
+    int BLUE  = audio.averageSpecs[i].gray;
+    return color(RED, GREEN, BLUE);
   }
 
   void draw() {
@@ -90,7 +90,7 @@ class ConcCircles {
         float y = (r+16*n)*sin(theta) + ky;
         int value = int(map(audio.averageSpecs[i].value + 10, 10, 110, 2, 32));
         buffer.ellipse(x, y, value, value);
-        if ( audio.beat.isOnset() ) {
+        if ( audio.isOnBeat() ) {
           float test = random(0, 1);
           if (test < 0.1) theta = random(theta * -1, theta);
           if (test > 0.75) theta *= -1;
@@ -122,9 +122,9 @@ class SpecCity {
       ky = buffer.height / 2;
     }
     for (int i = 0; i < (buffer.width / 2) ; i++) {
-      int GREEN   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-      int BLUE = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-      int RED  = int(map(audio.fullSpecs[i].value, 0, 100, 0, 255));
+      int GREEN = audio.averageSpecs[1].gray;
+      int BLUE  = audio.averageSpecs[3].gray;
+      int RED   = audio.fullSpecs[i].gray;
       int value_up = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, 0));
       int value_down = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, buffer.height));
       buffer.stroke(RED, GREEN, BLUE);
@@ -173,9 +173,9 @@ class Pulsar {
   }
 
   color setColor(int i) {
-    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-    int BLUE  = int(map(audio.fullSpecs[i].value, 0, 100, 0, 255));
+    int RED   = audio.averageSpecs[1].gray;
+    int GREEN = audio.averageSpecs[3].gray;
+    int BLUE  = audio.fullSpecs[i].gray;
     return color(RED, GREEN, BLUE);
   }
 
@@ -199,10 +199,11 @@ class Pulsar {
     for (int i = 0; i < (audio.fullSpecs.length - 1) / 2 ; i++) {
       buffer.strokeWeight(1);
       buffer.stroke( setColor(i) );
+      //buffer.stroke( kinect.user_color );
 
       float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 8, 0, 180);
       float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width*3);
-      float spin   = map(audio.volume.value, 0, 100, 0, 360);
+      float spin   = map(audio.volume.value, 0, 100, 0, 90);
 
       drawLine(radius, angle + spin);
       drawLine(radius, angle + 180 + spin);

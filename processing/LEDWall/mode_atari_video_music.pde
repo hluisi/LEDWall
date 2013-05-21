@@ -120,7 +120,7 @@ class AtariVideoMusic {
   }
   
   void update() {
-    if ( audio.beat.isOnset() ) {
+    if ( audio.isOnBeat() ) {
       float test = random(0, 1);
       if (test < 0.25) changeDisplay();
       if (test > 0.75) {
@@ -152,9 +152,9 @@ class AtariSingle {
   }
 
   color setColor(int i) {
-    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-    int BLUE  = int(map(audio.averageSpecs[i].value, 0, 100, 0, 255));
+    int RED   = audio.averageSpecs[1].gray;
+    int GREEN = audio.averageSpecs[3].gray;
+    int BLUE  = audio.averageSpecs[i].gray;
     return color(RED, GREEN, BLUE);
   }
   

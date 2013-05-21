@@ -61,7 +61,7 @@ void setupControl() {
     .setColorForeground(color(#515151))
     .setColorActive(color(255))
     .setColorLabel(color(255))
-    .setValue(false)
+    .setValue(true)
     .setMode(ControlP5.SWITCH)
   ;
     
@@ -86,6 +86,10 @@ public void Brightness(int value) {
 }
 
 public void modeButton(int v) {
+  if (v < 1) { 
+    v = 1;
+    r.activate(1);
+  }
   DISPLAY_MODE = v;
 }
 

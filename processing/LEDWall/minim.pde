@@ -1,3 +1,5 @@
+// USING BETA VERSION OF MINIM!!
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
@@ -23,6 +25,8 @@ class AverageListener implements AudioListener {
 
   public color COLOR;
   public int BASS, MIDS, TREB, RED, GREEN, BLUE;
+  
+  private boolean gotBeat = false, gotMode = false, gotKinect = false;
 
   private int last_update = millis();
   public int BPM = 0;
@@ -98,11 +102,33 @@ class AverageListener implements AudioListener {
       last_update = check;
     }
 
-    if ( beat.isOnset() ) bpm_count++;
+    if ( beat.isOnset() ) {
+      bpm_count++;
+      gotBeat = true; gotMode = true; gotKinect = true;
+    }
   }
 
   boolean isOnBeat() {
-    if ( beat.isOnset() ) return true;
+    if ( gotBeat ) {
+      gotBeat = false;
+      return true;
+    }
+    else return false;
+  }
+  
+  boolean isOnMode() {
+    if ( gotMode ) {
+      gotMode = false;
+      return true;
+    }
+    else return false;
+  }
+  
+  boolean isOnKinect() {
+    if ( gotKinect ) {
+      gotKinect = false;
+      return true;
+    }
     else return false;
   }
 
@@ -133,7 +159,7 @@ class AverageListener implements AudioListener {
 
 class AudioSpectrum {
   //final int MAXIMUM_RAW_LEVEL  = 32; // maxium level coming in (guessed from tests)
-  final int SMOOTH_BUFFER_SIZE = 3;  // the length of the smooth array
+  //final int SMOOTH_BUFFER_SIZE = 3;  // the length of the smooth array
   final int FRAME_TRIGGER      = 60; // how many frames must the peak and low values 
   
   float raw_peak = 0;    // the peak or max level of the spectrum
@@ -151,6 +177,8 @@ class AudioSpectrum {
   int peak = 0;
 
   int peak_count = 0, smooth_count = 0;  // counters for peak, base, and smooth
+  
+  int gray = 0;
 
   boolean lowerPeak = false;  // are we lowering the peak?
 
@@ -204,8 +232,12 @@ class AudioSpectrum {
     
     dB = 20*((float)Math.log10(raw)); 
     
-    value = int(map(raw,  0, max_peak, 0, 100));
+    gray  = int(map(raw, 0, max_peak, 0, 255));
+    gray  = int(constrain(gray, 0, 255));
+    
+    value = int(map(raw, 0, max_peak, 0, 100));
     value = int(constrain(value, 0, 100));
+    
     peak  = int(map(raw_peak, 0, max_peak, 0, 100));
     peak = int(constrain(peak, 0, 100));
     

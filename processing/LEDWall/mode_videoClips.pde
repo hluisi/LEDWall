@@ -71,9 +71,9 @@ class MovieClips {
   
   void update() {
     // switch clips?
-    if ( audio.beat.isOnset() ) {
+    if ( audio.isOnBeat() ) {
       float test = random(0, 1);
-      if (test < 0.5) {
+      if (test < 0.65) {
         int next = int( random(clips.length) );
         if (next >= clips.length) next--;
         current = next;

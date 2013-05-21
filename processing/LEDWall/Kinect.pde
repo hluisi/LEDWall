@@ -5,8 +5,6 @@ final int KINECT_HEIGHT = 480;
 final int BUFFER_WIDTH  = 640;
 final int BUFFER_HEIGHT = 320;
 
-
-
 Kinect kinect;
 
 
@@ -19,20 +17,6 @@ void setupKinect() {
   println("KINECT - setup finished!");
 }
 
-/*
-void doKinect() {
-  kinect.setDepthImageColor(audio.COLOR);
-  kinect.bufferDepth();
-  buffer.beginDraw();
-  buffer.background(0);
-  buffer.pushStyle();
-  //buffer.tint(audio.COLOR[COLOR_MODE]);
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.popStyle();
-  buffer.endDraw();
-  //kinect.display();
-}
-*/
 
 public void onNewUser(int userId) {
   println("KINECT - onNewUser - found new user: " + userId);
@@ -110,6 +94,8 @@ class Kinect extends SimpleOpenNI {
   
   color user_color = color(0);
   
+  int[] usercolors = new int [12];
+  
   boolean mapUser = false;
 
   PImage buffer_image, depth_image, user_image;
@@ -163,23 +149,38 @@ class Kinect extends SimpleOpenNI {
     println("KINECT - mirroring is now OFF ...");
   }
   
-  void setUserColor() {
-    if ( audio.beat.isOnset() ) {
-      float test = random(1);
-      if (test < 0.25) {
-        rc = int(random(0, 5));
-        println("KINECT - changed user color to: " + hex(user_color) );
+  void setUserColors() {
+    // map gray
+    usercolors[0] = color(audio.volume.gray);
+    
+    // map red and green
+    int RED   = audio.averageSpecs[1].gray;
+    int GREEN = audio.averageSpecs[3].gray;
+    int BLUE  = audio.averageSpecs[5].gray;
+    
+    color test = color(RED, GREEN, BLUE);
+    
+    if (brightness(test) > 32) {
+      usercolors[1]  = color(RED, GREEN, audio.averageSpecs[5].gray);
+      usercolors[2]  = color(audio.averageSpecs[4].gray, GREEN, BLUE);
+      usercolors[3]  = color(RED, audio.averageSpecs[4].gray, BLUE);
+      usercolors[4]  = color(RED, GREEN, audio.averageSpecs[4].gray);
+      usercolors[5]  = color(audio.averageSpecs[2].gray, GREEN, BLUE);
+      usercolors[6]  = color(RED, audio.averageSpecs[2].gray, BLUE);
+      usercolors[7]  = color(RED, GREEN, audio.averageSpecs[2].gray);
+      usercolors[8]  = color(audio.averageSpecs[0].gray, GREEN, BLUE);
+      usercolors[9]  = color(RED, audio.averageSpecs[0].gray, BLUE);
+      usercolors[10] = color(RED, GREEN, audio.averageSpecs[0].gray);
+      usercolors[11] = color(0);
+    }
+    else {
+      for (int i = 1; i < usercolors.length; i++) {
+        usercolors[i] = color(32 + audio.volume.value);
       }
     }
-    int RED   = int(map(audio.averageSpecs[1].value, 0, 100, 0, 255));
-    int GREEN = int(map(audio.averageSpecs[3].value, 0, 100, 0, 255));
-    int BLUE  = int(map(audio.fullSpecs[rc].value, 0, 100, 0, 255));
-    if (audio.volume.value < 25) user_color = color(64 + audio.volume.value);
-    else user_color = color(RED, GREEN, BLUE);
   }
 
-  
-  void updateSingle(color c, boolean map_depth) {
+  void updateUsers(boolean map_depth) {
     if (getNumberOfUsers() > 0) {
       user_id = -1;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
@@ -190,17 +191,22 @@ class Kinect extends SimpleOpenNI {
       int user_red = 0, user_green = 0, user_blue = 0;
             
       if (map_depth) {
-        user_red   = (c >> 16) & 0xFF; 
-        user_green = (c >> 8) & 0xFF;   
-        user_blue  = c & 0xFF;
         depth_image = depthImage();
       }
-      
       
       for (int i = 0; i < user_image.pixels.length; i++) {
         if (user_map[i] != 0) {
           user_id = max(user_map[i], user_id);
+          int current_user = user_map[i];
+          
+          if ( user_map[i] >= 11 ) current_user = 11;
+          
+          color c = usercolors[current_user];
+          
           if (map_depth) {
+            user_red   = (c >> 16) & 0xFF; 
+            user_green = (c >> 8) & 0xFF;   
+            user_blue  = c & 0xFF;
             float depth_brightness = brightness(depth_image.pixels[i]);
             float r = map(depth_brightness, 0, 255, 0, user_red);
             float g = map(depth_brightness, 0, 255, 0, user_green);
@@ -236,15 +242,12 @@ class Kinect extends SimpleOpenNI {
       }
     }
   }
-
-  
   
   void updateUser() {
     update();
-    setUserColor();
-    updateSingle(user_color, mapUser);
+    setUserColors();
+    updateUsers(mapUser);
   }
-  
   
 }
 

@@ -22,6 +22,7 @@ final String[] DISPLAY_STR = {
 PImage smpte, test, wall_image;
 
 void setup() {
+  //hint(ENABLE_STROKE_PURE);
   int x = DEBUG_WINDOW_XSIZE, y;
   if (DEBUG_SHOW_WALL) y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
   else y = DEBUG_WINDOW_YSIZE;
@@ -55,10 +56,10 @@ void setup() {
 }
 
 void autoMode() {
-  if ( audio.beat.isOnset() ) {
+  if ( audio.isOnMode() ) {
     float test = random(1);
-    if (test < 0.2) {
-      int count = int(random(2, 10));
+    if (test < 0.15) {
+      int count = int(random(1, 10));
       DISPLAY_MODE = count;
       r.activate(count);
       println("MODE - " + DISPLAY_STR[count]);
@@ -67,6 +68,7 @@ void autoMode() {
 }
 
 void draw() {
+  frame.setTitle("Wall of Light - " + int(frameRate) + "fps");
   if (AUTOMODE) autoMode();
   doMode();
   //minimTest();
@@ -87,7 +89,7 @@ void drawDebug() {
   rect(5, DEBUG_WINDOW_START + 5, 200, 210);
   
   fill(255);
-  text("FPS: " + String.format("%.2f", frameRate), 10, DEBUG_WINDOW_START + 20);
+  //text("FPS: " + String.format("%.2f", frameRate), 10, DEBUG_WINDOW_START + 20);
   text("Display Mode:  " + DISPLAY_STR[DISPLAY_MODE] , 10, DEBUG_WINDOW_START + 35);
   
   text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 65);

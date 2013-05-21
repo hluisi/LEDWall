@@ -79,28 +79,25 @@ class VideoWall {
       teensyImages[i].loadPixels();
       arrayCopy(send_buffer.pixels, i * (80 * 16), teensyImages[i].pixels, 0, 80 * 16);
       teensyImages[i].updatePixels();
-      image2data(teensyImages[i], ledData[i], true);
-      //if (i == 0) {
-      //  ledData[i][0] = '*';  // first Teensy is the frame sync master
-      //  int usec = (int)((1000000.0 / frameRate) * 0.75); // using processing's frameRate to fix timing
-      //  ledData[i][1] = (byte)(usec);   // request the frame sync pulse
-      //  ledData[i][2] = (byte)(usec >> 8); // at 75% of the frame time
-      //} 
-      //else {
-      //  ledData[i][0] = '%';  // others sync to the master board
-      //  ledData[i][1] = 0;
-      //  ledData[i][2] = 0;
-      //}
-      // send the raw data to the LEDs  :-)
-      //ledSerial[i].write(ledData[i]);
+      
+      if (i < TEENSY_TOTAL) {
+        teensys[i].send(teensyImages[i]);
+      }
+        
     }
     
+    while (sendingCount > 0) {
+      // wait till threads are done
+    }
+    
+    
+    
     //image2data(teensyImages[1], ledData, ledLayout[0]);
-    ledData[2][0] = '*';  // first Teensy is the frame sync master
-    int usec = (int)((1000000.0 / frameRate) * 0.75);  // using processing's frameRate to fix timing
-    ledData[2][1] = (byte)(usec);   // request the frame sync pulse
-    ledData[2][2] = (byte)(usec >> 8); // at 75% of the frame time
-    ledSerial[0].write(ledData[2]);
+    //ledData[2][0] = '*';  // first Teensy is the frame sync master
+    //int usec = (int)((1000000.0 / frameRate) * 0.75);  // using processing's frameRate to fix timing
+    //ledData[2][1] = (byte)(usec);   // request the frame sync pulse
+    //ledData[2][2] = (byte)(usec >> 8); // at 75% of the frame time
+    //ledSerial[0].write(ledData[2]);
     
   }
 
