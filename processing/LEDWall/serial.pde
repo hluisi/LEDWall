@@ -120,7 +120,7 @@ class Teensy extends Thread {
 
   void send(PImage img) {
     image = img;    // set the current image
-    sendIt = true;  // trigger thread
+    trigger = true;  // trigger thread
   }
 
   // image2data converts an image to OctoWS2811's raw data format.
