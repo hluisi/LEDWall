@@ -30,21 +30,21 @@ void setupSerial() {
 
 class Teensy extends Thread {
 
-  boolean running;
-  boolean sending;
-  boolean sendIt;
-  boolean isMaster;
-  PImage  image;
-  byte[]  data;
-  Serial  port;
-  String  portName;
+  boolean running;   // thread is running
+  boolean sending;   // thread is sending
+  boolean trigger;   // trigger sending data
+  boolean isMaster;  // teensy is master
+  PImage  image;     // image that will be sent to teensy
+  byte[]  data;      // converted image data that gets sent
+  Serial  port;      // serial port of the teensy
+  String  portName;  // serial port name
 
   Teensy(PApplet parent, String pname, boolean master) {
     println("Setting up teensy: " + pname + " ...");
     data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
     running  = false;  // are we runing?
     sending  = false;  // are we currently sending data?
-    sendIt   = false;  // should we send data now?
+    trigger  = false;  // should we send data now?
     isMaster = master; // are we the master teensy?  (used for display sync)
     portName = pname;  // set the port name
 
@@ -87,23 +87,22 @@ class Teensy extends Thread {
   }
 
   void run() {
-    if (sendIt) {
+    if (trigger) {
       sending = true;  // we are sending data
-      sendingCount++;  // inc the sending count
-      sendData();
-      sendIt = false;
-      sending = false;   // done sending
-      sendingCount--;    // dec the sending count
+      sendingCount++;  // raise the sending count
+      sendData();      // send data
+      trigger = false; // reset trigger
+      sending = false; // done sending
+      sendingCount--;  // lower the sending count
     }
   }
 
   void update() {
-    image2data();
+    image2data();  // convert image to data
   }
 
   void sendData() {
-    
-    update();        // update the data
+    update();        // update the image data
     if (isMaster) {  // are we the master?
       data[0] = '*';  
       int usec = (int)((1000000.0 / frameRate) * 0.75); // using processing's frameRate to fix timing
@@ -115,13 +114,13 @@ class Teensy extends Thread {
       data[2] = 0;
     }
 
-    port.write(data);  // send data 
+    port.write(data);  // send data over serial to teensy
     
   }
 
   void send(PImage img) {
-    image = img;
-    sendIt = true;
+    image = img;    // set the current image
+    sendIt = true;  // trigger thread
   }
 
   // image2data converts an image to OctoWS2811's raw data format.
