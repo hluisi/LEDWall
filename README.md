@@ -16,7 +16,7 @@ It also uses the following processing libraries:
 *  [Toxiclibs](http://toxiclibs.org/)
 *  [blobDectection](http://www.v3ga.net/processing/BlobDetection/)
 *  [simpleOpenNI](http://code.google.com/p/simple-openni/)
-*  [minim 2.1.0beta](http://code.compartmental.net/tools/minim/)
+*  [minim 2.1.0 beta](http://code.compartmental.net/tools/minim/)
 
 
 Written by Hunter Luisi and Max Cooper
