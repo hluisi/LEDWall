@@ -1,12 +1,11 @@
-//import processing.opengl.*;
 
 Buffer buffer;
-//PGraphics buffer;
-
 
 void setupBuffer() {
-  buffer = new Buffer(this); //new Buffer(this); //createGraphics(COLUMNS, ROWS, JAVA2D);
+  buffer = new Buffer(this); 
+  buffer.smooth();
   
+
   println("BUFFER SETUP ...");
 }
 
@@ -42,7 +41,7 @@ class Buffer extends PGraphicsJava2D {
       g = int( map( g, 0, 255, 0, max_brightness ) );
       b = int( map( b, 0, 255, 0, max_brightness ) );
       pixels[i] = color(r, g, b, a);
-      
+
       // watts
       float pixel_watts = map(r + g + b, 0, 768, 0, 0.24);
       wattage += pixel_watts;
@@ -50,6 +49,5 @@ class Buffer extends PGraphicsJava2D {
     max_watts = max(max_watts, wattage);
     updatePixels();
   }
-  
 }
 

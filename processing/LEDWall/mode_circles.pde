@@ -2,7 +2,6 @@ ConcCircles circles;
 SpecCity city;
 Pulsar pulsar;
 
-
 int CIRCLE_MODE = 0;
 
 void setupCircles() {
@@ -12,50 +11,19 @@ void setupCircles() {
 }
 
 void doCircles() {
-  kinect.updateUser();
-  buffer.beginDraw();
   buffer.blendMode(ADD);
-  buffer.background(audio.COLOR);
-
   circles.draw();
-
-  buffer.blendMode(BLEND);
-
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
 }
 
 void doPulsar() {
-  kinect.updateUser();
-  buffer.beginDraw();
   buffer.blendMode(ADD);
-  buffer.background(audio.COLOR);
-
   pulsar.draw();
-
-  buffer.blendMode(BLEND);
-
-
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
 }
 
 void doCity() {
-  kinect.updateUser();
-  buffer.beginDraw();
-  buffer.background(audio.COLOR);
-  //buffer.background(0);
   buffer.blendMode(ADD);
-
-
   city.draw();
-  buffer.blendMode(BLEND);
-
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
 }
-
-
 
 class ConcCircles {
   float r = 16;
@@ -154,22 +122,10 @@ class SpecCity {
 }
 
 class Pulsar {
-  int SpecStart = 0, SpecEnd = 256;
-  int MIN, MAX;
   color lineColor;
   float kx, ky;
 
   Pulsar() {
-    MIN = 1; 
-    MAX = 160;
-  }
-
-  void setMin(int i) {
-    MIN = i;
-  }
-
-  void setMax(int i) {
-    MAX = i;
   }
 
   color setColor(int i) {
@@ -196,14 +152,14 @@ class Pulsar {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
-    for (int i = 0; i < (audio.fullSpecs.length - 1) / 2 ; i++) {
+    for (int i = 0; i < (audio.fullSpecs.length - 1) / 2; i++) {
       buffer.strokeWeight(1);
       buffer.stroke( setColor(i) );
       //buffer.stroke( kinect.user_color );
 
       float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 8, 0, 180);
       float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width*3);
-      float spin   = map(audio.volume.value, 0, 100, 0, 90);
+      float spin   = map(audio.volume.value, 0, 100, 0, 180);
 
       drawLine(radius, angle + spin);
       drawLine(radius, angle + 180 + spin);

@@ -1,25 +1,16 @@
 import processing.video.*;
 
-MovieClips movies;
+MovieClips clips;
 
 void setupClips() {
   println("VIDEO CLIPS - starting setup...");
-  movies = new MovieClips(this, "videos");
+  clips = new MovieClips(this, "videos");
   println("VIDEO CLIPS - setup finished!");
 }
 
 void doClips() {
-  kinect.updateUser();
-  buffer.beginDraw();
-  buffer.background(audio.COLOR);
   buffer.blendMode(ADD);
-  
-  movies.draw();
-  
-  buffer.blendMode(BLEND);
-
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
+  clips.draw();
 }
 
 class myMovie extends Movie {
@@ -99,7 +90,7 @@ class MovieClips {
     }
     
     // set the speed of the next frame according to the current BPM
-    current_speed = map(audio.BPM, 0, 200, 0.25, 2.0);
+    current_speed = map(audio.BPM, 0, 240, 0.25, 2.0);
     clips[current].speed(current_speed);
   }
   

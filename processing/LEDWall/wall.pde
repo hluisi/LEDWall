@@ -19,9 +19,10 @@ final int DEBUG_REAL_PIXEL_SIZE_Y = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_Y; //
 
 final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;         // the x size of the debug window
 final int DEBUG_WINDOW_YSIZE = 220;                                       // the y size of the debug window
-final int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 
-boolean DEBUG_SHOW_WALL  = true;  // show the wall on the computer screen wall?
+int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
+
+boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 
 VideoWall wall;
 
@@ -52,8 +53,7 @@ class VideoWall {
     rect(screenX, screenY, DEBUG_PIXEL_SIZE, DEBUG_PIXEL_SIZE);
   }
 
-  void displayScreen() {
-    background(0);
+  void display() {
     for (int i = 0; i < TOTAL; i++) {
       int x = i % COLUMNS; 
       int y = i / COLUMNS;
@@ -101,11 +101,11 @@ class VideoWall {
     
   }
 
-  void display() {
+  void draw() {
     buffer.updatePixels();
     buffer.loadPixels();
     send();
-    if (DEBUG_SHOW_WALL) displayScreen();
+    if (DEBUG_SHOW_WALL) display();
   }
 }
 

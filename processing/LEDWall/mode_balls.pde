@@ -25,21 +25,13 @@ void setupParticles() {
 }
 
 void doParticles() {
-  physics.update ();
-  kinect.updateUser();
-
-  buffer.beginDraw();
-  buffer.background(audio.COLOR);
+  physics.update();
 
   for (Particle p: particles) {
     if (p.lifespan < 128) buffer.blendMode(BLEND);
     else buffer.blendMode(ADD);
     p.display();
   }
-
-  buffer.blendMode(BLEND);
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
 }
 
 /*

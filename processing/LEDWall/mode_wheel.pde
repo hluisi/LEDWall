@@ -7,19 +7,10 @@ void setupWheel() {
 }
 
 void doWheel() {
-  kinect.updateUser();
+  buffer.blendMode(ADD);
   wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
   wheel.setCycle(audio.BPM);
-  buffer.beginDraw();
-  buffer.blendMode(ADD);
-  
-  buffer.background(audio.COLOR);
-  
   wheel.display();
-  buffer.blendMode(BLEND);
-
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
 }
 
 

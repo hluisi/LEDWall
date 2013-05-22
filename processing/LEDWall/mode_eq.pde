@@ -6,10 +6,8 @@ void setupEQ() {
 }
 
 void doEQ() {
-  buffer.beginDraw();
-  buffer.background(0);
+  buffer.blendMode(BLEND);
   eq.display();
-  buffer.endDraw();
 }
 
 

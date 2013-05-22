@@ -155,8 +155,7 @@ class baseBar {
     if (base_stroke_on) {
       buffer.stroke(base_stroke);
       buffer.strokeWeight(base_weight);
-    } 
-    else {
+    } else {
       buffer.noStroke();
     }
     buffer.fill(base_color);           // color bar to value level
@@ -219,8 +218,7 @@ class textBar extends baseBar {
         if (i == (words_array.length - 1)) {                   // now make sure we're not on the last word
           line_list.add(current_line);                         // if we are, then add that to the line list too
         }
-      }
-      else {                                  // the line still fits inside the base bar
+      } else {                                  // the line still fits inside the base bar
         current_line = line_test;             // so make the test line the current line
         if (i == (words_array.length - 1)) {  // again make sure we're not on the last word
           line_list.add(current_line);        // if we are, then add that to the line list too
@@ -271,11 +269,9 @@ class textBar extends baseBar {
     float start_y;
     if (base_align_y == BOTTOM) {
       start_y = location.y - text_height + font_height;
-    }
-    else if (base_align_y == CENTER) {
+    } else if (base_align_y == CENTER) {
       start_y = location.y - (text_height / 2) + (font_height / 2);
-    }
-    else {
+    } else {
       start_y = location.y;
     }
 
@@ -401,7 +397,7 @@ class valueBar extends baseBar {
     }
     // mapping from the center outward
     if (base_align_x == CENTER && base_align_y == CENTER) {
-      
+
       if (base_width >= base_height) {
         value_start.x = map(value, MIN, MAX, location.x, location.x - base_half_width);
         value_end.x   = map(value, MIN, MAX, location.x, location.x + base_half_width);
@@ -554,20 +550,13 @@ class valueBar extends baseBar {
     buffer.fill(text_color);     // set color for font
     buffer.textAlign(base_align_x, base_align_y);
     if (base_align_x == LEFT && base_align_y == TOP)
-      buffer.text(value, location.x - text_offset, location.y - text_offset);
-    else if (base_align_x == CENTER && base_align_y == TOP)
-      buffer.text(value, location.x, location.y - text_offset);
-    else if (base_align_x == RIGHT && base_align_y == TOP)
-      buffer.text(value, location.x + text_offset, location.y - text_offset);
-    else if (base_align_x == LEFT && base_align_y == CENTER)
-      buffer.text(value, location.x - text_offset, location.y);
-    else if (base_align_x == CENTER && base_align_y == CENTER)
-      buffer.text(value, location.x, location.y - 2);
-    else if (base_align_x == RIGHT && base_align_y == CENTER)
-      buffer.text(value, location.x + text_offset, location.y);
-    else if (base_align_x == LEFT && base_align_y == BOTTOM)
-      buffer.text(value, location.x - text_offset, location.y + text_offset);
-    else if (base_align_x == CENTER && base_align_y == BOTTOM)
+      buffer.text(value, location.x - text_offset, location.y - text_offset); else if (base_align_x == CENTER && base_align_y == TOP)
+      buffer.text(value, location.x, location.y - text_offset); else if (base_align_x == RIGHT && base_align_y == TOP)
+      buffer.text(value, location.x + text_offset, location.y - text_offset); else if (base_align_x == LEFT && base_align_y == CENTER)
+      buffer.text(value, location.x - text_offset, location.y); else if (base_align_x == CENTER && base_align_y == CENTER)
+      buffer.text(value, location.x, location.y - 2); else if (base_align_x == RIGHT && base_align_y == CENTER)
+      buffer.text(value, location.x + text_offset, location.y); else if (base_align_x == LEFT && base_align_y == BOTTOM)
+      buffer.text(value, location.x - text_offset, location.y + text_offset); else if (base_align_x == CENTER && base_align_y == BOTTOM)
       buffer.text(value, location.x, location.y + text_offset);
     else
       buffer.text(value, location.x + text_offset, location.y + text_offset);
@@ -579,8 +568,7 @@ class valueBar extends baseBar {
     if (value_stroke_on) {
       buffer.stroke(value_stroke);
       buffer.strokeWeight(value_weight);
-    } 
-    else {
+    } else {
       buffer.noStroke();
     }
     buffer.fill(value_color);           // color bar to value level
@@ -598,8 +586,7 @@ class valueBar extends baseBar {
           buffer.line(peak_start.x, peak_start.y, peak_end.x, peak_start.y);
           buffer.line(peak_start.x, peak_end.y, peak_end.x, peak_end.y);
         }
-      } 
-      else {
+      } else {
         buffer.line(peak_start.x, peak_end.y - 1, peak_end.x - 1, peak_end.y - 1);
       }
     }
@@ -821,14 +808,11 @@ class eqBar {
     color return_color;
     if (v < VALUE.MAX * 0.5) {
       return_color = color(0, 255, 0); // less then half is green
-    } 
-    else if (v > VALUE.MAX * 0.5 && v < VALUE.MAX * 0.75) {
+    } else if (v > VALUE.MAX * 0.5 && v < VALUE.MAX * 0.75) {
       return_color = color(255, 255, 0); // then yellow
-    } 
-    else if (v > VALUE.MAX * 0.75 && v < VALUE.MAX * 0.9) {
+    } else if (v > VALUE.MAX * 0.75 && v < VALUE.MAX * 0.9) {
       return_color = color(229, 128, 0);  // then orange
-    }
-    else {
+    } else {
       return_color = color(255, 0, 0);
     }
     return return_color;
@@ -853,8 +837,7 @@ class eqBar {
     buffer.translate(RED.location.x, RED.location.y);
     if (RED.base_align_y == BOTTOM) {
       buffer.rotate(radians(-90));
-    } 
-    else if (RED.base_align_y == TOP) {
+    } else if (RED.base_align_y == TOP) {
       buffer.rotate(radians(-90));
     }
 

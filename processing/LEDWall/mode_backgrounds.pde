@@ -1,37 +1,22 @@
-PImage image_buffer;
-
-void doUserAudio() {
-  kinect.updateUser();
-  buffer.beginDraw();
-  buffer.background(0);
-  buffer.image(kinect.buffer_image, 0, 0);
-  buffer.endDraw();
-}
 
 void doUserBg() {
-  kinect.updateUser();
-  buffer.beginDraw();
-  buffer.background(audio.COLOR);
+  buffer.blendMode(BLEND);
   buffer.stroke(255);
   buffer.strokeWeight(1);
   for (int i = 0; i < 160 - 1; i++) {
-    //buffer.line(i, (buffer.height / 2) + audio.in.left.get(i)*30, i + 1, (buffer.height / 2) + audio.in.left.get(i+1)*30);
-    
     buffer.line(i, 40 + audio.in.mix.get(i)*60, i + 1, 40 + audio.in.mix.get(i+1)*60); 
   }
   buffer.noStroke();
-  buffer.image(kinect.buffer_image, 0, 0);
-  //if (audio.VOLUME < 70) buffer.filter(POSTERIZE,5);
-  buffer.endDraw();
 }
 
 void displayImage(PImage _image) {
-  
-  image_buffer.copy(_image, 0, 0, _image.width, _image.height, 0, 0, image_buffer.width, image_buffer.height);
-  buffer.beginDraw();
-  buffer.background(0);
-  buffer.image(image_buffer, 0, 0);
-  buffer.endDraw();
+  buffer.blendMode(BLEND);
+  if (_image.width != buffer.width && _image.height != buffer.height) {
+    buffer.copy(_image, 0, 0, _image.width, _image.height, 0, 0, buffer.width, buffer.height);
+  }
+  else {
+    buffer.image(_image, 0, 0);
+  }
 }
 
 void doTest() {

@@ -47,8 +47,8 @@ public void onStartCalibration(int userId) {
 
 public void onEndCalibration(int userId, boolean successfull) {
   if (successfull) {
-   println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
-   kinect.startTrackingSkeleton(userId);
+    println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
+    kinect.startTrackingSkeleton(userId);
   } else {
     println("KINECT - onEndCalibration - calibration for user " + userId + " has failed!!!");
     println(" - Trying pose detection");
@@ -58,7 +58,7 @@ public void onEndCalibration(int userId, boolean successfull) {
 
 public void onStartPose(String pose, int userId) {
   println("KINECT - onStartPose - userId: " + userId + ", pose: " + pose);
-  
+
   if (pose.equals("Psi") == true) {
     println(" - stoping pose detection");
     kinect.stopPoseDetection(userId); 
@@ -91,11 +91,11 @@ class Kinect extends SimpleOpenNI {
   int[] user_map;
   int user_id = -1;
   int rc = 0;
-  
+
   color user_color = color(0);
-  
-  int[] usercolors = new int [12];
-  
+
+  color[] usercolors = new color [12];
+
   boolean mapUser = false;
 
   PImage buffer_image, depth_image, user_image;
@@ -118,8 +118,7 @@ class Kinect extends SimpleOpenNI {
       println("KINECT - ERROR opening the depthMap! Is the kinect connected?!?!");
       exit();
       return;
-    } 
-    else {
+    } else {
       depth_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
       println("KINECT - depth enabled!");
     }
@@ -129,8 +128,7 @@ class Kinect extends SimpleOpenNI {
       println("KINECT - ERROR opening the userMap! Is the kinect connected?!?!");
       exit();
       return;
-    } 
-    else {
+    } else {
       user_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
       println("KINECT - user enabled!");
     }
@@ -148,19 +146,21 @@ class Kinect extends SimpleOpenNI {
     setMirror(false);
     println("KINECT - mirroring is now OFF ...");
   }
-  
+
   void setUserColors() {
     // map gray
-    usercolors[0] = color(audio.volume.gray);
-    
+    int temp = audio.volume.value + 32;
+    if (temp > buffer.max_brightness) temp = buffer.max_brightness;
+    usercolors[0] = color(temp);
+
     // map red and green
     int RED   = audio.averageSpecs[1].gray;
     int GREEN = audio.averageSpecs[3].gray;
     int BLUE  = audio.averageSpecs[5].gray;
-    
+
     color test = color(RED, GREEN, BLUE);
-    
-    if (brightness(test) > 32) {
+
+    if (brightness(test) > 16) {
       usercolors[1]  = color(RED, GREEN, audio.averageSpecs[5].gray);
       usercolors[2]  = color(audio.averageSpecs[4].gray, GREEN, BLUE);
       usercolors[3]  = color(RED, audio.averageSpecs[4].gray, BLUE);
@@ -171,39 +171,35 @@ class Kinect extends SimpleOpenNI {
       usercolors[8]  = color(audio.averageSpecs[0].gray, GREEN, BLUE);
       usercolors[9]  = color(RED, audio.averageSpecs[0].gray, BLUE);
       usercolors[10] = color(RED, GREEN, audio.averageSpecs[0].gray);
-      usercolors[11] = color(0);
-    }
-    else {
-      for (int i = 1; i < usercolors.length; i++) {
-        usercolors[i] = color(32 + audio.volume.value);
-      }
+      usercolors[11] = usercolors[0];
+    } else {
+      java.util.Arrays.fill(usercolors, usercolors[0]);
     }
   }
 
-  void updateUsers(boolean map_depth) {
+  void updateUsers() {
     if (getNumberOfUsers() > 0) {
       user_id = -1;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
-      //depth_map = depthMap();
 
       user_image.loadPixels();
-      
+
       int user_red = 0, user_green = 0, user_blue = 0;
-            
-      if (map_depth) {
+
+      if (mapUser) {
         depth_image = depthImage();
       }
-      
+
       for (int i = 0; i < user_image.pixels.length; i++) {
         if (user_map[i] != 0) {
           user_id = max(user_map[i], user_id);
           int current_user = user_map[i];
-          
+
           if ( user_map[i] >= 11 ) current_user = 11;
-          
+
           color c = usercolors[current_user];
-          
-          if (map_depth) {
+
+          if (mapUser) {
             user_red   = (c >> 16) & 0xFF; 
             user_green = (c >> 8) & 0xFF;   
             user_blue  = c & 0xFF;
@@ -212,12 +208,10 @@ class Kinect extends SimpleOpenNI {
             float g = map(depth_brightness, 0, 255, 0, user_green);
             float b = map(depth_brightness, 0, 255, 0, user_blue);
             user_image.pixels[i] = color(r, g, b);
-          } 
-          else {
+          } else {
             user_image.pixels[i] = color(c);
           }
-        }
-        else {
+        } else {
           user_image.pixels[i] = color(0, 0, 0, 0);
         }
       }
@@ -228,26 +222,23 @@ class Kinect extends SimpleOpenNI {
     if (user_id == -1) {
       user_center.x = buffer.width / 2; 
       user_center.y = buffer.height / 2;
-    } 
-    else {
+    } else {
       PVector temp = new PVector();
       if (getCoM(user_id, temp)) {
         convertRealWorldToProjective(temp, user_center);
         user_center.x /= 4; 
         user_center.y /= 4;
-      } 
-      else {
+      } else {
         user_center.x = buffer.width / 2; 
         user_center.y = buffer.height / 2;
       }
     }
   }
-  
-  void updateUser() {
-    update();
+
+  void update() {
+    super.update();
     setUserColors();
-    updateUsers(mapUser);
+    updateUsers();
   }
-  
 }
 

@@ -20,7 +20,7 @@ void setupSerial() {
   // SETUP TEENSYs
   teensys[0] = new Teensy(this, "COM3", true);
   teensys[0].start();
-  teensys[1] = new Teensy(this, "COM10", false);
+  teensys[1] = new Teensy(this, "COM12", false);
   teensys[1].start();
   
   println();
@@ -83,7 +83,7 @@ class Teensy extends Thread {
     println("Starting " + portName + " thread...");
     running = true;
     super.start();
-    println(portName + " tread is running!");
+    println(portName + " thread is running!");
   }
 
   void run() {
@@ -169,5 +169,13 @@ class Teensy extends Thread {
   int colorWiring(int c) {
     // return c;  // RGB
     return ((c & 0xFF0000) >> 8) | ((c & 0x00FF00) << 8) | (c & 0x0000FF); // GRB - most common wiring
+  }
+  
+  // Our method that quits the thread
+  void quit() {
+    println("Quitting thread: " + portName + " ..."); 
+    running = false;  // Setting running to false ends the loop in run()
+    // IUn case the thread is waiting. . .
+    interrupt();
   }
 }
