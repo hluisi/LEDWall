@@ -49,7 +49,7 @@ class Teensy extends Thread {
 
       // setup serial port
     try {
-      port = new Serial(parent, portName, 115200);             // create the port
+      port = new Serial(parent, portName, 115200);           // create the port
       if (port == null) throw new NullPointerException();    // was the port created?
       port.write('?');                                       // send ident char to teensy
     } 
@@ -58,7 +58,7 @@ class Teensy extends Thread {
       exit();
     }
 
-    delay(50); // wait a bit for teensy to send back ident data
+    delay(50); // wait for teensy to send back ident data
 
     String line = port.readStringUntil(10);  // give me everything up to the linefeed
 
