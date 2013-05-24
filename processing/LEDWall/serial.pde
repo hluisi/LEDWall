@@ -118,6 +118,11 @@ class Teensy extends Thread {
   }
 
   void send(PImage img) {
+    if ( (img.width != TEENSY_WIDTH) || (img.height != TEENSY_HEIGHT) ) {
+      println("the image your sending does not match the teensy width or height!!");
+      println("image:" + img.width + "x" + img.height + "    teensy:" + TEENSY_WIDTH + "x" + TEENSY_HEIGHT);
+      exit();
+    }
     image = img;    // set the current image
     trigger = true;  // trigger thread
   }
