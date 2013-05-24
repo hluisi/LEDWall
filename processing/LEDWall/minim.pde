@@ -17,7 +17,6 @@ class AverageListener implements AudioListener {
   public FFT fft;           // FFT 
   public BeatDetect beat;   // beat detect
 
-    public color COLOR;
   public int BASS, MIDS, TREB, RED, GREEN, BLUE;
 
   private boolean gotBeat = false, gotMode = false, gotKinect = false;
@@ -28,6 +27,7 @@ class AverageListener implements AudioListener {
   private int[] bpms = new int [15];
   AudioSpectrum[] averageSpecs, fullSpecs;
   AudioSpectrum volume;
+  Colors colors;
 
   AverageListener() {
     in = minim.getLineIn(Minim.MONO, 512);           // create the audio in 
@@ -45,8 +45,8 @@ class AverageListener implements AudioListener {
     for (int i = 0; i < fullSpecs.length; i++) fullSpecs[i] = new AudioSpectrum();
 
     volume = new AudioSpectrum();
+    colors = new Colors();
 
-    COLOR = color(0);
     BASS  = 0;
     MIDS  = 0;
     TREB  = 0;
@@ -70,11 +70,7 @@ class AverageListener implements AudioListener {
   }
 
   private void mapColors() {
-    RED   = round(map(( averageSpecs[0].value + averageSpecs[1].value ) / 2, 0, 100, 0, 255));
-    GREEN = round(map(( averageSpecs[2].value + averageSpecs[3].value ) / 2, 0, 100, 0, 255));
-    BLUE  = round(map(( averageSpecs[4].value + averageSpecs[5].value ) / 2, 0, 100, 0, 255)); 
-
-    COLOR = color(RED, GREEN, BLUE);
+    colors.update(averageSpecs);
   }
 
   private void mapBPM() {
@@ -211,4 +207,3 @@ class AudioSpectrum {
     if (max_peak < 24) max_peak = 24;
   }
 }
-

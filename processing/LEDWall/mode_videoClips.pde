@@ -28,33 +28,30 @@ class MovieClips {
   myMovie[] clips;
   int switch_count = 0;
   String[] names;
+  String[] short_names;
   
   MovieClips(PApplet app, String dir) {
     String thisdir = sketchPath + "\\data\\" + dir;
     File file = new File(thisdir);
     String[] file_names = file.list();
-    clips = new myMovie [file_names.length];
+    String[] names = new String [file_names.length];
+    String[] short_names = new String [file_names.length];
     
     int j = 0;
     for (int i = 0; i < file_names.length; i++) {
       String[] fname = file_names[i].split("\\.(?=[^\\.]+$)");
       if (fname[fname.length - 1].equals("mov") == true) {
+        names[j] = thisdir + "\\" + file_names[i];
+        short_names[j] = fname[0];
         j++;
       }
     }
     clips = new myMovie [j];
-    names = new String [j];
     
-    j = 0;
-    for (int i = 0; i < file_names.length; i++) {
-      String[] fname = file_names[i].split("\\.(?=[^\\.]+$)");
-      if (fname[fname.length - 1].equals("mov") == true) {
-        names[j] = thisdir + "\\" + file_names[i];
-        println("CLIPS - loading clip - " + i + ": " + names[j]);
-        clips[j] = new myMovie(app, names[j], fname[0]);
-        clips[j].loop();
-        j++;
-      }
+    for (int i = 0; i < clips.length; i++) {
+      println("CLIPS - loading clip - " + i + ": " + short_names[i]);
+      clips[i] = new myMovie(app, names[i], short_names[i]);
+      clips[i].loop();
     }
     //println(clips.length);
     //println(clips[clips.length - 1].name);

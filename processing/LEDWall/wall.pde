@@ -34,6 +34,7 @@ void setupWall() {
 class VideoWall {
   PImage[] teensyImages = new PImage [10];
   PGraphics send_buffer;
+  int send_time = 0;
 
 
   VideoWall() {
@@ -86,10 +87,11 @@ class VideoWall {
         
     }
     
+    int check = millis();
     while (sendingCount > 0) {
-      // wait till threads are done
+      // wait till threads are donesending
     }
-    
+    send_time = millis() - check;
     
     
     //image2data(teensyImages[1], ledData, ledLayout[0]);

@@ -147,33 +147,11 @@ class Kinect extends SimpleOpenNI {
     println("KINECT - mirroring is now OFF ...");
   }
 
-  void setUserColors() {
-    // map gray
-    int temp = audio.volume.value + 32;
-    if (temp > buffer.max_brightness) temp = buffer.max_brightness;
-    usercolors[0] = color(temp);
-
-    // map red and green
-    int RED   = audio.averageSpecs[1].gray;
-    int GREEN = audio.averageSpecs[3].gray;
-    int BLUE  = audio.averageSpecs[5].gray;
-
-    color test = color(RED, GREEN, BLUE);
-
-    if (brightness(test) > 16) {
-      usercolors[1]  = color(RED, GREEN, audio.averageSpecs[5].gray);
-      usercolors[2]  = color(audio.averageSpecs[4].gray, GREEN, BLUE);
-      usercolors[3]  = color(RED, audio.averageSpecs[4].gray, BLUE);
-      usercolors[4]  = color(RED, GREEN, audio.averageSpecs[4].gray);
-      usercolors[5]  = color(audio.averageSpecs[2].gray, GREEN, BLUE);
-      usercolors[6]  = color(RED, audio.averageSpecs[2].gray, BLUE);
-      usercolors[7]  = color(RED, GREEN, audio.averageSpecs[2].gray);
-      usercolors[8]  = color(audio.averageSpecs[0].gray, GREEN, BLUE);
-      usercolors[9]  = color(RED, audio.averageSpecs[0].gray, BLUE);
-      usercolors[10] = color(RED, GREEN, audio.averageSpecs[0].gray);
-      usercolors[11] = usercolors[0];
+  color getUserColor(int index) {
+    if ( index >= 12 || brightness(audio.colors.background) < 16 ) {
+      return audio.colors.gray;
     } else {
-      java.util.Arrays.fill(usercolors, usercolors[0]);
+      return audio.colors.users[index];
     }
   }
 
@@ -195,9 +173,7 @@ class Kinect extends SimpleOpenNI {
           user_id = max(user_map[i], user_id);
           int current_user = user_map[i];
 
-          if ( user_map[i] >= 11 ) current_user = 11;
-
-          color c = usercolors[current_user];
+          color c = getUserColor(current_user);
 
           if (mapUser) {
             user_red   = (c >> 16) & 0xFF; 
@@ -209,7 +185,7 @@ class Kinect extends SimpleOpenNI {
             float b = map(depth_brightness, 0, 255, 0, user_blue);
             user_image.pixels[i] = color(r, g, b);
           } else {
-            user_image.pixels[i] = color(c);
+            user_image.pixels[i] = c;
           }
         } else {
           user_image.pixels[i] = color(0, 0, 0, 0);
@@ -237,7 +213,6 @@ class Kinect extends SimpleOpenNI {
 
   void update() {
     super.update();
-    setUserColors();
     updateUsers();
   }
 }

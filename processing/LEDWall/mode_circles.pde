@@ -79,7 +79,7 @@ class SpecCity {
 
   void draw() {
     buffer.beginShape(); 
-    buffer.fill(audio.COLOR); 
+    buffer.fill(audio.colors.background); 
     buffer.strokeWeight(1);
     if (kinect.user_id != -1) {
       kx = kinect.user_center.x; 

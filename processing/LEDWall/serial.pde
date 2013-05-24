@@ -22,9 +22,8 @@ void setupSerial() {
   teensys[0].start();
   teensys[1] = new Teensy(this, "COM12", false);
   teensys[1].start();
-  
-  println();
   println("TEENSYS SETUP!!");
+  println();
 }
 
 

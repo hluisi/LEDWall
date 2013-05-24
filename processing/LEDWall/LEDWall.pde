@@ -31,15 +31,15 @@ void setup() {
     y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
   } else {
     x = DEBUG_WINDOW_XSIZE;
-    y = DEBUG_WINDOW_YSIZE + ROWS;
-    DEBUG_WINDOW_START = ROWS;
+    y = DEBUG_WINDOW_YSIZE + (ROWS*2);
+    DEBUG_WINDOW_START = ROWS*2;
   }
 
   size(x, y, JAVA2D);
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
-  wall_image = createImage(COLUMNS * 5, ROWS * 5, RGB);
+  wall_image = createImage(COLUMNS * 2, ROWS * 2, RGB);
 
   setupBuffer();
   setupMinim();
@@ -51,11 +51,12 @@ void setup() {
   setupWheel();
   setupEQ();
 
-
+  setupShapes();
   setupParticles();
   setupCircles();
   setupAtari();
   setupClips();
+  
   // must be last
   setupControl();
   frameRate(300);
@@ -79,7 +80,9 @@ void draw() {
   background(0);      
   
   buffer.beginDraw();         // begin buffering
-  buffer.background(audio.COLOR);
+  buffer.noStroke();
+  buffer.noFill();
+  buffer.background(audio.colors.background);
   if (AUTOMODE) autoMode();   // auto change mode to audio beat
   doMode();                   // do the current mode(s)
   
@@ -98,7 +101,8 @@ void draw() {
 
 void drawDebug() {
   if (!DEBUG_SHOW_WALL) {
-    image(buffer.get(), (width / 2) - (COLUMNS / 2) , 0);
+    wall_image.copy(buffer.get(), 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS*2, ROWS*2);
+    image(wall_image, (width / 2) - ( (COLUMNS*2) / 2) , 0);
   }
   textSize(11);
   fill(#313131);
@@ -131,6 +135,7 @@ void drawDebug() {
   text("G: " + audio.GREEN, 50, DEBUG_WINDOW_START + 140);
   text("B: " + audio.BLUE, 90, DEBUG_WINDOW_START + 140);
   text("Clips speed: " + clips.current_speed, 10, DEBUG_WINDOW_START + 170);
+  text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 185);
 
   fill(#212121);
   rectMode(CORNER);

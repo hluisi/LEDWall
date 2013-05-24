@@ -79,7 +79,7 @@ class Wheel {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
       //if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
-      if (use_audio) cycleColors(audio.COLOR);
+      if (use_audio) cycleColors(audio.colors.background);
       else cycleColors();
       last_cycle = cTime;
     }
