@@ -32,7 +32,7 @@ class ConcCircles {
 
   ConcCircles() {
   }
-  
+
   color getCircleColor(int i) {
     int RED   = audio.averageSpecs[1].gray;
     int GREEN = audio.averageSpecs[3].gray;
@@ -49,8 +49,7 @@ class ConcCircles {
         if (kinect.user_id != -1) {
           kx = kinect.user_center.x; 
           ky = kinect.user_center.y - 12;
-        } 
-        else {
+        } else {
           kx = buffer.width / 2; 
           ky = buffer.height / 2;
         }
@@ -63,8 +62,7 @@ class ConcCircles {
           if (test < 0.1) theta = random(theta * -1, theta);
           if (test > 0.75) theta *= -1;
         }
-        if (theta > 0) theta += 360/numCircles/ (audio.BPM + 1);
-        else theta -= 360/numCircles/ (audio.BPM + 1);
+        if (theta > 0) theta += 360/numCircles/ (audio.BPM + 1); else theta -= 360/numCircles/ (audio.BPM + 1);
       }
     }
   }
@@ -84,8 +82,7 @@ class SpecCity {
     if (kinect.user_id != -1) {
       kx = kinect.user_center.x; 
       ky = kinect.user_center.y - 12;
-    } 
-    else {
+    } else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
@@ -147,8 +144,7 @@ class Pulsar {
     if (kinect.user_id != -1) {
       kx = kinect.user_center.x; 
       ky = kinect.user_center.y - 12;
-    } 
-    else {
+    } else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
@@ -167,7 +163,6 @@ class Pulsar {
     //buffer.filter(POSTERIZE, 16);
   }
 }
-
 
 
 

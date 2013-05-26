@@ -46,7 +46,7 @@ class EQ {
       spec[i].setLabelFont(tFont);
       spec[i].setLabelColor(color(0, 128));
       spec[i].setLabel(round(audio.fft.getAverageCenterFrequency(i)) + " Hz");
-      
+
       x += 16;
     }
   }

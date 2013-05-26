@@ -16,7 +16,6 @@ It currently uses some of the following hardware:
 
 It also uses the following processing libraries:
 
-*  [Toxiclibs](http://toxiclibs.org/)
 *  [blobDectection](http://www.v3ga.net/processing/BlobDetection/)
 *  [simpleOpenNI](http://code.google.com/p/simple-openni/)
 *  [minim 2.1.0 beta](http://code.compartmental.net/tools/minim/)

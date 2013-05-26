@@ -39,8 +39,10 @@ class VideoWall {
 
   VideoWall() {
     send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
+    send_buffer.loadPixels();
     for (int i = 0; i < teensyImages.length; i++) {
       teensyImages[i] = createImage(80, 16, RGB);
+      teensyImages[i].loadPixels();
     }
   }
 
@@ -73,39 +75,33 @@ class VideoWall {
     send_buffer.popMatrix();
     send_buffer.endDraw();
 
-    send_buffer.loadPixels();
-
     // set the teensy image array
     for (int i = 0; i < teensyImages.length; i++) {
-      teensyImages[i].loadPixels();
       arrayCopy(send_buffer.pixels, i * (80 * 16), teensyImages[i].pixels, 0, 80 * 16);
       teensyImages[i].updatePixels();
-      
+
       if (i < TEENSY_TOTAL) {
         teensys[i].send(teensyImages[i]);
       }
-        
     }
-    
+
     int check = millis();
     while (sendingCount > 0) {
       // wait till threads are donesending
     }
     send_time = millis() - check;
-    
-    
+
+
     //image2data(teensyImages[1], ledData, ledLayout[0]);
     //ledData[2][0] = '*';  // first Teensy is the frame sync master
     //int usec = (int)((1000000.0 / frameRate) * 0.75);  // using processing's frameRate to fix timing
     //ledData[2][1] = (byte)(usec);   // request the frame sync pulse
     //ledData[2][2] = (byte)(usec >> 8); // at 75% of the frame time
     //ledSerial[0].write(ledData[2]);
-    
   }
 
   void draw() {
     buffer.updatePixels();
-    buffer.loadPixels();
     send();
     if (DEBUG_SHOW_WALL) display();
   }

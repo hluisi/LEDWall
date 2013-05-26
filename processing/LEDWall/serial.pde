@@ -16,11 +16,11 @@ void setupSerial() {
   delay(20);
   println("Serial Ports List:");
   println(list);
-  
+
   // SETUP TEENSYs
-  teensys[0] = new Teensy(this, "COM3", true);
+  teensys[0] = new Teensy(this, "COM13", true);
   teensys[0].start();
-  teensys[1] = new Teensy(this, "COM12", false);
+  teensys[1] = new Teensy(this, "COM14", false);
   teensys[1].start();
   println("TEENSYS SETUP!!");
   println();
@@ -38,7 +38,7 @@ class Teensy extends Thread {
   Serial  port;      // serial port of the teensy
   String  portName;  // serial port name
 
-  Teensy(PApplet parent, String pname, boolean master) {
+    Teensy(PApplet parent, String pname, boolean master) {
     println("Setting up teensy: " + pname + " ...");
     data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
     running  = false;  // are we runing?
@@ -114,7 +114,6 @@ class Teensy extends Thread {
     }
 
     port.write(data);  // send data over serial to teensy
-    
   }
 
   void send(PImage img) {
@@ -174,7 +173,7 @@ class Teensy extends Thread {
     // return c;  // RGB
     return ((c & 0xFF0000) >> 8) | ((c & 0x00FF00) << 8) | (c & 0x0000FF); // GRB - most common wiring
   }
-  
+
   // Our method that quits the thread
   void quit() {
     println("Quitting thread: " + portName + " ..."); 
@@ -183,3 +182,4 @@ class Teensy extends Thread {
     interrupt();
   }
 }
+

@@ -1,10 +1,10 @@
 
 void doUserBg() {
-  buffer.blendMode(BLEND);
+  buffer.blendMode(ADD);
   buffer.stroke(255);
   buffer.strokeWeight(1);
   for (int i = 0; i < 160 - 1; i++) {
-    buffer.line(i, 40 + audio.in.mix.get(i)*60, i + 1, 40 + audio.in.mix.get(i+1)*60); 
+    buffer.line(i, 40 + audio.in.mix.get(i)*60, i + 1, 40 + audio.in.mix.get(i+1)*60);
   }
   buffer.noStroke();
 }
@@ -13,8 +13,7 @@ void displayImage(PImage _image) {
   buffer.blendMode(BLEND);
   if (_image.width != buffer.width && _image.height != buffer.height) {
     buffer.copy(_image, 0, 0, _image.width, _image.height, 0, 0, buffer.width, buffer.height);
-  }
-  else {
+  } else {
     buffer.image(_image, 0, 0);
   }
 }
@@ -22,3 +21,4 @@ void displayImage(PImage _image) {
 void doTest() {
   displayImage(smpte);
 }
+

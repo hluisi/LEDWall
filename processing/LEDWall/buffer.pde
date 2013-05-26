@@ -4,7 +4,7 @@ Buffer buffer;
 void setupBuffer() {
   buffer = new Buffer(this); 
   buffer.smooth();
-  
+
 
   println("BUFFER SETUP ...");
 }
@@ -20,6 +20,7 @@ class Buffer extends PGraphicsJava2D {
     setParent(app);
     setPrimary(false);
     setSize(COLUMNS, ROWS);
+    loadPixels();
   }
 
   void maxBrightness(int v) {
@@ -28,7 +29,7 @@ class Buffer extends PGraphicsJava2D {
 
   void endDraw() {
     super.endDraw();
-    loadPixels();
+
     wattage = 0;
     for (int i = 0; i < pixels.length; i++) {
       color argb = pixels[i];

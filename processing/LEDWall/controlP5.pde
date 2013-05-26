@@ -3,8 +3,9 @@ import controlP5.*;
 ControlP5 cp5;
 Println console;
 RadioButton r;
-Toggle amode;
-Toggle mUser;
+Toggle auto_mode_toggle;
+Toggle map_user_toggle;
+Toggle audio_back_toggle;
 Slider bright;
 
 void setupControl() {
@@ -39,8 +40,8 @@ void setupControl() {
                       .addItem("Test", 0)
                         .addItem("EQ", 1)
                           .addItem("UserBG", 2)
-                            .addItem("Wheel", 3)
-                              .addItem("Balls", 4)
+                            .addItem("Rainbow", 3)
+                              .addItem("Shapes", 4)
                                 .addItem("Spin", 5)
                                   .addItem("Pulsar", 6)
                                     .addItem("City", 7)
@@ -54,7 +55,7 @@ void setupControl() {
     t.captionLabel().setPaddingY(3);
   }
 
-  amode = cp5.addToggle("auto_mode")
+  auto_mode_toggle = cp5.addToggle("auto_mode")
     .setPosition(225, DEBUG_WINDOW_START + 150)
       .setSize(40, 20)
         .setColorBackground(color(#212121))
@@ -65,9 +66,9 @@ void setupControl() {
                   .setMode(ControlP5.SWITCH)
                     ;
 
-  amode.captionLabel().setText("Auto Mode");
+  auto_mode_toggle.captionLabel().setText("Auto Mode");
 
-  mUser = cp5.addToggle("map_user")
+  map_user_toggle = cp5.addToggle("map_user")
     .setPosition(275, DEBUG_WINDOW_START + 150)
       .setSize(40, 20)
         .setColorBackground(color(#212121))
@@ -78,7 +79,20 @@ void setupControl() {
                   .setMode(ControlP5.SWITCH)
                     ;
 
-  mUser.captionLabel().setText("User Map");
+  map_user_toggle.captionLabel().setText("User Map");
+
+  audio_back_toggle = cp5.addToggle("audio_bg")
+    .setPosition(325, DEBUG_WINDOW_START + 150)
+      .setSize(40, 20)
+        .setColorBackground(color(#212121))
+          .setColorForeground(color(#515151))
+            .setColorActive(color(255))
+              .setColorLabel(color(255))
+                .setValue(true)
+                  .setMode(ControlP5.SWITCH)
+                    ;
+
+  audio_back_toggle.captionLabel().setText("BACK GND");
 }
 
 public void Brightness(int value) {
@@ -110,6 +124,16 @@ void map_user(boolean theFlag) {
   } else {
     kinect.mapUser = false;
     println("User Map: OFF");
+  }
+}
+
+void audio_bg(boolean theFlag) {
+  if (theFlag==true) {
+    AUDIO_BG_ON = true;
+    println("Audio backgroung: ON");
+  } else {
+    AUDIO_BG_ON = false;
+    println("Audio background: OFF");
   }
 }
 

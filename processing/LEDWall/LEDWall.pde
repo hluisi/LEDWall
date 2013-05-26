@@ -4,8 +4,8 @@ float xoff = 0.0;
 final int DISPLAY_MODE_TEST    = 0;
 final int DISPLAY_MODE_SHOWEQ  = 1;
 final int DISPLAY_MODE_USERBG  = 2;
-final int DISPLAY_MODE_WHEEL   = 3;
-final int DISPLAY_MODE_BALLS   = 4;
+final int DISPLAY_MODE_RAINBOW = 3;
+final int DISPLAY_MODE_SHAPES  = 4;
 final int DISPLAY_MODE_SPIN    = 5;
 final int DISPLAY_MODE_PULSAR  = 6;
 final int DISPLAY_MODE_CITY    = 7;
@@ -15,9 +15,10 @@ final int DISPLAY_MODE_CLIPS   = 9;
 boolean AUTOMODE = false;
 boolean useAudio = true;
 boolean useKinect = true;
+boolean AUDIO_BG_ON = true;
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "USER BG", "WHEEL", "BALLS", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
+  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
 };
 
 
@@ -48,15 +49,14 @@ void setup() {
   setupWall();
   setupKinect();
 
-  setupWheel();
+  setupRainbow();
   setupEQ();
 
   setupShapes();
-  setupParticles();
   setupCircles();
   setupAtari();
   setupClips();
-  
+
   // must be last
   setupControl();
   frameRate(300);
@@ -78,21 +78,23 @@ void autoMode() {
 
 void draw() {
   background(0);      
-  
+
   buffer.beginDraw();         // begin buffering
   buffer.noStroke();
   buffer.noFill();
-  buffer.background(audio.colors.background);
+
+  if (AUDIO_BG_ON) buffer.background(audio.colors.background); else buffer.background(0);
+
   if (AUTOMODE) autoMode();   // auto change mode to audio beat
   doMode();                   // do the current mode(s)
-  
+
   buffer.blendMode(BLEND);    // reset blend mode
   if (useKinect) {  // using the kinect?
     kinect.update(); // update the kinect
     buffer.image(kinect.buffer_image, 0, 0); // draw kinect user(s)
   }
-  
-  
+
+
   buffer.endDraw();           // end buffering
   wall.draw();                // draw the wall
   drawDebug();                // draw debug info
@@ -102,7 +104,7 @@ void draw() {
 void drawDebug() {
   if (!DEBUG_SHOW_WALL) {
     wall_image.copy(buffer.get(), 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS*2, ROWS*2);
-    image(wall_image, (width / 2) - ( (COLUMNS*2) / 2) , 0);
+    image(wall_image, (width / 2) - ( (COLUMNS*2) / 2), 0);
   }
   textSize(11);
   fill(#313131);
@@ -110,8 +112,8 @@ void drawDebug() {
   strokeWeight(1);
   rectMode(CORNER);
   rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
-  
-  
+
+
 
   // fill text display background
   fill(#212121);
@@ -135,7 +137,7 @@ void drawDebug() {
   text("G: " + audio.GREEN, 50, DEBUG_WINDOW_START + 140);
   text("B: " + audio.BLUE, 90, DEBUG_WINDOW_START + 140);
   text("Clips speed: " + clips.current_speed, 10, DEBUG_WINDOW_START + 170);
-  text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 185);
+  //text("size: " + wheel.size.x, 10, DEBUG_WINDOW_START + 185);
 
   fill(#212121);
   rectMode(CORNER);
@@ -159,13 +161,13 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
   if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)  doEQ();
   if (DISPLAY_MODE == DISPLAY_MODE_USERBG)  doUserBg();
-  if (DISPLAY_MODE == DISPLAY_MODE_BALLS)   doParticles(); 
   if (DISPLAY_MODE == DISPLAY_MODE_SPIN)    doCircles();
   if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)  doPulsar();
   if (DISPLAY_MODE == DISPLAY_MODE_CITY)    doCity();
-  if (DISPLAY_MODE == DISPLAY_MODE_WHEEL)   doWheel();
+  if (DISPLAY_MODE == DISPLAY_MODE_RAINBOW) doRainbow();
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
+  if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
 }
 
 void dispose() {
@@ -195,8 +197,8 @@ void keyPressed() {
   if (key == '0') DISPLAY_MODE = DISPLAY_MODE_TEST;
   if (key == '1') DISPLAY_MODE = DISPLAY_MODE_SHOWEQ;
   if (key == '2') DISPLAY_MODE = DISPLAY_MODE_USERBG;
-  if (key == '3') DISPLAY_MODE = DISPLAY_MODE_WHEEL;
-  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_BALLS;
+  if (key == '3') DISPLAY_MODE = DISPLAY_MODE_RAINBOW;
+  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_SHAPES;
   if (key == '5') DISPLAY_MODE = DISPLAY_MODE_SPIN;
   if (key == '6') DISPLAY_MODE = DISPLAY_MODE_PULSAR;
   if (key == '7') DISPLAY_MODE = DISPLAY_MODE_CITY;
@@ -205,7 +207,6 @@ void keyPressed() {
 
   r.activate(DISPLAY_MODE);
 }
-
 
 
 

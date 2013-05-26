@@ -130,6 +130,7 @@ class Kinect extends SimpleOpenNI {
       return;
     } else {
       user_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
+      user_image.loadPixels();
       println("KINECT - user enabled!");
     }
 
@@ -159,8 +160,6 @@ class Kinect extends SimpleOpenNI {
     if (getNumberOfUsers() > 0) {
       user_id = -1;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
-
-      user_image.loadPixels();
 
       int user_red = 0, user_green = 0, user_blue = 0;
 

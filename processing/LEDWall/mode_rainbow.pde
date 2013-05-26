@@ -1,23 +1,31 @@
-Wheel wheel;
+Rainbow rainbow;
 
-void setupWheel() {
-  wheel = new Wheel();
-  wheel.audioOff();
-  println("WHEEL SETUP ...");
+final String[] RAINBOW_STR = { 
+  "WHEEL", "TUNNEL"
+};
+
+void setupRainbow() {
+  rainbow = new Rainbow();
+  rainbow.audioOff();
+  println("RAINBOW SETUP ...");
 }
 
-void doWheel() {
+void doRainbow() {
   buffer.blendMode(ADD);
-  wheel.setLocation(kinect.user_center.x, kinect.user_center.y );
-  wheel.setCycle(audio.BPM);
-  wheel.display();
+  rainbow.setLocation(kinect.user_center.x, kinect.user_center.y );
+  rainbow.setCycle(audio.BPM);
+  rainbow.display();
 }
 
 
-class Wheel {
-  //PShape sun_shape;
+class Rainbow {
+  final int MODE_WHEEL  = 0;
+  final int MODE_TUNNEL = 1;
+  final int TOTAL_MODES = 2;
+  int mode = 1;
   boolean use_audio;
   PVector location;                       // the location of the center of the wheel
+  PVector size;
   int last_cycle;                           // the last time the colors were cycled
   int cycle_time = 100;                // the time between cycling colors
   color[] colors = new color [8];
@@ -27,13 +35,19 @@ class Wheel {
   };
 
 
-  Wheel() {
+  Rainbow() {
     location = new PVector();
+    size = new PVector();
     resetColors();
+    resetSize();
     last_cycle = millis();
     use_audio = false;
   }
   
+  void resetSize() {
+    size.set(buffer.width*3,buffer.height*6);
+  }
+
   void setCycle(int t) {
     int temp = int(map(t, 1, 200, 172, 1));
     cycle_time = temp;
@@ -79,20 +93,21 @@ class Wheel {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
       //if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
-      if (use_audio) cycleColors(audio.colors.background);
-      else cycleColors();
+      if (use_audio) cycleColors(audio.colors.background); else cycleColors();
       last_cycle = cTime;
     }
+    
+    if ( audio.isOnBeat() ) {
+      float test = random(0, 1);
+      if (test < 0.65) {
+        mode = round( random(TOTAL_MODES - 1) );
+        println("RAINBOW - new mode: " + RAINBOW_STR[mode]);
+      }
+    }
+    
   }
-
-
-  void display() {
-
-    check();
-
-    buffer.noStroke();
-
-
+  
+  void doWheel() {
     for (int i = 0; i < 8; i++) {
 
       buffer.fill(colors[i]);
@@ -104,6 +119,44 @@ class Wheel {
       buffer.quad(location.x, location.y, buffer.width, i * 10, buffer.width, (i + 1) * 10, location.x, location.y);
       buffer.quad(location.x, location.y, i * 20, buffer.height, (i + 1) * 20, buffer.height, location.x, location.y);
     }
+  }
+  
+  void doTunnel() {
+    buffer.pushMatrix();
+    buffer.rectMode(CENTER);
+    buffer.blendMode(BLEND);
+    //buffer.translate(buffer.width/2, buffer.height/2);
+    buffer.translate(location.x, location.y);
+    for (int j = 0; j < 5; j++) {
+      for (int i = 0; i < colors.length; i++) {
+        buffer.fill(colors[i]);
+        buffer.rect(0,0,size.x,size.y,2.5);
+        size.div(1.1);
+      }
+    }
+    
+    buffer.fill(0);
+    buffer.rect(0,0,size.x,size.y,5);
+    resetSize();
+    buffer.blendMode(ADD);
+    if (AUDIO_BG_ON) {
+      buffer.fill(audio.colors.background); 
+      buffer.rect(0,0,size.x,size.y);
+    }
+      
+    buffer.popMatrix();
+    
+  }
+    
+
+  void display() {
+    check();
+    buffer.noStroke();
+    
+    if (mode == MODE_WHEEL) doWheel();
+    if (mode == MODE_TUNNEL) doTunnel();
+
+    
   }
 }
 

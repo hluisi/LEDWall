@@ -17,7 +17,7 @@ class AverageListener implements AudioListener {
   public FFT fft;           // FFT 
   public BeatDetect beat;   // beat detect
 
-  public int BASS, MIDS, TREB, RED, GREEN, BLUE;
+    public int BASS, MIDS, TREB, RED, GREEN, BLUE;
 
   private boolean gotBeat = false, gotMode = false, gotKinect = false;
 
@@ -207,3 +207,4 @@ class AudioSpectrum {
     if (max_peak < 24) max_peak = 24;
   }
 }
+

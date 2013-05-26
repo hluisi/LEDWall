@@ -15,7 +15,7 @@ void doClips() {
 
 class myMovie extends Movie {
   String name;
-  
+
   myMovie(PApplet parent, String fullname, String shortname) {
     super(parent, fullname);
     name = shortname;
@@ -29,34 +29,20 @@ class MovieClips {
   int switch_count = 0;
   String[] names;
   String[] short_names;
-  
+
   MovieClips(PApplet app, String dir) {
-    String thisdir = sketchPath + "\\data\\" + dir;
-    File file = new File(thisdir);
-    String[] file_names = file.list();
-    String[] names = new String [file_names.length];
-    String[] short_names = new String [file_names.length];
-    
-    int j = 0;
-    for (int i = 0; i < file_names.length; i++) {
-      String[] fname = file_names[i].split("\\.(?=[^\\.]+$)");
-      if (fname[fname.length - 1].equals("mov") == true) {
-        names[j] = thisdir + "\\" + file_names[i];
-        short_names[j] = fname[0];
-        j++;
-      }
-    }
-    clips = new myMovie [j];
-    
+    String[] movie_files = getFileNames(dir, "mov");
+    clips = new myMovie [movie_files.length];
+
     for (int i = 0; i < clips.length; i++) {
-      println("CLIPS - loading clip - " + i + ": " + short_names[i]);
-      clips[i] = new myMovie(app, names[i], short_names[i]);
+      //String[] parts = movie_files[i].split(java.io.File.pathSeparatorChar);
+      String name = movie_files[i].substring(movie_files[i].lastIndexOf("\\")+1);
+      println("CLIPS - loading clip - " + i + ": " + name);
+      clips[i] = new myMovie(app, movie_files[i], name);
       clips[i].loop();
     }
-    //println(clips.length);
-    //println(clips[clips.length - 1].name);
   }
-  
+
   void update() {
     // switch clips?
     if ( audio.isOnBeat() ) {
@@ -67,8 +53,7 @@ class MovieClips {
         current = next;
         println("CLIPS - new clip: " + clips[current].name);
         switch_count++;
-      }
-      else  {
+      } else {
         float spot = noise(xoff) * clips[current].duration();
         clips[current].jump( spot );
         println("  -  jummped to: " + clips[current].time());
@@ -80,17 +65,17 @@ class MovieClips {
         println("  -  new seed: " + seed);
       }
     }
-    
+
     // read the new frame
     if (clips[current].available() == true) {
-      clips[current].read(); 
+      clips[current].read();
     }
-    
+
     // set the speed of the next frame according to the current BPM
     current_speed = map(audio.BPM, 0, 240, 0.25, 2.0);
     clips[current].speed(current_speed);
   }
-  
+
   void draw() {
     update();
     buffer.image(clips[current], 0, 0, buffer.width, buffer.height);
