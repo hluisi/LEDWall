@@ -28,6 +28,7 @@ VideoWall wall;
 
 void setupWall() {
   wall = new VideoWall();
+  teensys[0].start();
   println("WALL SETUP ...");
 }
 
@@ -50,7 +51,7 @@ class VideoWall {
     int screenX = (x * DEBUG_REAL_PIXEL_SIZE_X) + (DEBUG_REAL_PIXEL_SIZE_X / 2);
     int screenY = (y * DEBUG_REAL_PIXEL_SIZE_Y) + (DEBUG_REAL_PIXEL_SIZE_Y / 2);
     noStroke();
-    smooth();
+    //smooth();
     fill(c);
     rectMode(CENTER);
     rect(screenX, screenY, DEBUG_PIXEL_SIZE, DEBUG_PIXEL_SIZE);
@@ -81,23 +82,16 @@ class VideoWall {
       teensyImages[i].updatePixels();
 
       if (i < TEENSY_TOTAL) {
-        teensys[i].send(teensyImages[i]);
+        //teensys[i].update(teensyImages[i]);
+        teensys[i].trigger();
       }
     }
 
-    int check = millis();
-    while (sendingCount > 0) {
+    //int check = millis();
+    //while (sendingCount > 0) {
       // wait till threads are donesending
-    }
-    send_time = millis() - check;
-
-
-    //image2data(teensyImages[1], ledData, ledLayout[0]);
-    //ledData[2][0] = '*';  // first Teensy is the frame sync master
-    //int usec = (int)((1000000.0 / frameRate) * 0.75);  // using processing's frameRate to fix timing
-    //ledData[2][1] = (byte)(usec);   // request the frame sync pulse
-    //ledData[2][2] = (byte)(usec >> 8); // at 75% of the frame time
-    //ledSerial[0].write(ledData[2]);
+    //}
+    //send_time = millis() - check;
   }
 
   void draw() {

@@ -34,9 +34,9 @@ class ConcCircles {
   }
 
   color getCircleColor(int i) {
-    int RED   = audio.averageSpecs[1].gray;
-    int GREEN = audio.averageSpecs[3].gray;
-    int BLUE  = audio.averageSpecs[i].gray;
+    int RED   = audio.averageSpecs[1].grey;
+    int GREEN = audio.averageSpecs[3].grey;
+    int BLUE  = audio.averageSpecs[i].grey;
     return color(RED, GREEN, BLUE);
   }
 
@@ -87,9 +87,9 @@ class SpecCity {
       ky = buffer.height / 2;
     }
     for (int i = 0; i < (buffer.width / 2) ; i++) {
-      int GREEN = audio.averageSpecs[1].gray;
-      int BLUE  = audio.averageSpecs[3].gray;
-      int RED   = audio.fullSpecs[i].gray;
+      int GREEN = audio.averageSpecs[1].grey;
+      int BLUE  = audio.averageSpecs[3].grey;
+      int RED   = audio.fullSpecs[i].grey;
       int value_up = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, 0));
       int value_down = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, buffer.height));
       buffer.stroke(RED, GREEN, BLUE);
@@ -126,9 +126,9 @@ class Pulsar {
   }
 
   color setColor(int i) {
-    int RED   = audio.averageSpecs[1].gray;
-    int GREEN = audio.averageSpecs[3].gray;
-    int BLUE  = audio.fullSpecs[i].gray;
+    int RED   = audio.averageSpecs[1].grey;
+    int GREEN = audio.averageSpecs[3].grey;
+    int BLUE  = audio.fullSpecs[i].grey;
     return color(RED, GREEN, BLUE);
   }
 

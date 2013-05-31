@@ -144,9 +144,9 @@ class AtariSingle {
   }
 
   color setColor(int i) {
-    int RED   = audio.averageSpecs[1].gray;
-    int GREEN = audio.averageSpecs[3].gray;
-    int BLUE  = audio.averageSpecs[i].gray;
+    int RED   = audio.averageSpecs[1].grey;
+    int GREEN = audio.averageSpecs[3].grey;
+    int BLUE  = audio.averageSpecs[i].grey;
     return color(RED, GREEN, BLUE);
   }
 

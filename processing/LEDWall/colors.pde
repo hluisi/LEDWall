@@ -3,7 +3,7 @@ class Colors {
   color[] reds;
   color[] greens;
   color[] blues;
-  color background, gray;
+  color background, grey;
 
   AudioSpectrum[] audioSpecs;
 
@@ -15,9 +15,9 @@ class Colors {
   }
 
   color colorMap(int r1, int r2, int g1, int g2, int b1, int b2) {
-    int RED   = audioSpecs[r1].gray + audioSpecs[r1].gray / 2;
-    int GREEN = audioSpecs[g1].gray + audioSpecs[g2].gray / 2;
-    int BLUE  = audioSpecs[b1].gray + audioSpecs[b2].gray / 2; 
+    int RED   = audioSpecs[r1].grey + audioSpecs[r1].grey / 2;
+    int GREEN = audioSpecs[g1].grey + audioSpecs[g2].grey / 2;
+    int BLUE  = audioSpecs[b1].grey + audioSpecs[b2].grey / 2; 
     return color(RED, GREEN, BLUE);
   }
 
@@ -25,10 +25,10 @@ class Colors {
     background = colorMap(0, 1, 2, 3, 4, 5);
   }
 
-  void updateGray() {
+  void updateGrey() {
     int temp = audio.volume.value + 32;
     if (temp > buffer.max_brightness) temp = buffer.max_brightness;
-    gray = color(temp);
+    grey = color(temp);
   }
 
   void updateReds() {
@@ -70,7 +70,7 @@ class Colors {
   void update(AudioSpectrum[] specs) {
     audioSpecs = specs;
     updateBackground();
-    updateGray();
+    updateGrey();
     updateReds();
     updateGreens();
     updateBlues();

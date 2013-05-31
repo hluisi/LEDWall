@@ -150,8 +150,9 @@ class Kinect extends SimpleOpenNI {
 
   color getUserColor(int index) {
     if ( index >= 12 || brightness(audio.colors.background) < 16 ) {
-      return audio.colors.gray;
+      return color(brightness(audio.colors.grey) + 32);
     } else {
+      //return usercolors[index];
       return audio.colors.users[index];
     }
   }
@@ -209,9 +210,14 @@ class Kinect extends SimpleOpenNI {
       }
     }
   }
+  
+  void updateColors() {
+    arrayCopy(audio.colors.users, usercolors);
+  }
 
   void update() {
     super.update();
+    //updateColors();
     updateUsers();
   }
 }

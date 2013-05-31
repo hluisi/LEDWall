@@ -26,6 +26,7 @@ class Rainbow {
   boolean use_audio;
   PVector location;                       // the location of the center of the wheel
   PVector size;
+  PVector last_size;
   int last_cycle;                           // the last time the colors were cycled
   int cycle_time = 100;                // the time between cycling colors
   color[] colors = new color [8];
@@ -38,6 +39,7 @@ class Rainbow {
   Rainbow() {
     location = new PVector();
     size = new PVector();
+    last_size = new PVector();
     resetColors();
     resetSize();
     last_cycle = millis();
@@ -46,6 +48,7 @@ class Rainbow {
   
   void resetSize() {
     size.set(buffer.width*3,buffer.height*6);
+    last_size.set(size.x*1.1, size.y*1.1);
   }
 
   void setCycle(int t) {
@@ -102,41 +105,73 @@ class Rainbow {
       if (test < 0.65) {
         mode = round( random(TOTAL_MODES - 1) );
         println("RAINBOW - new mode: " + RAINBOW_STR[mode]);
+        //if (mode == MODE_TUNNEL) {
+        //  audioOn();
+        //} else {
+        //  audioOff();
+        //}
       }
     }
     
   }
   
   void doWheel() {
+    buffer.blendMode(BLEND);
+    //buffer.background(0);
+    buffer.stroke(0);
+    buffer.strokeWeight(0.5);
+    //buffer.noStroke();
+    
+    
     for (int i = 0; i < 8; i++) {
-
+      
+      float horizontal = map(audio.BASS, 0, 100, 20, 10);
+      float vertical   = map(audio.MIDS, 0, 100, 10, 5);
+      
       buffer.fill(colors[i]);
-      buffer.quad(location.x, location.y, 0, i * 10, 0, (i + 1) * 10, location.x, location.y);
-      buffer.quad(location.x, location.y, i * 20, 0, (i + 1) * 20, 0, location.x, location.y);
-
+      buffer.triangle(location.x, location.y, 0, (i * 10) + vertical, 0, ((i + 1) * 10) - vertical);
+      buffer.triangle(location.x, location.y, (i * 20) + horizontal, 0, ((i + 1) * 20) - horizontal, 0);
+      
       int j = 7 - i;
       buffer.fill(colors[j]);
-      buffer.quad(location.x, location.y, buffer.width, i * 10, buffer.width, (i + 1) * 10, location.x, location.y);
-      buffer.quad(location.x, location.y, i * 20, buffer.height, (i + 1) * 20, buffer.height, location.x, location.y);
+      buffer.triangle(location.x, location.y, buffer.width, (i * 10) + vertical, buffer.width, ((i + 1) * 10) - vertical);
+      buffer.triangle(location.x, location.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
+      
+    }
+    
+    buffer.blendMode(ADD);
+    if (AUDIO_BG_ON) {
+      buffer.fill(audio.colors.background); 
+      buffer.rect(0,0,size.x,size.y);
     }
   }
   
   void doTunnel() {
-    buffer.pushMatrix();
     buffer.rectMode(CENTER);
     buffer.blendMode(BLEND);
-    //buffer.translate(buffer.width/2, buffer.height/2);
+    buffer.stroke(0);
+    buffer.strokeWeight(0.5);
+    //buffer.noStroke();
+    buffer.pushMatrix();
     buffer.translate(location.x, location.y);
-    for (int j = 0; j < 5; j++) {
+    //buffer.translate(buffer.width/2, buffer.height/2);
+    
+    for (int j = 0; j < 2; j++) {
       for (int i = 0; i < colors.length; i++) {
         buffer.fill(colors[i]);
-        buffer.rect(0,0,size.x,size.y,2.5);
-        size.div(1.1);
+        float h = map(audio.BASS, 0, 100, size.x, last_size.x);
+        float v = map(audio.MIDS, 0, 100, size.y, last_size.y);
+        //float x = map(i, 0, colors.length, 0, -10);
+        //float y = map(i, 0, colors.length, 0, -15);
+        buffer.rect(0,0,h,v,2.5);
+        last_size.set(size.x, size.y);
+        size.div(1.5);
       }
     }
     
     buffer.fill(0);
     buffer.rect(0,0,size.x,size.y,5);
+    buffer.popMatrix();
     resetSize();
     buffer.blendMode(ADD);
     if (AUDIO_BG_ON) {
@@ -144,7 +179,7 @@ class Rainbow {
       buffer.rect(0,0,size.x,size.y);
     }
       
-    buffer.popMatrix();
+    
     
   }
     

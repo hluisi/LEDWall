@@ -103,8 +103,9 @@ OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
 void setup() {
   pinMode(12, INPUT_PULLUP); // Frame Sync
+  pinMode(13, OUTPUT);
   Serial.setTimeout(50);
-  Serial.begin(115200);
+  Serial.begin(57600);
   leds.begin();
   leds.show();
 }
@@ -145,6 +146,7 @@ void loop() {
   int startChar = Serial.read();
 
   if (startChar == '*') {
+    digitalWrite(13, HIGH);
     // receive a "master" frame - we send the frame sync to other boards
     // the sender is controlling the video pace.  The 16 bit number is
     // how far into this frame to send the sync to other boards.
@@ -164,10 +166,11 @@ void loop() {
       delayMicroseconds(usToWaitBeforeSyncOutput);
       digitalWrite(12, LOW);
       // WS2811 update begins immediately after falling edge of frame sync
-      digitalWrite(13, HIGH);
+      //digitalWrite(13, HIGH);
       leds.show();
-      digitalWrite(13, LOW);
+      //digitalWrite(13, LOW);
     }
+    digitalWrite(13, LOW);
 
   } else if (startChar == '$') {
     // receive a "master" frame - we send the frame sync to other boards

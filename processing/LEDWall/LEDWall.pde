@@ -68,7 +68,7 @@ void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
     if (test < 0.15) {
-      int count = int(random(1, 10));
+      int count = int(random(2, 10));
       DISPLAY_MODE = count;
       r.activate(count);
       println("MODE - " + DISPLAY_STR[count]);
@@ -137,7 +137,7 @@ void drawDebug() {
   text("G: " + audio.GREEN, 50, DEBUG_WINDOW_START + 140);
   text("B: " + audio.BLUE, 90, DEBUG_WINDOW_START + 140);
   text("Clips speed: " + clips.current_speed, 10, DEBUG_WINDOW_START + 170);
-  //text("size: " + wheel.size.x, 10, DEBUG_WINDOW_START + 185);
+  text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 185);
 
   fill(#212121);
   rectMode(CORNER);
@@ -177,17 +177,18 @@ void dispose() {
 
 void shutdown() {
   System.out.println("CLOSING DOWN!!!");
-  buffer.beginDraw();
-  buffer.background(0);
-  buffer.endDraw();
-  wall.display();
+  //buffer.beginDraw();
+  //buffer.background(0);
+  //buffer.endDraw();
+  //wall.display();
 
   kinect.close();
 
   // always close Minim audio classes when you are done with them
   audio.close();
   minim.stop();
-  for (int i = 0; i < TEENSY_TOTAL; i++) {
+  
+  for (int i = 0; i < teensys.length; i++) {
     teensys[i].quit();
   }
 }

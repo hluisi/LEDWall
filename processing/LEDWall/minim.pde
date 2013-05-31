@@ -159,7 +159,7 @@ class AudioSpectrum {
 
   int peak_count = 0, smooth_count = 0;  // counters for peak, base, and smooth
 
-  int gray = 0;
+  int grey = 0;
 
   boolean lowerPeak = false;  // are we lowering the peak?
 
@@ -193,8 +193,8 @@ class AudioSpectrum {
 
     dB = 20*((float)Math.log10(raw)); 
 
-    gray  = int(map(raw, 0, max_peak, 0, 255));
-    gray  = int(constrain(gray, 0, 255));
+    grey  = int(map(raw, 0, max_peak, 0, 255));
+    grey  = int(constrain(grey, 0, 255));
 
     value = int(map(raw, 0, max_peak, 0, 100));
     value = int(constrain(value, 0, 100));
