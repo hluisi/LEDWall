@@ -28,7 +28,9 @@ VideoWall wall;
 
 void setupWall() {
   wall = new VideoWall();
-  teensys[0].start();
+  for (int i = 0; i < TEENSY_TOTAL; i++) {
+    teensys[i].start();
+  }
   println("WALL SETUP ...");
 }
 
@@ -75,6 +77,8 @@ class VideoWall {
     send_buffer.image(buffer, 0, 0);
     send_buffer.popMatrix();
     send_buffer.endDraw();
+    
+    WALL_WATTS = 0;  // reset the wattage tracking
 
     // set the teensy image array
     for (int i = 0; i < teensyImages.length; i++) {
@@ -83,9 +87,12 @@ class VideoWall {
 
       if (i < TEENSY_TOTAL) {
         //teensys[i].update(teensyImages[i]);
+        WALL_WATTS += teensys[i].watts;
         teensys[i].trigger();
       }
     }
+    
+    MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
 
     //int check = millis();
     //while (sendingCount > 0) {

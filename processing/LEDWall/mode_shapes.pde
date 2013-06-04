@@ -21,6 +21,7 @@ void setupShapes() {
 }
 
 void doShapes() {
+  //buffer.background(0);
   buffer.blendMode(ADD);
   shapes.display();
 }

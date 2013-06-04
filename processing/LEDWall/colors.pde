@@ -20,14 +20,21 @@ class Colors {
     int BLUE  = audioSpecs[b1].grey + audioSpecs[b2].grey / 2; 
     return color(RED, GREEN, BLUE);
   }
+  
+  color colorMapBG(int r1, int r2, int g1, int g2, int b1, int b2) {
+    int RED   = audioSpecs[r1].grey + audioSpecs[r1].grey / 6;
+    int GREEN = audioSpecs[g1].grey + audioSpecs[g2].grey / 6;
+    int BLUE  = audioSpecs[b1].grey + audioSpecs[b2].grey / 6; 
+    return color(RED, GREEN, BLUE);
+  }
 
   void updateBackground() {
-    background = colorMap(0, 1, 2, 3, 4, 5);
+    background = colorMapBG(0, 1, 2, 3, 4, 5);
   }
 
   void updateGrey() {
-    int temp = audio.volume.value + 32;
-    if (temp > buffer.max_brightness) temp = buffer.max_brightness;
+    int temp = audio.volume.value + 16;
+    if (temp > max_brightness) temp = max_brightness;
     grey = color(temp);
   }
 

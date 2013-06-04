@@ -17,7 +17,7 @@ void setupControl() {
     .setSize(400, 20)
       .setPosition(225, DEBUG_WINDOW_START + 100)
         .setRange(0, 255)
-          .setValue(245)
+          .setValue(240)
             .setColorForeground(color(255))
               .setColorBackground(color(#212121))
                 .setColorActive(color(255, 255, 0))
@@ -62,7 +62,7 @@ void setupControl() {
           .setColorForeground(color(#515151))
             .setColorActive(color(255))
               .setColorLabel(color(255))
-                .setValue(false)
+                .setValue(true)
                   .setMode(ControlP5.SWITCH)
                     ;
 
@@ -96,7 +96,7 @@ void setupControl() {
 }
 
 public void Brightness(int value) {
-  buffer.maxBrightness(value);
+  max_brightness = value;
 }
 
 public void modeButton(int v) {

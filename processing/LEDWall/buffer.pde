@@ -1,8 +1,10 @@
 
-Buffer buffer;
+PGraphics buffer;
+//Buffer buffer;
 
 void setupBuffer() {
-  buffer = new Buffer(this); 
+  //buffer = new Buffer(this); 
+  buffer = createGraphics(COLUMNS, ROWS, JAVA2D);
   buffer.smooth();
 
 
@@ -11,7 +13,7 @@ void setupBuffer() {
 
 class Buffer extends PGraphicsJava2D {
 
-  int max_brightness = 245;
+  int max_brightness = 128;
   float wattage = 0;
   float max_watts = 0;
 
@@ -23,10 +25,11 @@ class Buffer extends PGraphicsJava2D {
     loadPixels();
   }
 
-  void maxBrightness(int v) {
-    max_brightness = v;
-  }
-
+  //void maxBrightness(int v) {
+  //  max_brightness = v;
+  //}
+  
+  /*
   void endDraw() {
     super.endDraw();
 
@@ -41,6 +44,11 @@ class Buffer extends PGraphicsJava2D {
       r = int( map( r, 0, 255, 0, max_brightness ) );
       g = int( map( g, 0, 255, 0, max_brightness ) );
       b = int( map( b, 0, 255, 0, max_brightness ) );
+      
+      r = gammaTable[r][0];
+      g = gammaTable[g][1];
+      b = gammaTable[b][2];
+      
       pixels[i] = color(r, g, b, a);
 
       // watts
@@ -49,6 +57,6 @@ class Buffer extends PGraphicsJava2D {
     }
     max_watts = max(max_watts, wattage);
     updatePixels();
-  }
+  } */
 }
 
