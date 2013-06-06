@@ -1,5 +1,5 @@
-final int TOTAL_PARTICLES = 64;
-final float SHAPES_SIZE = 10;
+final int TOTAL_PARTICLES = 16;
+final float SHAPES_SIZE = 20;
 
 PShape[] svgs;
 Shapes shapes;
@@ -12,6 +12,8 @@ void setupShapes() {
   for (int i = 0; i < svgs.length; i++) {
     svgs[i] = loadShape(shape_file_names[i]);
     svgs[i].disableStyle();
+    //svgs[i].stroke(0);
+    //svgs[i].strokeWeight(1);
     println(i + ": " + svgs[i].getName());
   }
   
@@ -21,9 +23,16 @@ void setupShapes() {
 }
 
 void doShapes() {
-  //buffer.background(0);
-  buffer.blendMode(ADD);
+  buffer.background(0);
+  buffer.blendMode(BLEND);
   shapes.display();
+  
+  if (AUDIO_BG_ON) {
+    buffer.blendMode(ADD);
+    buffer.rectMode(CORNER);
+    buffer.fill(audio.colors.background); 
+    buffer.rect(0,0,buffer.width,buffer.height);
+  }
 }
 
 class Shapes {
@@ -173,8 +182,8 @@ class Particle {
     if ( j < 0 ) j = MAX_SPEC - 1;
 
     //pAngle = map(audio.averageSpecs[pSpec].value, 0, 100, -360, 360);
-    size.x = map(audio.averageSpecs[pSpec].value, 0, 100, pWidth, buffer.width/4);
-    size.y = map(audio.averageSpecs[j].value, 0, 100, pHeight, buffer.height/2);
+    size.x = map(audio.averageSpecs[pSpec].value, 0, 100, pWidth, buffer.width/2);
+    size.y = map(audio.averageSpecs[j].value, 0, 100, pHeight, buffer.height);
     
     if ( location.x < (size.x/2) || location.x > (buffer.width - (size.x/2)) ) {
       velocity.x *= -1;
@@ -191,9 +200,9 @@ class Particle {
   }
 
   void display() {
-    //buffer.stroke(0);
+    buffer.stroke(0);
     //buffer.strokeWeight(0.5);
-    buffer.noStroke();
+    //buffer.noStroke();
     buffer.fill(pColor);
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);

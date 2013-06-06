@@ -1,5 +1,6 @@
 
 void doUserBg() {
+  buffer.background(audio.colors.background);
   buffer.blendMode(ADD);
   buffer.stroke(255);
   buffer.strokeWeight(1);

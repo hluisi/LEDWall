@@ -6,7 +6,7 @@ float MAX_WATTS = 0;
 int sendingCount = 0;
 
 int[][] gammaTable;
-int max_brightness = 240;
+int max_brightness = 192;
 
 final int TEENSY_TOTAL  = 2;
 final int TEENSY_WIDTH  = 80;
@@ -18,7 +18,7 @@ final float BLUE_GAMMA = 2.1;
 
 Teensy[] teensys = new Teensy [TEENSY_TOTAL];
 
-void setupSerial() {
+void setupTeensys() {
   println("starting teensy setup...");
   String[] list = Serial.list();
   delay(20);
@@ -112,11 +112,11 @@ class Teensy extends Thread {
     r = gammaTable[r][0];  // map red to gamma correction table
     g = gammaTable[g][1];  // map green to gamma correction table
     b = gammaTable[b][2];  // map blue to gamma correction table
-
+    
     float pixel_watts = map(r + g + b, 0, 768, 0, 0.24);  // get the wattage of the pixel
     watts += pixel_watts; // add pixel wattage to total wattage count
 
-    return color(g, r, b); // translate the 24 bit color from RGB to the actual order used by the LED wiring.  GRB is the most common.
+    return color(g, r, b, 255); // translate the 24 bit color from RGB to the actual order used by the LED wiring.  GRB is the most common.
   }
 
   // converts an image to OctoWS2811's raw data format.
@@ -124,7 +124,6 @@ class Teensy extends Thread {
   // of 8.  The data array must be the proper size for the image.
   void update() { 
     watts = 0;
-
     int offset = 3;
     int x, y, xbegin, xend, xinc, mask;
     int linesPerPin = wall.teensyImages[id].height / 8;

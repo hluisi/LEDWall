@@ -15,7 +15,7 @@ final int DISPLAY_MODE_CLIPS   = 9;
 boolean AUTOMODE = false;
 boolean useAudio = true;
 boolean useKinect = true;
-boolean AUDIO_BG_ON = true;
+boolean AUDIO_BG_ON = false;
 
 final String[] DISPLAY_STR = { 
   "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
@@ -40,6 +40,8 @@ void setup() {
   }
 
   size(x, y, JAVA2D);
+  
+  //smooth();
 
   dh = new DisposeHandler(this);
 
@@ -49,7 +51,7 @@ void setup() {
 
   setupBuffer();
   setupMinim();
-  setupSerial();
+  setupTeensys();
 
   setupWall();
   setupKinect();
@@ -118,8 +120,6 @@ void drawDebug() {
   rectMode(CORNER);
   rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
 
-
-
   // fill text display background
   fill(#212121);
   rect(5, DEBUG_WINDOW_START + 5, 200, 210);
@@ -134,18 +134,14 @@ void drawDebug() {
   text("TREB: " + audio.TREB, 140, DEBUG_WINDOW_START + 80);
   text("dB: " + String.format("%.2f", audio.volume.dB), 10, DEBUG_WINDOW_START + 95);
 
-  if (WALL_WATTS > 3000) fill(255, 0, 0);
   text("WATTS: " + String.format("%.2f", teensys[0].watts), 10, DEBUG_WINDOW_START + 125);
   text("Max: "   + String.format("%.2f", MAX_WATTS), 115, DEBUG_WINDOW_START + 125);
-  fill(255);
-  text("R: " + audio.RED, 10, DEBUG_WINDOW_START + 140);
-  text("G: " + audio.GREEN, 50, DEBUG_WINDOW_START + 140);
-  text("B: " + audio.BLUE, 90, DEBUG_WINDOW_START + 140);
-  text("Clips speed: " + clips.current_speed, 10, DEBUG_WINDOW_START + 170);
-  text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 185);
+
+  text("Clips speed: " + clips.current_speed, 10, DEBUG_WINDOW_START + 140);
+  //text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 170);
 
   fill(#212121);
-  rectMode(CORNER);
+  
   rect(DEBUG_WINDOW_XSIZE - 150, DEBUG_WINDOW_START + 5, 145, 210);
   for (int i = 0; i < wall.teensyImages.length; i++) {
     pushMatrix();
@@ -174,35 +170,6 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
 }
-
-//void dispose() {
-//  shutdown();
-//  super.dispose();
-//}
-
-//void exit() {
-//  shutdown();
-//  super.exit();
-//}
-
-
-//void shutdown() {
-//System.out.println("CLOSING DOWN!!!");
-//buffer.beginDraw();
-//buffer.background(0);
-//buffer.endDraw();
-//wall.display();
-
-//kinect.close();
-
-// always close Minim audio classes when you are done with them
-//audio.close();
-//minim.stop();
-
-//for (int i = 0; i < teensys.length; i++) {
-//  teensys[i].quit();
-//}
-//}
 
 void keyPressed() {
 

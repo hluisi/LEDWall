@@ -27,9 +27,9 @@ boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 VideoWall wall;
 
 void setupWall() {
-  wall = new VideoWall();
-  for (int i = 0; i < TEENSY_TOTAL; i++) {
-    teensys[i].start();
+  wall = new VideoWall();                    // create the wall
+  for (int i = 0; i < TEENSY_TOTAL; i++) {   // start teensy threads
+    teensys[i].start();  
   }
   println("WALL SETUP ...");
 }
@@ -39,10 +39,10 @@ class VideoWall {
   PGraphics send_buffer;
   int send_time = 0;
 
-
   VideoWall() {
     send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
     send_buffer.loadPixels();
+    
     for (int i = 0; i < teensyImages.length; i++) {
       teensyImages[i] = createImage(80, 16, RGB);
       teensyImages[i].loadPixels();
@@ -53,7 +53,6 @@ class VideoWall {
     int screenX = (x * DEBUG_REAL_PIXEL_SIZE_X) + (DEBUG_REAL_PIXEL_SIZE_X / 2);
     int screenY = (y * DEBUG_REAL_PIXEL_SIZE_Y) + (DEBUG_REAL_PIXEL_SIZE_Y / 2);
     noStroke();
-    //smooth();
     fill(c);
     rectMode(CENTER);
     rect(screenX, screenY, DEBUG_PIXEL_SIZE, DEBUG_PIXEL_SIZE);
