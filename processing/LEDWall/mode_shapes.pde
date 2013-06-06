@@ -201,7 +201,7 @@ class Particle {
 
   void display() {
     buffer.stroke(0);
-    //buffer.strokeWeight(0.5);
+    buffer.strokeWeight(1);
     //buffer.noStroke();
     buffer.fill(pColor);
     buffer.pushMatrix();

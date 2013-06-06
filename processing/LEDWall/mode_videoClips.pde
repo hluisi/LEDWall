@@ -72,7 +72,7 @@ class MovieClips {
     }
 
     // set the speed of the next frame according to the current BPM
-    current_speed = map(audio.BPM, 0, 240, 0.25, 2.0);
+    current_speed = map(audio.BPM, 0, 180, 0.5, 1.75);
     clips[current].speed(current_speed);
   }
 

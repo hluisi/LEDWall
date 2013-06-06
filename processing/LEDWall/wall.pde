@@ -19,6 +19,7 @@ final int DEBUG_REAL_PIXEL_SIZE_Y = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_Y; //
 
 final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;         // the x size of the debug window
 final int DEBUG_WINDOW_YSIZE = 220;                                       // the y size of the debug window
+final int DEBUG_TEXT_X = DEBUG_WINDOW_XSIZE - 200;
 
 int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 

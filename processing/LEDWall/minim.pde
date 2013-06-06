@@ -13,20 +13,19 @@ void setupMinim() {
 }
 
 class AverageListener implements AudioListener {
-  public AudioInput in;     // audio input
-  public FFT fft;           // FFT 
-  public BeatDetect beat;   // beat detect
+  AudioInput in;     // audio input
+  FFT fft;           // FFT 
+  BeatDetect beat;   // beat detect
 
-    public int BASS, MIDS, TREB, RED, GREEN, BLUE;
 
-  private boolean gotBeat = false, gotMode = false, gotKinect = false;
+  boolean gotBeat = false, gotMode = false, gotKinect = false;
 
-  private int last_update = millis();
-  public int BPM = 0;
-  public int bpm_count = 0, sec_count = 0;
-  private int[] bpms = new int [15];
+  int last_update = millis();
+  int BPM = 0, check = 0;
+  int bpm_count = 0, sec_count = 0;
+  int[] bpms = new int [15];
   AudioSpectrum[] averageSpecs, fullSpecs;
-  AudioSpectrum volume;
+  AudioSpectrum volume, bass, mids, treb;
   Colors colors;
 
   AverageListener() {
@@ -45,35 +44,32 @@ class AverageListener implements AudioListener {
     for (int i = 0; i < fullSpecs.length; i++) fullSpecs[i] = new AudioSpectrum();
 
     volume = new AudioSpectrum();
-    colors = new Colors();
+    bass   = new AudioSpectrum();
+    mids   = new AudioSpectrum();
+    treb   = new AudioSpectrum();
 
-    BASS  = 0;
-    MIDS  = 0;
-    TREB  = 0;
-    RED   = 0;
-    GREEN = 0;
-    BLUE  = 0;
+    colors = new Colors();
 
     for (int i = 0; i < bpms.length; i++) bpms[i] = 0;
   }
 
-  private void mapSpectrums() {
+  void mapSpectrums() {
     for ( int i = 0; i < averageSpecs.length; i++) averageSpecs[i].set( fft.getAvg(i) );
     for ( int i = 0; i < fullSpecs.length; i++) fullSpecs[i].set( fft.getBand(i) );
+  }
+
+  void mapRanges() {
+    bass.set( (averageSpecs[0].value + averageSpecs[1].value) / 2 );
+    mids.set( (averageSpecs[2].value + averageSpecs[3].value) / 2 );
+    treb.set( (averageSpecs[4].value + averageSpecs[5].value) / 2 );
     volume.set( in.mix.level()*100 );
   }
 
-  private void mapRanges() {
-    BASS = round(( averageSpecs[0].value + averageSpecs[1].value ) / 2);
-    MIDS = round(( averageSpecs[2].value + averageSpecs[3].value ) / 2);
-    TREB = round(( averageSpecs[4].value + averageSpecs[5].value ) / 2);
-  }
-
-  private void mapColors() {
+  void mapColors() {
     colors.update(averageSpecs);
   }
 
-  private void mapBPM() {
+  void mapBPM() {
 
     // do we have a beat?
     if ( beat.isOnset() ) {
@@ -83,7 +79,7 @@ class AverageListener implements AudioListener {
       gotKinect = true;
     }
 
-    int check = millis();
+    check = millis();
     if (check - last_update > 1000) {
       if (sec_count == bpms.length) {
         sec_count = 0;
@@ -144,7 +140,7 @@ class AverageListener implements AudioListener {
 }
 
 class AudioSpectrum {
-  final int FRAME_TRIGGER      = 60; // how many frames must the peak and low values 
+  final int FRAME_TRIGGER = 60; // how many frames must the peak and low values 
 
   float raw_peak = 0;    // the peak or max level of the spectrum
   float max_peak = 0;
@@ -160,6 +156,8 @@ class AudioSpectrum {
   int peak_count = 0, smooth_count = 0;  // counters for peak, base, and smooth
 
   int grey = 0;
+  
+  float peak_check = 0;
 
   boolean lowerPeak = false;  // are we lowering the peak?
 
@@ -170,7 +168,7 @@ class AudioSpectrum {
 
     raw = v * spectrumGain; // set raw
 
-    float peak_check = max(raw_peak, raw); // get the max peak level
+    peak_check = max(raw_peak, raw); // get the max peak level
     if (peak_check < 1) peak_check = 1;
 
     raw_base = min(raw_base, raw);             // set the min base level

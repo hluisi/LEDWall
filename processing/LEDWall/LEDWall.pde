@@ -69,6 +69,7 @@ void setup() {
   frameRate(300);
 
   frame.setTitle("Wall of Light");
+  background(0);
 }
 
 void autoMode() {
@@ -78,13 +79,13 @@ void autoMode() {
       int count = int(random(1, 10));
       DISPLAY_MODE = count;
       r.activate(count);
-      println("MODE - " + DISPLAY_STR[count]);
+      //println("MODE - " + DISPLAY_STR[count]);
     }
   }
 }
 
 void draw() {
-  background(0);      
+  //background(0);      
 
   buffer.beginDraw();         // begin buffering
   buffer.noStroke();
@@ -108,55 +109,7 @@ void draw() {
   xoff += 0.2;
 }
 
-void drawDebug() {
-  if (!DEBUG_SHOW_WALL) {
-    wall_image.copy(buffer.get(), 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS*2, ROWS*2);
-    image(wall_image, (width / 2) - ( (COLUMNS*2) / 2), 0);
-  }
-  textSize(11);
-  fill(#313131);
-  stroke(0);
-  strokeWeight(1);
-  rectMode(CORNER);
-  rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
 
-  // fill text display background
-  fill(#212121);
-  rect(5, DEBUG_WINDOW_START + 5, 200, 210);
-
-  fill(255);
-  text("FPS: " + String.format("%.2f", frameRate), 10, DEBUG_WINDOW_START + 20);
-  text("Display Mode:  " + DISPLAY_STR[DISPLAY_MODE], 10, DEBUG_WINDOW_START + 35);
-
-  text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, 10, DEBUG_WINDOW_START + 65);
-  text("BASS: " + audio.BASS, 10, DEBUG_WINDOW_START + 80); 
-  text("MIDS: " + audio.MIDS, 70, DEBUG_WINDOW_START + 80);
-  text("TREB: " + audio.TREB, 140, DEBUG_WINDOW_START + 80);
-  text("dB: " + String.format("%.2f", audio.volume.dB), 10, DEBUG_WINDOW_START + 95);
-
-  text("WATTS: " + String.format("%.2f", teensys[0].watts), 10, DEBUG_WINDOW_START + 125);
-  text("Max: "   + String.format("%.2f", MAX_WATTS), 115, DEBUG_WINDOW_START + 125);
-
-  text("Clips speed: " + clips.current_speed, 10, DEBUG_WINDOW_START + 140);
-  //text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 170);
-
-  fill(#212121);
-  
-  rect(DEBUG_WINDOW_XSIZE - 150, DEBUG_WINDOW_START + 5, 145, 210);
-  for (int i = 0; i < wall.teensyImages.length; i++) {
-    pushMatrix();
-    int y = DEBUG_WINDOW_START + 14 + (i * 16);
-
-    String temp = "Teensy " + i;
-    fill(255);
-    text(temp, DEBUG_WINDOW_XSIZE - 90 - textWidth(temp) - 5, y + (i * 4) + 12);
-
-    translate(DEBUG_WINDOW_XSIZE - 90, y + (i * 4));
-
-    image(wall.teensyImages[i], 0, 0);
-    popMatrix();
-  }
-}
 
 void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
@@ -169,6 +122,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
+  displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
 }
 
 void keyPressed() {

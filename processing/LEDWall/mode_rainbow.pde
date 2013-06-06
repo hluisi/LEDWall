@@ -22,12 +22,15 @@ class Rainbow {
   final int MODE_WHEEL  = 0;
   final int MODE_TUNNEL = 1;
   final int TOTAL_MODES = 2;
+  float horizontal = 0;
+  float vertical = 0;
+  float random_test = 0;
   int mode = 1;
   boolean use_audio;
   PVector location;                       // the location of the center of the wheel
   PVector size;
   PVector last_size;
-  int last_cycle;                           // the last time the colors were cycled
+  int last_cycle, bi;                           // the last time the colors were cycled
   int cycle_time = 100;                // the time between cycling colors
   color[] colors = new color [8];
   color[] default_colors = {
@@ -101,8 +104,8 @@ class Rainbow {
     }
     
     if ( audio.isOnBeat() ) {
-      float test = random(0, 1);
-      if (test < 0.65) {
+      random_test = random(0, 1);
+      if (random_test < 0.65) {
         mode = round( random(TOTAL_MODES - 1) );
         println("RAINBOW - new mode: " + RAINBOW_STR[mode]);
         //if (mode == MODE_TUNNEL) {
@@ -125,15 +128,15 @@ class Rainbow {
     
     for (int i = 0; i < 8; i++) {
       
-      float horizontal = map(audio.BASS, 0, 100, 20, 10);
-      float vertical   = map(audio.MIDS, 0, 100, 10, 5);
+      horizontal = map(audio.mids.value, 0, 100, 20, 10);
+      vertical   = map(audio.treb.value, 0, 100, 10, 5);
       
       buffer.fill(colors[i]);
       buffer.triangle(location.x, location.y, 0, (i * 10) + vertical, 0, ((i + 1) * 10) - vertical);
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, 0, ((i + 1) * 20) - horizontal, 0);
       
-      int j = 7 - i;
-      buffer.fill(colors[j]);
+      bi = 7 - i;
+      buffer.fill(colors[bi]);
       buffer.triangle(location.x, location.y, buffer.width, (i * 10) + vertical, buffer.width, ((i + 1) * 10) - vertical);
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
       
@@ -159,11 +162,11 @@ class Rainbow {
     for (int j = 0; j < 2; j++) {
       for (int i = 0; i < colors.length; i++) {
         buffer.fill(colors[i]);
-        float h = map(audio.BASS, 0, 100, size.x, last_size.x);
-        float v = map(audio.MIDS, 0, 100, size.y, last_size.y);
+        horizontal = map(audio.mids.value, 0, 100, size.x, last_size.x);
+        vertical   = map(audio.treb.value, 0, 100, size.y, last_size.y);
         //float x = map(i, 0, colors.length, 0, -10);
         //float y = map(i, 0, colors.length, 0, -15);
-        buffer.rect(0,0,h,v,2.5);
+        buffer.rect(0,0,horizontal,vertical,2.5);
         last_size.set(size.x, size.y);
         size.div(1.5);
       }
