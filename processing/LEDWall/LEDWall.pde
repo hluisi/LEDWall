@@ -34,15 +34,16 @@ void setup() {
   if (DEBUG_SHOW_WALL) {
     x = DEBUG_WINDOW_XSIZE;
     y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
-  } else {
+  } 
+  else {
     x = DEBUG_WINDOW_XSIZE;
     y = DEBUG_WINDOW_YSIZE + (ROWS*2);
     DEBUG_WINDOW_START = ROWS*2;
   }
 
   size(x, y, P2D);
-  
-  
+
+
   //smooth();
 
   dh = new DisposeHandler(this);
@@ -98,27 +99,27 @@ void draw() {
   buffer.background(0);
 
   if (AUTOMODE) autoMode();   // auto change mode to audio beat
-  
+
   doMode();                   // do the current mode(s)
-  
+
   if (AUDIO_BG_ON) {
     buffer.blendMode(ADD);
     buffer.rectMode(CENTER);
     buffer.fill(audio.colors.background); 
-    buffer.rect(buffer.width / 2, buffer.height / 2,buffer.width + 20,buffer.height + 10);
+    buffer.rect(buffer.width / 2, buffer.height / 2, buffer.width + 20, buffer.height + 10);
   }
 
   buffer.blendMode(BLEND);    // reset to blend mode
-  
+
   if (useKinect) {  // using the kinect?
     kinect.update(); // update the kinect
     buffer.image(kinect.buffer_image, 0, 0); // draw kinect user(s)
   }
-  
+
   buffer.noStroke(); // reset stroke
   buffer.noFill();   // reset fill
-  
-  buffer.endDraw();           // end buffering
+
+    buffer.endDraw();           // end buffering
   wall.draw();                // draw the wall
   drawDebug();                // draw debug info
   xoff += 0.2;

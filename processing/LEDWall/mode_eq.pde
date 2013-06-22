@@ -26,7 +26,7 @@ class EQ {
 
     volume = new eqBar( buffer.width / 2, buffer.height - 6, buffer.width - 16, 10, CENTER, CENTER, tFont);
     volume.VALUE.textColor(color(0, 255));
-    volume.VALUE.textOffset(19);
+    volume.VALUE.textOffset(0);
     volume.VALUE.setMax(100);
     volume.VALUE.setPeakWeight(1);
     volume.VALUE.peakOn();
@@ -38,7 +38,7 @@ class EQ {
     for (int i = 0; i < 9; i++) {
       spec[i] = new eqBar( x, 60, 14, 58, CENTER, BOTTOM, eqFont);
       spec[i].VALUE.textColor(color(255, 255));
-      spec[i].VALUE.textOffset(11);
+      spec[i].VALUE.textOffset(10);
       spec[i].VALUE.setMax(100);
       spec[i].VALUE.setPeakWeight(1);
       spec[i].VALUE.peakOn();

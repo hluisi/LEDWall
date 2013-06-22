@@ -70,15 +70,15 @@ void setupControl() {
                                       .addItem("City", 7)
                                         .addItem("Atari", 8)
                                           .addItem("Clips", 9)
-                                          .addItem("iChing", 10)
-                                            .activate(1)
-                                              ;
+                                            .addItem("iChing", 10)
+                                              .activate(1)
+                                                ;
 
   for (Toggle t:r.getItems()) {
     t.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);
     t.captionLabel().setPaddingY(3);
   }
-  
+
   displayModeText = cp5.addTextlabel("mode_text")
     .setPosition(200, DEBUG_WINDOW_START + 5)
       .setColor(color(255))
@@ -140,7 +140,8 @@ void auto_mode(boolean theFlag) {
   if (theFlag==true) {
     AUTOMODE = true;
     println("Auto Mode: ON");
-  } else {
+  } 
+  else {
     AUTOMODE = false;
     println("Auto Mode: OFF");
   }
@@ -150,7 +151,8 @@ void map_user(boolean theFlag) {
   if (theFlag==true) {
     kinect.mapUser = true;
     println("User Map: ON");
-  } else {
+  } 
+  else {
     kinect.mapUser = false;
     println("User Map: OFF");
   }
@@ -160,7 +162,8 @@ void audio_bg(boolean theFlag) {
   if (theFlag==true) {
     AUDIO_BG_ON = true;
     println("Audio backgroung: ON");
-  } else {
+  } 
+  else {
     AUDIO_BG_ON = false;
     println("Audio background: OFF");
   }

@@ -48,9 +48,9 @@ class Rainbow {
     last_cycle = millis();
     use_audio = false;
   }
-  
+
   void resetSize() {
-    size.set(buffer.width*3,buffer.height*6);
+    size.set(buffer.width*3, buffer.height*6);
     last_size.set(size.x*1.1, size.y*1.1);
   }
 
@@ -99,10 +99,11 @@ class Rainbow {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
       //if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
-      if (use_audio) cycleColors(audio.colors.background); else cycleColors();
+      if (use_audio) cycleColors(audio.colors.background); 
+      else cycleColors();
       last_cycle = cTime;
     }
-    
+
     if ( audio.isOnBeat() ) {
       random_test = random(0, 1);
       if (random_test < 0.65) {
@@ -115,40 +116,38 @@ class Rainbow {
         //}
       }
     }
-    
   }
-  
+
   void doWheel() {
     buffer.stroke(0);
     buffer.strokeWeight(0.5);
-    
+
     for (int i = 0; i < 8; i++) {
-      
+
       horizontal = map(audio.mids.value, 0, 100, 20, 10);
       vertical   = map(audio.treb.value, 0, 100, 10, 5);
-      
+
       buffer.fill(colors[i]);
       buffer.triangle(location.x, location.y, 0, (i * 10) + vertical, 0, ((i + 1) * 10) - vertical);
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, 0, ((i + 1) * 20) - horizontal, 0);
-      
+
       bi = 7 - i;
       buffer.fill(colors[bi]);
       buffer.triangle(location.x, location.y, buffer.width, (i * 10) + vertical, buffer.width, ((i + 1) * 10) - vertical);
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
-      
     }
   }
-  
+
   void doTunnel() {
     buffer.rectMode(CENTER);
     buffer.blendMode(BLEND);
     buffer.stroke(0);
     buffer.strokeWeight(0.5);
-    
+
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);
     //buffer.translate(buffer.width/2, buffer.height/2);
-    
+
     for (int j = 0; j < 2; j++) {
       for (int i = 0; i < colors.length; i++) {
         buffer.fill(colors[i]);
@@ -156,18 +155,18 @@ class Rainbow {
         vertical   = map(audio.treb.value, 0, 100, size.y, last_size.y);
         //float x = map(i, 0, colors.length, 0, -10);
         //float y = map(i, 0, colors.length, 0, -15);
-        buffer.rect(0,0,horizontal,vertical, 2.5);
+        buffer.rect(0, 0, horizontal, vertical, 2.5);
         last_size.set(size.x, size.y);
         size.div(1.5);
       }
     }
-    
+
     buffer.fill(0);
-    buffer.rect(0,0,size.x,size.y,5);
+    buffer.rect(0, 0, size.x, size.y, 5);
     buffer.popMatrix();
     resetSize();
   }
-    
+
 
   void display() {
     check();

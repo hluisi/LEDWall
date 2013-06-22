@@ -8,7 +8,7 @@ void setupShapes() {
   // load the svgs
   String[] shape_file_names = getFileNames("shapes", "svg"); // get the svg file names
 
-  svgs = new PShape [shape_file_names.length];               // set the length of the svg array
+    svgs = new PShape [shape_file_names.length];               // set the length of the svg array
   for (int i = 0; i < svgs.length; i++) {
     svgs[i] = loadShape(shape_file_names[i]);
     svgs[i].disableStyle();
@@ -16,7 +16,7 @@ void setupShapes() {
     //svgs[i].strokeWeight(1);
     println(i + ": " + svgs[i].getName());
   }
-  
+
   shapes = new Shapes();
 
   println("Shapes SETUP ...");
@@ -129,7 +129,8 @@ class Particle {
   void checkRadius() {
     if (pWidth >= pHeight) {
       pRadius = pWidth;
-    } else {
+    } 
+    else {
       pRadius = pHeight;
     }
   }
@@ -163,7 +164,8 @@ class Particle {
   color getColor() {
     if (brightness(audio.colors.background) < 32 ) {
       return color(brightness(audio.colors.grey)+16);
-    } else {
+    } 
+    else {
       return audio.colors.users[pSpec];
     }
   }
@@ -177,7 +179,7 @@ class Particle {
     //pAngle = map(audio.averageSpecs[pSpec].value, 0, 100, -360, 360);
     size.x = map(audio.averageSpecs[pSpec].value, 0, 100, pWidth, buffer.width/2);
     size.y = map(audio.averageSpecs[j].value, 0, 100, pHeight, buffer.height);
-    
+
     if ( location.x < (size.x/2) || location.x > (buffer.width - (size.x/2)) ) {
       velocity.x *= -1;
     }

@@ -51,7 +51,8 @@ public void onEndCalibration(int userId, boolean successfull) {
   if (successfull) {
     println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
     kinect.startTrackingSkeleton(userId);
-  } else {
+  } 
+  else {
     println("KINECT - onEndCalibration - calibration for user " + userId + " has failed!!!");
     println(" - Trying pose detection");
     kinect.startPoseDetection("Psi", userId);
@@ -105,7 +106,8 @@ class Kinect extends SimpleOpenNI {
       println("KINECT - ERROR opening the depthMap! Is the kinect connected?!?!");
       exit();
       return;
-    } else {
+    } 
+    else {
       depth_image = createImage(KINECT_WIDTH, KINECT_HEIGHT, ARGB);
       depth_image.loadPixels();
       println("KINECT - depth enabled!");
@@ -116,7 +118,8 @@ class Kinect extends SimpleOpenNI {
       println("KINECT - ERROR opening the userMap! Is the kinect connected?!?!");
       exit();
       return;
-    } else {
+    } 
+    else {
       user_image = createImage(KINECT_WIDTH, KINECT_HEIGHT, ARGB);
       user_image.loadPixels();
       println("KINECT - user enabled!");
@@ -139,7 +142,8 @@ class Kinect extends SimpleOpenNI {
   color getUserColor(int index) {
     if ( index >= 12 || brightness(audio.colors.background) < 16 ) {
       return color(brightness(audio.colors.grey) + 16);
-    } else {
+    } 
+    else {
       return audio.colors.users[index];
     }
   }
@@ -172,10 +176,12 @@ class Kinect extends SimpleOpenNI {
             float g = map(depth_brightness, 0, 255, 0, user_green);
             float b = map(depth_brightness, 0, 255, 0, user_blue);
             user_image.pixels[i] = color(r, g, b);
-          } else {
+          } 
+          else {
             user_image.pixels[i] = c;
           }
-        } else {
+        } 
+        else {
           user_image.pixels[i] = color(0, 0, 0, 0);
         }
       }
@@ -186,13 +192,15 @@ class Kinect extends SimpleOpenNI {
     if (currentUserNumber == -1) {
       user_center.x = buffer.width / 2; 
       user_center.y = buffer.height / 2;
-    } else {
+    } 
+    else {
       PVector temp = new PVector();
       if (getCoM(currentUserNumber, temp)) {
         convertRealWorldToProjective(temp, user_center);
         user_center.x /= 4; 
         user_center.y /= 4;
-      } else {
+      } 
+      else {
         user_center.x = buffer.width / 2; 
         user_center.y = buffer.height / 2;
       }

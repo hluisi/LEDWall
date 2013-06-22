@@ -164,10 +164,12 @@ class AtariSingle {
   void draw() {
     if (mode == SOLID) {
       buffer.noStroke();
-    } else if (mode == HOLE) {
+    } 
+    else if (mode == HOLE) {
       stroke_weight = map(audio.volume.value, 0, 100, 1, (h / 5) /* + 1 */);
       buffer.strokeWeight(stroke_weight);
-    } else {
+    } 
+    else {
       stroke_weight = 2;
       buffer.strokeWeight(stroke_weight);
     }
@@ -181,7 +183,8 @@ class AtariSingle {
       if (mode == SOLID) {
         buffer.noStroke();
         buffer.fill(thisColor);
-      } else {
+      } 
+      else {
         buffer.noFill();
         buffer.stroke(thisColor);
       }

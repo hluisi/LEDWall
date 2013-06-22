@@ -108,11 +108,11 @@ class Teensy extends Thread {
     r = int( map( r, 0, 255, 0, max_brightness ) );  // map red to max LED brightness
     g = int( map( g, 0, 255, 0, max_brightness ) );  // map green to max LED brightness
     b = int( map( b, 0, 255, 0, max_brightness ) );  // map blue to max LED brightness
-    
-    r = gammaTable[r][0];  // map red to gamma correction table
+
+      r = gammaTable[r][0];  // map red to gamma correction table
     g = gammaTable[g][1];  // map green to gamma correction table
     b = gammaTable[b][2];  // map blue to gamma correction table
-    
+
     float pixel_watts = map(r + g + b, 0, 768, 0, 0.24);  // get the wattage of the pixel
     watts += pixel_watts; // add pixel wattage to total wattage count (watts is added to WALL_WATTS in wall tab)
 
@@ -137,7 +137,8 @@ class Teensy extends Thread {
         xbegin = 0;
         xend = wall.teensyImages[id].width;
         xinc = 1;
-      } else {
+      } 
+      else {
         // odd numbered rows are right to left
         xbegin = wall.teensyImages[id].width - 1;
         xend = -1;
@@ -167,7 +168,8 @@ class Teensy extends Thread {
       int usec = (int)((1000000.0 / frameRate) * 0.75); // using processing's frameRate to fix timing
       data[1] = (byte)(usec);   // request the frame sync pulse
       data[2] = (byte)(usec >> 8); // at 75% of the frame time
-    } else {
+    } 
+    else {
       data[0] = '%';  // others sync to the master board
       data[1] = 0;
       data[2] = 0;

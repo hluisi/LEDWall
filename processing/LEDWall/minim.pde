@@ -18,7 +18,7 @@ class AverageListener implements AudioListener {
   BeatDetect beat;   // beat detect
 
 
-  boolean gotBeat = false, gotMode = false, gotKinect = false;
+    boolean gotBeat = false, gotMode = false, gotKinect = false;
 
   int last_update = millis();
   int BPM = 0, check = 0;
@@ -100,21 +100,24 @@ class AverageListener implements AudioListener {
     if ( gotBeat ) {
       gotBeat = false;
       return true;
-    } else return false;
+    } 
+    else return false;
   }
 
   boolean isOnMode() {
     if ( gotMode ) {
       gotMode = false;
       return true;
-    } else return false;
+    } 
+    else return false;
   }
 
   boolean isOnKinect() {
     if ( gotKinect ) {
       gotKinect = false;
       return true;
-    } else return false;
+    } 
+    else return false;
   }
 
   void close() {
@@ -129,8 +132,8 @@ class AverageListener implements AudioListener {
     mapColors();
     mapBPM();
   }
-  
-  
+
+
 
   void samples(float[] samps) {
     update(samps);
@@ -151,7 +154,7 @@ class AudioSpectrum {
 
   float dB = 0;                 // current db of the level
   float spectrumGain = 1.5;     // the gain of the level.  No idea id this is right, but it seems to 
-                                // work have spending many hours of tail and error on it. 
+  // work have spending many hours of tail and error on it. 
 
   int value = 0;                // raw value mapped from 0 to 100
   int peak = 0;                 // current peak
@@ -160,7 +163,7 @@ class AudioSpectrum {
   int smooth_count = 0;         // counter for peak
 
   int grey = 0;                 // level mapped from 0 to 255
-  
+
   float peak_check = 0;         // count before max peak is lowered
 
   boolean lowerPeak = false;    // are we lowering the peak?
@@ -189,7 +192,8 @@ class AudioSpectrum {
 
     if (lowerPeak == true && raw < raw_peak) { // should we lower the peak?
       raw_peak -= 0.5;
-    } else if (lowerPeak == true && raw >= raw_peak) { // should we stop trying to lower the peak?
+    } 
+    else if (lowerPeak == true && raw >= raw_peak) { // should we stop trying to lower the peak?
       lowerPeak = false;
     }
 
@@ -232,7 +236,7 @@ class Colors {
     int BLUE  = audio.averageSpecs[b1].grey + audio.averageSpecs[b2].grey / 2; 
     return color(RED, GREEN, BLUE);
   }
-  
+
   color colorMapBG(int r1, int r2, int g1, int g2, int b1, int b2) {
     int RED   = audio.averageSpecs[r1].grey + audio.averageSpecs[r1].grey / 6;
     int GREEN = audio.averageSpecs[g1].grey + audio.averageSpecs[g2].grey / 6;
@@ -295,5 +299,4 @@ class Colors {
     updateUsers();
   }
 }
-
 

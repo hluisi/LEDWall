@@ -30,7 +30,7 @@ VideoWall wall;
 void setupWall() {
   wall = new VideoWall();                    // create the wall
   for (int i = 0; i < TEENSY_TOTAL; i++) {   // start teensy threads
-    teensys[i].start();  
+    teensys[i].start();
   }
   println("WALL SETUP ...");
 }
@@ -43,7 +43,7 @@ class VideoWall {
   VideoWall() {
     send_buffer = createGraphics(ROWS, COLUMNS, P2D);
     send_buffer.loadPixels(); // load the pixels to make sure the array is not set to null
-    
+
     for (int i = 0; i < teensyImages.length; i++) {
       teensyImages[i] = createImage(80, 16, RGB);
       teensyImages[i].loadPixels();
@@ -78,7 +78,7 @@ class VideoWall {
     send_buffer.image(buffer, 0, 0);
     send_buffer.popMatrix();
     send_buffer.endDraw();
-    
+
     WALL_WATTS = 0;  // reset the wattage tracking
 
     // set the teensy image array
@@ -92,12 +92,12 @@ class VideoWall {
         teensys[i].trigger();
       }
     }
-    
+
     MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
 
     //int check = millis();
     //while (sendingCount > 0) {
-      // wait till threads are donesending
+    // wait till threads are donesending
     //}
     //send_time = millis() - check;
   }

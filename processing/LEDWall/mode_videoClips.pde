@@ -44,7 +44,8 @@ class MovieClips {
         current = next;
         println("CLIPS - new clip: " + names[current]);
         switch_count++;
-      } else {
+      } 
+      else {
         float spot = noise(xoff) * clips[current].duration();
         clips[current].jump( spot );
         println("  -  jummped to: " + clips[current].time());

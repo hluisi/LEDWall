@@ -50,7 +50,8 @@ class ConcCircles {
         if (kinect.currentUserNumber != -1) {
           kx = kinect.user_center.x; 
           ky = kinect.user_center.y - 12;
-        } else {
+        } 
+        else {
           kx = buffer.width / 2; 
           ky = buffer.height / 2;
         }
@@ -64,8 +65,9 @@ class ConcCircles {
           if (test > 0.75) theta *= -1;
         }
         if (theta > 0) {
-          theta += 360 / numCircles / (audio.BPM + 1); 
-        } else {
+          theta += 360 / numCircles / (audio.BPM + 1);
+        } 
+        else {
           theta -= 360 / numCircles / (audio.BPM + 1);
         }
       }
@@ -87,7 +89,8 @@ class SpecCity {
     if (kinect.currentUserNumber != -1) {
       kx = kinect.user_center.x; 
       ky = kinect.user_center.y - 12;
-    } else {
+    } 
+    else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
@@ -149,7 +152,8 @@ class Pulsar {
     if (kinect.currentUserNumber != -1) {
       kx = kinect.user_center.x; 
       ky = kinect.user_center.y - 12;
-    } else {
+    } 
+    else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
@@ -168,6 +172,5 @@ class Pulsar {
     //buffer.filter(POSTERIZE, 16);
   }
 }
-
 
 
