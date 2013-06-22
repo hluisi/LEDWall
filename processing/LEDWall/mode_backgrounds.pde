@@ -3,11 +3,11 @@ void doUserBg() {
   buffer.background(audio.colors.background);
   buffer.blendMode(ADD);
   buffer.stroke(255);
-  buffer.strokeWeight(1);
+  buffer.strokeWeight(2);
   for (int i = 0; i < 160 - 1; i++) {
     buffer.line(i, 40 + audio.in.mix.get(i)*60, i + 1, 40 + audio.in.mix.get(i+1)*60);
   }
-  buffer.noStroke();
+  
 }
 
 void displayImage(PImage _image) {

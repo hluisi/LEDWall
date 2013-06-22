@@ -2,7 +2,7 @@
 
 void drawDebug() {
   if (!DEBUG_SHOW_WALL) { // show the buffer
-    wall_image.copy(buffer.get(), 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS*2, ROWS*2); 
+    wall_image.copy(buffer.get(), 0, 0, KINECT_WIDTH, KINECT_HEIGHT, 0, 0, COLUMNS*2, ROWS*2); 
     image(wall_image, (width / 2) - ( (COLUMNS*2) / 2), 0);
   }
   
@@ -32,10 +32,10 @@ void drawDebug() {
   text("dB: " + String.format("%.2f", audio.volume.dB), DEBUG_TEXT_X, DEBUG_WINDOW_START + 95);
 
   text("WATTS: " + String.format("%.2f", teensys[0].watts), DEBUG_TEXT_X, DEBUG_WINDOW_START + 125);
-  text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 80, DEBUG_WINDOW_START + 125);
+  text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 100, DEBUG_WINDOW_START + 125);
 
   text("Clips speed: " + clips.current_speed, DEBUG_TEXT_X, DEBUG_WINDOW_START + 140);
-  //text("send time: " + wall.send_time, 10, DEBUG_WINDOW_START + 170);
+  text("Users: " + kinect.numberOfUsers, DEBUG_TEXT_X, DEBUG_WINDOW_START + 170);
 
   //fill(#212121);
 

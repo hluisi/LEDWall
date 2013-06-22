@@ -26,8 +26,8 @@ void setupTeensys() {
   println(list);
 
   // SETUP TEENSYs
-  teensys[0] = new Teensy(this, 4, "COM13", true);
-  teensys[1] = new Teensy(this, 5, "COM14", false);
+  teensys[0] = new Teensy(this, 4, "COM4", true);
+  teensys[1] = new Teensy(this, 5, "COM5", false);
   setupGamma();
   println("TEENSYS SETUP!!");
   println();
@@ -114,7 +114,7 @@ class Teensy extends Thread {
     b = gammaTable[b][2];  // map blue to gamma correction table
     
     float pixel_watts = map(r + g + b, 0, 768, 0, 0.24);  // get the wattage of the pixel
-    watts += pixel_watts; // add pixel wattage to total wattage count
+    watts += pixel_watts; // add pixel wattage to total wattage count (watts is added to WALL_WATTS in wall tab)
 
     return color(g, r, b, 255); // translate the 24 bit color from RGB to the actual order used by the LED wiring.  GRB is the most common.
   }

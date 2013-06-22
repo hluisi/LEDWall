@@ -1,9 +1,11 @@
 import SimpleOpenNI.*;
 
-final int KINECT_WIDTH = 640;
-final int KINECT_HEIGHT = 480;
-final int BUFFER_WIDTH  = 640;
-final int BUFFER_HEIGHT = 320;
+final int KINECT_WIDTH  = 640;
+final int KINECT_HEIGHT = 320;
+final int KINECT_X_START = 0;
+final int KINECT_X_END = KINECT_WIDTH;
+final int KINECT_Y_START = 80;
+final int KINECT_Y_END = 400;
 
 Kinect kinect;
 
@@ -71,30 +73,15 @@ public void onEndPose(String pose, int userId) {
 }
 
 class Kinect extends SimpleOpenNI {
-  final int KINECT_X_START = 0;
-  final int KINECT_X_END = BUFFER_WIDTH;
-  final int KINECT_Y_START = 0;
-  final int KINECT_Y_END = BUFFER_HEIGHT;
-
-  int mode = 0;
-
-  final int MODE_DEPTH      = 0;
-  final int MODE_USERSBLACK = 1;
-  final int MODE_USERSCOLOR = 2;
-  final int MODE_USERSSKELL = 3;
-  final int MODE_HANDS      = 4;
-
 
   PVector user_center = new PVector();
 
   int[] depth_map;
   int[] user_map;
-  int user_id = -1;
-  int rc = 0;
+  int currentUserNumber = -1;
+  int numberOfUsers = 0;
 
   color user_color = color(0);
-
-  color[] usercolors = new color [12];
 
   boolean mapUser = false;
 
@@ -119,7 +106,8 @@ class Kinect extends SimpleOpenNI {
       exit();
       return;
     } else {
-      depth_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
+      depth_image = createImage(KINECT_WIDTH, KINECT_HEIGHT, ARGB);
+      depth_image.loadPixels();
       println("KINECT - depth enabled!");
     }
 
@@ -129,12 +117,12 @@ class Kinect extends SimpleOpenNI {
       exit();
       return;
     } else {
-      user_image = createImage(BUFFER_WIDTH, BUFFER_HEIGHT, ARGB);
+      user_image = createImage(KINECT_WIDTH, KINECT_HEIGHT, ARGB);
       user_image.loadPixels();
       println("KINECT - user enabled!");
     }
 
-    //alternativeViewPointDepthToImage();
+    alternativeViewPointDepthToImage();
     mirrorOn();
   }
 
@@ -152,14 +140,14 @@ class Kinect extends SimpleOpenNI {
     if ( index >= 12 || brightness(audio.colors.background) < 16 ) {
       return color(brightness(audio.colors.grey) + 16);
     } else {
-      //return usercolors[index];
       return audio.colors.users[index];
     }
   }
 
   void updateUsers() {
-    if (getNumberOfUsers() > 0) {
-      user_id = -1;
+    numberOfUsers = getNumberOfUsers();
+    if (numberOfUsers > 0) {
+      currentUserNumber = -1;
       user_map = getUsersPixels(SimpleOpenNI.USERS_ALL);
 
       int user_red = 0, user_green = 0, user_blue = 0;
@@ -170,10 +158,10 @@ class Kinect extends SimpleOpenNI {
 
       for (int i = 0; i < user_image.pixels.length; i++) {
         if (user_map[i] != 0) {
-          user_id = max(user_map[i], user_id);
-          int current_user = user_map[i];
+          currentUserNumber = max(user_map[i], currentUserNumber); // make this better
+          int thisUser = user_map[i];
 
-          color c = getUserColor(current_user);
+          color c = getUserColor(thisUser);
 
           if (mapUser) {
             user_red   = (c >> 16) & 0xFF; 
@@ -192,15 +180,15 @@ class Kinect extends SimpleOpenNI {
         }
       }
       user_image.updatePixels();
-      buffer_image.copy(user_image, 0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, 0, 0, COLUMNS, ROWS);
+      buffer_image.copy(user_image, 0, 0, KINECT_WIDTH, KINECT_HEIGHT, 0, 0, COLUMNS, ROWS);
     } 
 
-    if (user_id == -1) {
+    if (currentUserNumber == -1) {
       user_center.x = buffer.width / 2; 
       user_center.y = buffer.height / 2;
     } else {
       PVector temp = new PVector();
-      if (getCoM(user_id, temp)) {
+      if (getCoM(currentUserNumber, temp)) {
         convertRealWorldToProjective(temp, user_center);
         user_center.x /= 4; 
         user_center.y /= 4;
@@ -209,10 +197,6 @@ class Kinect extends SimpleOpenNI {
         user_center.y = buffer.height / 2;
       }
     }
-  }
-  
-  void updateColors() {
-    arrayCopy(audio.colors.users, usercolors);
   }
 
   void update() {

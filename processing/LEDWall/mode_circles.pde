@@ -41,12 +41,13 @@ class ConcCircles {
   }
 
   void draw() {
-    buffer.stroke(0);
+    //buffer.stroke(0);
+    //buffer.strokeWeight(3);
     for (int i = 0; i < audio.averageSpecs.length - 1 ; i++) {
       for (int n = 0; n < numCircles; n++) {
         buffer.fill( getCircleColor(i) );
         float kx, ky;
-        if (kinect.user_id != -1) {
+        if (kinect.currentUserNumber != -1) {
           kx = kinect.user_center.x; 
           ky = kinect.user_center.y - 12;
         } else {
@@ -62,7 +63,11 @@ class ConcCircles {
           if (test < 0.1) theta = random(theta * -1, theta);
           if (test > 0.75) theta *= -1;
         }
-        if (theta > 0) theta += 360/numCircles/ (audio.BPM + 1); else theta -= 360/numCircles/ (audio.BPM + 1);
+        if (theta > 0) {
+          theta += 360 / numCircles / (audio.BPM + 1); 
+        } else {
+          theta -= 360 / numCircles / (audio.BPM + 1);
+        }
       }
     }
   }
@@ -78,8 +83,8 @@ class SpecCity {
   void draw() {
     buffer.beginShape(); 
     buffer.fill(audio.colors.background); 
-    buffer.strokeWeight(1);
-    if (kinect.user_id != -1) {
+    buffer.strokeWeight(3);
+    if (kinect.currentUserNumber != -1) {
       kx = kinect.user_center.x; 
       ky = kinect.user_center.y - 12;
     } else {
@@ -90,24 +95,24 @@ class SpecCity {
       int GREEN = audio.averageSpecs[1].grey;
       int BLUE  = audio.averageSpecs[3].grey;
       int RED   = audio.fullSpecs[i].grey;
-      int value_up = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, 0));
-      int value_down = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 3, buffer.height));
+      int value_up = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 2, 0));
+      int value_down = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 2, buffer.height));
       buffer.stroke(RED, GREEN, BLUE);
 
 
       //buffer.fill(RED, GREEN, BLUE);
 
-      buffer.line((buffer.width / 2) + i, buffer.height / 3, (buffer.width / 2) + i, value_up);
-      buffer.line((buffer.width / 2) - i, buffer.height / 3, (buffer.width / 2) - i, value_up);
-      //buffer.line(i + (buffer.width / 2), buffer.height / 3, buffer.width - i, value_down);
-      //buffer.line((buffer.width / 2) - i, buffer.height / 3, i, value_down);
+      buffer.line((buffer.width / 2) + i, buffer.height / 2, (buffer.width / 2) + i, value_up);
+      buffer.line((buffer.width / 2) - i, buffer.height / 2, (buffer.width / 2) - i, value_up);
+      buffer.line((buffer.width / 2) + i, buffer.height / 2, (buffer.width / 2) + i, value_down);
+      buffer.line((buffer.width / 2) - i, buffer.height / 2, (buffer.width / 2) - i, value_down);
 
       //buffer.vertex(i + (buffer.width / 2), buffer.height / 3); buffer.vertex(i + (buffer.width / 2), value_up);
       //buffer.vertex((buffer.width / 2) - i, buffer.height / 3); buffer.vertex((buffer.width / 2) - i, value_up);
-      buffer.vertex(i + (buffer.width / 2), buffer.height / 3); 
-      buffer.vertex(buffer.width - i, value_down);
-      buffer.vertex((buffer.width / 2) - i, buffer.height / 3); 
-      buffer.vertex(i, value_down);
+      //buffer.vertex(i + (buffer.width / 2), buffer.height / 3); 
+      //buffer.vertex(buffer.width - i, value_down);
+      //buffer.vertex((buffer.width / 2) - i, buffer.height / 3); 
+      //buffer.vertex(i, value_down);
     }
     buffer.endShape(CLOSE);
 
@@ -141,7 +146,7 @@ class Pulsar {
   void draw() {
     buffer.noFill();
 
-    if (kinect.user_id != -1) {
+    if (kinect.currentUserNumber != -1) {
       kx = kinect.user_center.x; 
       ky = kinect.user_center.y - 12;
     } else {
@@ -149,12 +154,12 @@ class Pulsar {
       ky = buffer.height / 2;
     }
     for (int i = 0; i < (audio.fullSpecs.length - 1) / 2; i++) {
-      buffer.strokeWeight(1);
+      buffer.strokeWeight(3);
       buffer.stroke( setColor(i) );
       //buffer.stroke( kinect.user_color );
 
-      float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 8, 0, 180);
-      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width*3);
+      float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 4, 0, 180);
+      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width*2);
       float spin   = map(audio.volume.value, 0, 100, 0, 180);
 
       drawLine(radius, angle + spin);

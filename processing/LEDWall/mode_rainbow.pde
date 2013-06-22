@@ -119,12 +119,8 @@ class Rainbow {
   }
   
   void doWheel() {
-    buffer.blendMode(BLEND);
-    //buffer.background(0);
     buffer.stroke(0);
     buffer.strokeWeight(0.5);
-    //buffer.noStroke();
-    
     
     for (int i = 0; i < 8; i++) {
       
@@ -141,12 +137,6 @@ class Rainbow {
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
       
     }
-    
-    buffer.blendMode(ADD);
-    if (AUDIO_BG_ON) {
-      buffer.fill(audio.colors.background); 
-      buffer.rect(0,0,size.x,size.y);
-    }
   }
   
   void doTunnel() {
@@ -154,7 +144,7 @@ class Rainbow {
     buffer.blendMode(BLEND);
     buffer.stroke(0);
     buffer.strokeWeight(0.5);
-    //buffer.noStroke();
+    
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);
     //buffer.translate(buffer.width/2, buffer.height/2);
@@ -166,7 +156,7 @@ class Rainbow {
         vertical   = map(audio.treb.value, 0, 100, size.y, last_size.y);
         //float x = map(i, 0, colors.length, 0, -10);
         //float y = map(i, 0, colors.length, 0, -15);
-        buffer.rect(0,0,horizontal,vertical,2.5);
+        buffer.rect(0,0,horizontal,vertical, 2.5);
         last_size.set(size.x, size.y);
         size.div(1.5);
       }
@@ -176,25 +166,14 @@ class Rainbow {
     buffer.rect(0,0,size.x,size.y,5);
     buffer.popMatrix();
     resetSize();
-    buffer.blendMode(ADD);
-    if (AUDIO_BG_ON) {
-      buffer.fill(audio.colors.background); 
-      buffer.rect(0,0,size.x,size.y);
-    }
-      
-    
-    
   }
     
 
   void display() {
     check();
-    buffer.noStroke();
-    
     if (mode == MODE_WHEEL) doWheel();
     if (mode == MODE_TUNNEL) doTunnel();
-
-    
+    buffer.noStroke();  // reset to no stroke
   }
 }
 

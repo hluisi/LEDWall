@@ -11,6 +11,7 @@ final int DISPLAY_MODE_PULSAR  = 6;
 final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
+final int DISPLAY_MODE_CHING   = 10;
 
 boolean AUTOMODE = false;
 boolean useAudio = true;
@@ -18,7 +19,7 @@ boolean useKinect = true;
 boolean AUDIO_BG_ON = false;
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
+  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS", "iCHING"
 };
 
 
@@ -39,7 +40,8 @@ void setup() {
     DEBUG_WINDOW_START = ROWS*2;
   }
 
-  size(x, y, JAVA2D);
+  size(x, y, P2D);
+  
   
   //smooth();
 
@@ -63,10 +65,11 @@ void setup() {
   setupCircles();
   setupAtari();
   setupClips();
+  setHexupIChing();
 
   // must be last
   setupControl();
-  frameRate(300);
+  frameRate(500);
 
   frame.setTitle("Wall of Light");
   background(0);
@@ -76,7 +79,7 @@ void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
     if (test < 0.15) {
-      int count = int(random(1, 10));
+      int count = round(random(1, 10));
       DISPLAY_MODE = count;
       r.activate(count);
       //println("MODE - " + DISPLAY_STR[count]);
@@ -91,18 +94,30 @@ void draw() {
   buffer.noStroke();
   buffer.noFill();
 
-  if (AUDIO_BG_ON) buffer.background(audio.colors.background); else buffer.background(0);
+  //if (AUDIO_BG_ON) buffer.background(audio.colors.background); else buffer.background(0);
+  buffer.background(0);
 
   if (AUTOMODE) autoMode();   // auto change mode to audio beat
+  
   doMode();                   // do the current mode(s)
+  
+  if (AUDIO_BG_ON) {
+    buffer.blendMode(ADD);
+    buffer.rectMode(CENTER);
+    buffer.fill(audio.colors.background); 
+    buffer.rect(buffer.width / 2, buffer.height / 2,buffer.width + 20,buffer.height + 10);
+  }
 
-  buffer.blendMode(BLEND);    // reset blend mode
+  buffer.blendMode(BLEND);    // reset to blend mode
+  
   if (useKinect) {  // using the kinect?
     kinect.update(); // update the kinect
     buffer.image(kinect.buffer_image, 0, 0); // draw kinect user(s)
   }
-
-
+  
+  buffer.noStroke(); // reset stroke
+  buffer.noFill();   // reset fill
+  
   buffer.endDraw();           // end buffering
   wall.draw();                // draw the wall
   drawDebug();                // draw debug info
@@ -122,6 +137,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
+  if (DISPLAY_MODE == DISPLAY_MODE_CHING)   doIChing();
   displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
 }
 
@@ -137,6 +153,7 @@ void keyPressed() {
   if (key == '7') DISPLAY_MODE = DISPLAY_MODE_CITY;
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_ATARI;
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
+  if (key == '-') DISPLAY_MODE = DISPLAY_MODE_CHING;
 
   r.activate(DISPLAY_MODE);
 }

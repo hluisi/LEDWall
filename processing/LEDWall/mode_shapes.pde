@@ -1,5 +1,5 @@
-final int TOTAL_PARTICLES = 16;
-final float SHAPES_SIZE = 20;
+final int TOTAL_PARTICLES = 8;
+final float SHAPES_SIZE = 16;
 
 PShape[] svgs;
 Shapes shapes;
@@ -26,13 +26,6 @@ void doShapes() {
   buffer.background(0);
   buffer.blendMode(BLEND);
   shapes.display();
-  
-  if (AUDIO_BG_ON) {
-    buffer.blendMode(ADD);
-    buffer.rectMode(CORNER);
-    buffer.fill(audio.colors.background); 
-    buffer.rect(0,0,buffer.width,buffer.height);
-  }
 }
 
 class Shapes {
@@ -200,9 +193,9 @@ class Particle {
   }
 
   void display() {
-    buffer.stroke(0);
-    buffer.strokeWeight(1);
-    //buffer.noStroke();
+    //buffer.stroke(0);
+    //buffer.strokeWeight(1);
+    buffer.noStroke();
     buffer.fill(pColor);
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);

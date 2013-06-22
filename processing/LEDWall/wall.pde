@@ -41,7 +41,7 @@ class VideoWall {
   int send_time = 0;
 
   VideoWall() {
-    send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
+    send_buffer = createGraphics(ROWS, COLUMNS, P2D);
     send_buffer.loadPixels();
     
     for (int i = 0; i < teensyImages.length; i++) {

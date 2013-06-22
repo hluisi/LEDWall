@@ -70,6 +70,7 @@ void setupControl() {
                                       .addItem("City", 7)
                                         .addItem("Atari", 8)
                                           .addItem("Clips", 9)
+                                          .addItem("iChing", 10)
                                             .activate(1)
                                               ;
 
