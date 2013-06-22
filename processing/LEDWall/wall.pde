@@ -23,7 +23,7 @@ final int DEBUG_TEXT_X = DEBUG_WINDOW_XSIZE - 200;
 
 int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 
-boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
+boolean DEBUG_SHOW_WALL  = true;  // show the wall on the computer screen wall?
 
 VideoWall wall;
 
@@ -42,7 +42,7 @@ class VideoWall {
 
   VideoWall() {
     send_buffer = createGraphics(ROWS, COLUMNS, P2D);
-    send_buffer.loadPixels();
+    send_buffer.loadPixels(); // load the pixels to make sure the array is not set to null
     
     for (int i = 0; i < teensyImages.length; i++) {
       teensyImages[i] = createImage(80, 16, RGB);
@@ -60,6 +60,7 @@ class VideoWall {
   }
 
   void display() {
+    buffer.loadPixels(); // load the current pixels
     for (int i = 0; i < TOTAL; i++) {
       int x = i % COLUMNS; 
       int y = i / COLUMNS;
