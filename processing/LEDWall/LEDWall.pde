@@ -66,8 +66,10 @@ void setup() {
   setupCircles();
   setupAtari();
   setupClips();
-  setHexupIChing();
-
+  setupIChing();
+  
+  
+  
   // must be last
   setupControl();
   frameRate(500);

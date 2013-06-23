@@ -2,7 +2,7 @@ IChing rune1, rune2;
 
 float rtest = 0;
 
-void setHexupIChing() {
+void setupIChing() {
   rune1 = new IChing(40, 18, 60, true);
   rune2 = new IChing(120, 18, 60, true);
 }
