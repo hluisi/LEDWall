@@ -1,3 +1,5 @@
+// DO THIS AFTER YOU REWRITE bars.pde
+
 EQ eq;
 
 void setupEQ() {

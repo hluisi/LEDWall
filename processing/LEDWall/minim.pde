@@ -1,3 +1,5 @@
+// NEED TO ADD COMMENTS
+
 // USING BETA VERSION OF MINIM!!
 
 import ddf.minim.*;
@@ -16,7 +18,6 @@ class AverageListener implements AudioListener {
   AudioInput in;     // audio input
   FFT fft;           // FFT 
   BeatDetect beat;   // beat detect
-
 
     boolean gotBeat = false, gotMode = false, gotKinect = false;
 
@@ -297,6 +298,19 @@ class Colors {
     updateGreens();
     updateBlues();
     updateUsers();
+  }
+
+  color get(int i) {
+    color rtn_color;
+    if (i < 0 || i > 11) rtn_color = grey;
+    else rtn_color = users[i];
+
+    if ( brightness(rtn_color) < 16 ) { 
+      return color(brightness(audio.colors.grey) + 32);
+    } 
+    else {
+      return rtn_color;
+    }
   }
 }
 

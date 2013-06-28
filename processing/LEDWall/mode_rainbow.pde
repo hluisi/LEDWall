@@ -1,3 +1,5 @@
+// COULD USE A REWRITE
+
 Rainbow rainbow;
 
 final String[] RAINBOW_STR = { 
@@ -12,7 +14,12 @@ void setupRainbow() {
 
 void doRainbow() {
   buffer.blendMode(ADD);
-  rainbow.setLocation(kinect.user_center.x, kinect.user_center.y );
+  if (kinect.users.length > 0) {
+    rainbow.setLocation(kinect.users[0].x, kinect.users[0].y );
+  } 
+  else {
+    rainbow.setLocation(buffer.width / 2, buffer.height / 2 );
+  }
   rainbow.setCycle(audio.BPM);
   rainbow.display();
 }

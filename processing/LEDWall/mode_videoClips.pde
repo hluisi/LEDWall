@@ -1,3 +1,5 @@
+// ADD COMMENTS
+
 import processing.video.*;
 
 MovieClips clips;
@@ -64,7 +66,7 @@ class MovieClips {
     }
 
     // set the speed of the next frame according to the current BPM
-    current_speed = map(audio.BPM, 0, 180, 0.5, 1.75);
+    current_speed = map(audio.BPM, 0, 180, 0.5, 1.35);
     clips[current].speed(current_speed);
   }
 

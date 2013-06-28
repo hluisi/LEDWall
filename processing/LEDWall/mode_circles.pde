@@ -1,6 +1,9 @@
+// COULD USE A REWRITE
+
 ConcCircles circles;
 SpecCity city;
 Pulsar pulsar;
+FracCircles fracs;
 
 int CIRCLE_MODE = 0;
 
@@ -8,6 +11,7 @@ void setupCircles() {
   circles = new ConcCircles();
   city = new SpecCity();
   pulsar = new Pulsar();
+  fracs = new FracCircles();
 }
 
 void doCircles() {
@@ -25,10 +29,53 @@ void doCity() {
   city.draw();
 }
 
+void doFracs() {
+  buffer.blendMode(ADD);
+  fracs.draw();
+}
+
+class FracCircles {
+
+  int currentColor = 0;
+  int currentSpec = 0;
+  float divFactor = 3;
+  float currentSize;
+
+  FracCircles() {
+    //
+  }
+
+  void drawCircles(float x, float y, float radius) {
+    if (currentColor > 11) currentColor = 0;
+    buffer.fill( audio.colors.users[currentColor] );
+    buffer.ellipse(x, y, radius, radius);
+    if (radius > 2) {
+      drawCircles( x + (radius / divFactor), y, radius / divFactor);
+      drawCircles( x - (radius / divFactor), y, radius / divFactor);
+    }
+    currentColor++;
+  }
+
+  void update() {
+    currentSize = map(audio.averageSpecs[currentSpec].value, 0, 100, 0, 80);
+    currentSpec++;
+    if (currentSpec > 8) currentSpec = 0;
+  }
+
+  void draw() {
+    currentColor = 0;
+    update();
+    //buffer.strokeWeight(3);
+    buffer.noStroke();
+    drawCircles(buffer.width / 2, buffer.height / 2, currentSize);
+  }
+}
+
 class ConcCircles {
   float r = 16;
   float theta = 0;
   float numCircles = 32;
+  float kx, ky;
 
   ConcCircles() {
   }
@@ -46,10 +93,9 @@ class ConcCircles {
     for (int i = 0; i < audio.averageSpecs.length - 1 ; i++) {
       for (int n = 0; n < numCircles; n++) {
         buffer.fill( getCircleColor(i) );
-        float kx, ky;
-        if (kinect.currentUserNumber != -1) {
-          kx = kinect.user_center.x; 
-          ky = kinect.user_center.y - 12;
+        if (kinect.users.length > 0) {
+          kx = kinect.users[0].x; 
+          ky = kinect.users[0].y;
         } 
         else {
           kx = buffer.width / 2; 
@@ -79,16 +125,18 @@ class ConcCircles {
 
 class SpecCity {
   float kx, ky;
+
   SpecCity() {
+    //
   }
 
   void draw() {
     buffer.beginShape(); 
     buffer.fill(audio.colors.background); 
     buffer.strokeWeight(3);
-    if (kinect.currentUserNumber != -1) {
-      kx = kinect.user_center.x; 
-      ky = kinect.user_center.y - 12;
+    if (kinect.users.length > 0) {
+      kx = kinect.users[0].x; 
+      ky = kinect.users[0].y;
     } 
     else {
       kx = buffer.width / 2; 
@@ -149,14 +197,15 @@ class Pulsar {
   void draw() {
     buffer.noFill();
 
-    if (kinect.currentUserNumber != -1) {
-      kx = kinect.user_center.x; 
-      ky = kinect.user_center.y - 12;
+    if (kinect.users.length > 0) {
+      kx = kinect.users[0].x; 
+      ky = kinect.users[0].y;
     } 
     else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
+
     for (int i = 0; i < (audio.fullSpecs.length - 1) / 2; i++) {
       buffer.strokeWeight(3);
       buffer.stroke( setColor(i) );
@@ -172,5 +221,4 @@ class Pulsar {
     //buffer.filter(POSTERIZE, 16);
   }
 }
-
 

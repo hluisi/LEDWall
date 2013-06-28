@@ -1,4 +1,5 @@
-
+// NOT SURE, WAVE MODE?  
+ 
 void doUserBg() {
   buffer.background(audio.colors.background);
   buffer.blendMode(ADD);

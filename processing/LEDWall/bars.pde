@@ -1,3 +1,6 @@
+// NEEDS A REWRITE BIGTIME!!
+
+
 class baseBar {
   float base_width;       // width of the Bar
   float base_height;      // height of the Bar

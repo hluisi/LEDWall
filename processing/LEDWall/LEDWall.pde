@@ -1,3 +1,30 @@
+/*  LEDWall LEDWall.pde - Code to control a large LED matrix wall. 
+    This code is geared to our "Wall of Light" Mutant Vehicle (bike) 
+    for burning man 2013
+    
+    Copyright (c) 2013 Hunter Luisi / hunterluisi.com
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+*/
+ 
+// STILL NEEDS REWRITE
+
 int DISPLAY_MODE = 1;
 float xoff = 0.0;
 
@@ -12,6 +39,7 @@ final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
 final int DISPLAY_MODE_CHING   = 10;
+final int DISPLAY_MODE_CIRCLES = 11;
 
 boolean AUTOMODE = false;
 boolean useAudio = true;
@@ -19,7 +47,7 @@ boolean useKinect = true;
 boolean AUDIO_BG_ON = false;
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS", "iCHING"
+  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS", "iCHING", "CIRCLES"
 };
 
 
@@ -67,9 +95,9 @@ void setup() {
   setupAtari();
   setupClips();
   setupIChing();
-  
-  
-  
+
+
+
   // must be last
   setupControl();
   frameRate(500);
@@ -82,7 +110,7 @@ void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
     if (test < 0.15) {
-      int count = round(random(1, 10));
+      int count = round( random(1, 11) );
       DISPLAY_MODE = count;
       r.activate(count);
       //println("MODE - " + DISPLAY_STR[count]);
@@ -114,8 +142,7 @@ void draw() {
   buffer.blendMode(BLEND);    // reset to blend mode
 
   if (useKinect) {  // using the kinect?
-    kinect.update(); // update the kinect
-    buffer.image(kinect.buffer_image, 0, 0); // draw kinect user(s)
+    kinect.draw();
   }
 
   buffer.noStroke(); // reset stroke
@@ -141,6 +168,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
   if (DISPLAY_MODE == DISPLAY_MODE_CHING)   doIChing();
+  if (DISPLAY_MODE == DISPLAY_MODE_CIRCLES) doFracs();
   displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
 }
 
@@ -157,6 +185,8 @@ void keyPressed() {
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_ATARI;
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
   if (key == '-') DISPLAY_MODE = DISPLAY_MODE_CHING;
+  if (key == '=') DISPLAY_MODE = DISPLAY_MODE_CIRCLES;
+  if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
 
   r.activate(DISPLAY_MODE);
 }

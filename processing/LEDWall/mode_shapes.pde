@@ -1,3 +1,5 @@
+// NEED TO HAVE SHAPES FOLLOW USERS
+
 final int TOTAL_PARTICLES = 8;
 final float SHAPES_SIZE = 16;
 

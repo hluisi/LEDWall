@@ -1,3 +1,5 @@
+// NEED TO REWRITE TO TRACK USERS
+
 AtariVideoMusic atari; 
 
 void setupAtari() {

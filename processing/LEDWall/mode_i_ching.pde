@@ -1,3 +1,5 @@
+// NOT HAPPY WITH THIS YET.  NEEDS SOME TWEAKING
+
 IChing rune1, rune2;
 
 float rtest = 0;
@@ -356,7 +358,7 @@ class IChing {
   }
 
   void draw(float x, float y) {
-    buffer.fill( kinect.getUserColor(cindex) );
+    buffer.fill( audio.colors.get(cindex) );
 
 
     if (showText) {

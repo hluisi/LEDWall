@@ -1,3 +1,5 @@
+// STILL A TON TO ADD
+
 import controlP5.*;
 
 ControlP5 cp5;
@@ -71,8 +73,9 @@ void setupControl() {
                                         .addItem("Atari", 8)
                                           .addItem("Clips", 9)
                                             .addItem("iChing", 10)
-                                              .activate(1)
-                                                ;
+                                              .addItem("Circles", 11)
+                                                .activate(1)
+                                                  ;
 
   for (Toggle t:r.getItems()) {
     t.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);

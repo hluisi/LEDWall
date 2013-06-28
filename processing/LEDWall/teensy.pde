@@ -1,3 +1,5 @@
+// ADD COMMENTS
+
 import processing.serial.*;
 
 float WALL_WATTS = 0;
@@ -26,7 +28,7 @@ void setupTeensys() {
   println(list);
 
   // SETUP TEENSYs
-  teensys[0] = new Teensy(this, 4, "COM4", true);
+  teensys[0] = new Teensy(this, 5, "COM4", true);
   teensys[1] = new Teensy(this, 5, "COM5", false);
   setupGamma();
   println("TEENSYS SETUP!!");

@@ -1,9 +1,4 @@
-/*--------------------------------------------------------------------
- Receives an image, splits the image into parts, and sends those parts
- to the teensy's to be displayed.  Will also display to screen if 
- DEBUG_SHOW_WALL is true
- 
- --------------------------------------------------------------------*/
+// COULD USE A REWRITE
 
 // Wall Setup
 final int COLUMNS = 160;             // the amount of LEDs per column (x)
@@ -23,7 +18,7 @@ final int DEBUG_TEXT_X = DEBUG_WINDOW_XSIZE - 200;
 
 int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 
-boolean DEBUG_SHOW_WALL  = true;  // show the wall on the computer screen wall?
+boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 
 VideoWall wall;
 
@@ -41,7 +36,7 @@ class VideoWall {
   int send_time = 0;
 
   VideoWall() {
-    send_buffer = createGraphics(ROWS, COLUMNS, P2D);
+    send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
     send_buffer.loadPixels(); // load the pixels to make sure the array is not set to null
 
     for (int i = 0; i < teensyImages.length; i++) {
