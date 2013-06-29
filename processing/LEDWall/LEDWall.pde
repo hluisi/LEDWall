@@ -22,6 +22,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
+
+
+
  
 // STILL NEEDS REWRITE
 
@@ -39,7 +42,6 @@ final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
 final int DISPLAY_MODE_CHING   = 10;
-final int DISPLAY_MODE_CIRCLES = 11;
 
 boolean AUTOMODE = false;
 boolean useAudio = true;
@@ -47,7 +49,7 @@ boolean useKinect = true;
 boolean AUDIO_BG_ON = false;
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS", "iCHING", "CIRCLES"
+  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS", "iCHING"
 };
 
 
@@ -79,6 +81,8 @@ void setup() {
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
   wall_image = createImage(COLUMNS * 2, ROWS * 2, RGB);
+  
+  setupUtils();
 
   setupBuffer();
   setupMinim();
@@ -110,7 +114,7 @@ void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
     if (test < 0.15) {
-      int count = round( random(1, 11) );
+      int count = round( random(1, 10) );
       DISPLAY_MODE = count;
       r.activate(count);
       //println("MODE - " + DISPLAY_STR[count]);
@@ -168,7 +172,6 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
   if (DISPLAY_MODE == DISPLAY_MODE_CHING)   doIChing();
-  if (DISPLAY_MODE == DISPLAY_MODE_CIRCLES) doFracs();
   displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
 }
 
@@ -185,7 +188,6 @@ void keyPressed() {
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_ATARI;
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
   if (key == '-') DISPLAY_MODE = DISPLAY_MODE_CHING;
-  if (key == '=') DISPLAY_MODE = DISPLAY_MODE_CIRCLES;
   if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
 
   r.activate(DISPLAY_MODE);

@@ -366,12 +366,25 @@ class IChing {
       buffer.textAlign(CENTER, CENTER);
       y += half / 2;
     }
-
+    
+    int i = cindex + 1;
+    
+    buffer.fill( audio.colors.get(i) );
     drawHex(x, y - ((third / 2) + (third * 2)), hexagram[5]);
+    i++;
+    buffer.fill( audio.colors.get(i) );
     drawHex(x, y - ((third / 2) + third), hexagram[4]);
+    i++;
+    buffer.fill( audio.colors.get(i) );
     drawHex(x, y - (third / 2), hexagram[3]);
+    i++;
+    buffer.fill( audio.colors.get(i) );
     drawHex(x, y + (third / 2), hexagram[2]);
+    i++;
+    buffer.fill( audio.colors.get(i) );
     drawHex(x, y + ((third / 2) + third), hexagram[1]);
+    i++;
+    buffer.fill( audio.colors.get(i) );
     drawHex(x, y + ((third / 2) + (third * 2)), hexagram[0]);
 
     if (showText) {
@@ -381,7 +394,7 @@ class IChing {
 
   void update() {
     set( round(random(64 - 1)) );
-    cindex = round( random(0, 11) );
+    cindex = round( random(0, 4) );
   }
 
   void display() {

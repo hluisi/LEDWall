@@ -3,7 +3,6 @@
 ConcCircles circles;
 SpecCity city;
 Pulsar pulsar;
-FracCircles fracs;
 
 int CIRCLE_MODE = 0;
 
@@ -11,7 +10,6 @@ void setupCircles() {
   circles = new ConcCircles();
   city = new SpecCity();
   pulsar = new Pulsar();
-  fracs = new FracCircles();
 }
 
 void doCircles() {
@@ -27,11 +25,6 @@ void doPulsar() {
 void doCity() {
   buffer.blendMode(ADD);
   city.draw();
-}
-
-void doFracs() {
-  buffer.blendMode(ADD);
-  fracs.draw();
 }
 
 class FracCircles {
@@ -93,7 +86,7 @@ class ConcCircles {
     for (int i = 0; i < audio.averageSpecs.length - 1 ; i++) {
       for (int n = 0; n < numCircles; n++) {
         buffer.fill( getCircleColor(i) );
-        if (kinect.users.length > 0) {
+        if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
           kx = kinect.users[0].x; 
           ky = kinect.users[0].y;
         } 
@@ -134,7 +127,7 @@ class SpecCity {
     buffer.beginShape(); 
     buffer.fill(audio.colors.background); 
     buffer.strokeWeight(3);
-    if (kinect.users.length > 0) {
+    if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
       kx = kinect.users[0].x; 
       ky = kinect.users[0].y;
     } 
@@ -197,7 +190,7 @@ class Pulsar {
   void draw() {
     buffer.noFill();
 
-    if (kinect.users.length > 0) {
+    if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
       kx = kinect.users[0].x; 
       ky = kinect.users[0].y;
     } 

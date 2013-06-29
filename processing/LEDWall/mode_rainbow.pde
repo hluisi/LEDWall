@@ -13,8 +13,8 @@ void setupRainbow() {
 }
 
 void doRainbow() {
-  buffer.blendMode(ADD);
-  if (kinect.users.length > 0) {
+  //buffer.blendMode(BLEND);
+  if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
     rainbow.setLocation(kinect.users[0].x, kinect.users[0].y );
   } 
   else {
@@ -41,8 +41,8 @@ class Rainbow {
   int cycle_time = 100;                // the time between cycling colors
   color[] colors = new color [8];
   color[] default_colors = {
-    color(128, 0, 0), color(128, 64, 0), color(128, 128, 0), color(64, 128, 0), 
-    color(0, 128, 0), color(0, 128, 64), color(0, 64, 128), color(0, 0, 128)
+    color(255, 0, 0), color(255, 127, 0), color(255, 127, 0), color(127, 255, 0), 
+    color(0, 255, 0), color(0, 255, 127), color(0, 127, 255), color(0, 0, 255)
   };
 
 
@@ -126,20 +126,35 @@ class Rainbow {
   }
 
   void doWheel() {
-    buffer.stroke(0);
-    buffer.strokeWeight(0.5);
+    buffer.noStroke();
+    //buffer.strokeWeight(0.5);
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < colors.length; i++) {
+      int rnd = round( random(-1,1) );
+      //int h_spec = i + rnd;
+      //int v_spec = i - 1 + rnd;
+        
+      //if (v_spec < 0) v_spec = colors.length - 1;
+      //if (v_spec > colors.length) v_spec = 0;
+      //if (h_spec < 0) h_spec = colors.length - 1;
+      //if (h_spec > colors.length) h_spec = 0;
+      
+      //rnd = round( random(-1,1) );
 
-      horizontal = map(audio.mids.value, 0, 100, 20, 10);
-      vertical   = map(audio.treb.value, 0, 100, 10, 5);
+      //horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, 20, 5);
+      //vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, 10, 1);
+      
+      horizontal = map(audio.volume.value, 0, 100, 20, 10 + (rnd * 2) );
+      vertical   = map(audio.volume.value, 0, 100, 10, 5 + rnd);
 
-      buffer.fill(colors[i]);
+      buffer.fill( mapByVol( colors[i] ) );
+      if ((i + rnd) % 2 == 0) buffer.fill( audio.colors.get(i) );
       buffer.triangle(location.x, location.y, 0, (i * 10) + vertical, 0, ((i + 1) * 10) - vertical);
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, 0, ((i + 1) * 20) - horizontal, 0);
 
       bi = 7 - i;
-      buffer.fill(colors[bi]);
+      buffer.fill( mapByVol( colors[bi] ) );
+      if ((i + rnd) % 2 == 0) buffer.fill( audio.colors.get(bi) );
       buffer.triangle(location.x, location.y, buffer.width, (i * 10) + vertical, buffer.width, ((i + 1) * 10) - vertical);
       buffer.triangle(location.x, location.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
     }
@@ -148,6 +163,7 @@ class Rainbow {
   void doTunnel() {
     buffer.rectMode(CENTER);
     buffer.blendMode(BLEND);
+    //buffer.noStroke();
     buffer.stroke(0);
     buffer.strokeWeight(0.5);
 
@@ -157,14 +173,33 @@ class Rainbow {
 
     for (int j = 0; j < 2; j++) {
       for (int i = 0; i < colors.length; i++) {
-        buffer.fill(colors[i]);
-        horizontal = map(audio.mids.value, 0, 100, size.x, last_size.x);
-        vertical   = map(audio.treb.value, 0, 100, size.y, last_size.y);
-        //float x = map(i, 0, colors.length, 0, -10);
-        //float y = map(i, 0, colors.length, 0, -15);
-        buffer.rect(0, 0, horizontal, vertical, 2.5);
+        int rnd = round( random(-1,1) );
+        int h_spec = i + rnd;
+        int v_spec = i - 1 + rnd;
+        
+        if (v_spec < 0) v_spec = colors.length - 1;
+        if (v_spec > colors.length) v_spec = 0;
+        if (h_spec < 0) h_spec = colors.length - 1;
+        if (h_spec > colors.length) h_spec = 0;
+        
+        rnd = round( random(-1,1) );
+        
+        
+        if ((i + rnd) % 2 == 0) {
+          //buffer.fill(0);
+          //buffer.fill(colors[i]);
+          buffer.fill( audio.colors.get(i) );
+          horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, size.x, last_size.x + last_size.x);
+          vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, size.y, last_size.y + last_size.y);
+        } else {
+          //buffer.fill(0);
+          buffer.fill( mapByVol( colors[i] ) );
+          horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, last_size.x, size.x);
+          vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, last_size.y, size.y);
+        }
+        buffer.rect(0, 0, horizontal, vertical);
         last_size.set(size.x, size.y);
-        size.div(1.5);
+        size.div(1.25);
       }
     }
 
@@ -179,6 +214,7 @@ class Rainbow {
     check();
     if (mode == MODE_WHEEL) doWheel();
     if (mode == MODE_TUNNEL) doTunnel();
+    //doTunnel();
     buffer.noStroke();  // reset to no stroke
   }
 }

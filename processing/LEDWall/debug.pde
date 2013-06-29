@@ -37,10 +37,9 @@ void drawDebug() {
   text("Clips speed: " + clips.current_speed, DEBUG_TEXT_X, DEBUG_WINDOW_START + 140);
   text("Users: " + userHash.size(), DEBUG_TEXT_X, DEBUG_WINDOW_START + 170);
 
-  if (userHash.size() > 0) {
-    User u = userHash.get(1);
-    if ( u != null ) {
-      u.update();
+  if (kinect.users.length > 0) {
+    User u = kinect.users[0];
+    if ( u != null && u.isActive() ) {
       if ( u.onScreen() ) {
         text("x: " + String.format("%.2f", u.x), DEBUG_TEXT_X, DEBUG_WINDOW_START + 185);
         text("y: " + String.format("%.2f", u.y), DEBUG_TEXT_X + 60, DEBUG_WINDOW_START + 185);
