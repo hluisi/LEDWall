@@ -4,6 +4,7 @@
 import SimpleOpenNI.*;  // import simple open ni
 import java.util.Map;   // import hash map
 
+final boolean USE_KINECT = false;
 
 final int KINECT_WIDTH  = 640;  // the x size of the kinect's depth image
 final int KINECT_HEIGHT = 320;  // the y size of the kinect's depth image 
@@ -28,10 +29,12 @@ void setupKinect() {
   }
   transparent.updatePixels();                                   // finalize (update) the image pixels
 
-  SimpleOpenNI.start();                      // tell simpleOpenNI to start
-  kinect  = new Kinect(this);                // create the kinect object
-  kinect.context.update();                   // updating the kinect now helps things to load faster 
-  userHash = new HashMap<Integer, User>();   // init the user hash table
+  if (USE_KINECT) {
+    SimpleOpenNI.start();                      // tell simpleOpenNI to start
+    kinect  = new Kinect(this);                // create the kinect object
+    kinect.context.update();                   // updating the kinect now helps things to load faster 
+    userHash = new HashMap<Integer, User>();   // init the user hash table
+  }
 }
 
 ////////////////////////////////////////////////////////

@@ -45,7 +45,6 @@ final int DISPLAY_MODE_CHING   = 10;
 
 boolean AUTOMODE = false;
 boolean useAudio = true;
-boolean useKinect = true;
 boolean AUDIO_BG_ON = false;
 
 final String[] DISPLAY_STR = { 
@@ -89,7 +88,7 @@ void setup() {
   setupTeensys();
 
   setupWall();
-  setupKinect();
+  if (USE_KINECT) setupKinect();
 
   setupRainbow();
   setupEQ();
@@ -104,7 +103,7 @@ void setup() {
 
   // must be last
   setupControl();
-  frameRate(500);
+  frameRate(300);
 
   frame.setTitle("Wall of Light");
   background(0);
@@ -123,7 +122,7 @@ void autoMode() {
 }
 
 void draw() {
-  //background(0);      
+  background(0);      
 
   buffer.beginDraw();         // begin buffering
   buffer.noStroke();
@@ -145,14 +144,14 @@ void draw() {
 
   buffer.blendMode(BLEND);    // reset to blend mode
 
-  if (useKinect) {  // using the kinect?
+  if (USE_KINECT) {  // using the kinect?
     kinect.draw();
   }
 
   buffer.noStroke(); // reset stroke
   buffer.noFill();   // reset fill
 
-    buffer.endDraw();           // end buffering
+  buffer.endDraw();           // end buffering
   wall.draw();                // draw the wall
   drawDebug();                // draw debug info
   xoff += 0.2;
@@ -188,7 +187,7 @@ void keyPressed() {
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_ATARI;
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
   if (key == '-') DISPLAY_MODE = DISPLAY_MODE_CHING;
-  if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
+  //if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
 
   r.activate(DISPLAY_MODE);
 }
@@ -201,7 +200,7 @@ public class DisposeHandler {
 
   void dispose() {
     System.out.println("CLOSING DOWN!!!");
-    kinect.close();
+    if (USE_KINECT) kinect.close();
 
     // always close Minim audio classes when you are done with them
     audio.close();

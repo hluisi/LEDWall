@@ -86,14 +86,21 @@ class ConcCircles {
     for (int i = 0; i < audio.averageSpecs.length - 1 ; i++) {
       for (int n = 0; n < numCircles; n++) {
         buffer.fill( getCircleColor(i) );
-        if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-          kx = kinect.users[0].x; 
-          ky = kinect.users[0].y;
-        } 
+        if (USE_KINECT) {
+          if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
+            kx = kinect.users[0].x; 
+            ky = kinect.users[0].y;
+          } 
+          else {
+            kx = buffer.width / 2; 
+            ky = buffer.height / 2;
+          }
+        }
         else {
           kx = buffer.width / 2; 
           ky = buffer.height / 2;
         }
+        
         float x = (r+16*n)*cos(theta) + kx;
         float y = (r+16*n)*sin(theta) + ky;
         int value = int(map(audio.averageSpecs[i].value + 10, 10, 110, 2, 32));
@@ -127,14 +134,21 @@ class SpecCity {
     buffer.beginShape(); 
     buffer.fill(audio.colors.background); 
     buffer.strokeWeight(3);
-    if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-      kx = kinect.users[0].x; 
-      ky = kinect.users[0].y;
-    } 
+    if (USE_KINECT) {
+      if (kinect.users.length > 0 && kinect.users[0].onScreen() && USE_KINECT) {
+        kx = kinect.users[0].x; 
+        ky = kinect.users[0].y;
+      } 
+      else {
+        kx = buffer.width / 2; 
+        ky = buffer.height / 2;
+      }
+    }
     else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;
     }
+    
     for (int i = 0; i < (buffer.width / 2) ; i++) {
       int GREEN = audio.averageSpecs[1].grey;
       int BLUE  = audio.averageSpecs[3].grey;
@@ -189,11 +203,16 @@ class Pulsar {
 
   void draw() {
     buffer.noFill();
-
-    if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-      kx = kinect.users[0].x; 
-      ky = kinect.users[0].y;
-    } 
+    if (USE_KINECT) {
+      if (kinect.users.length > 0 && kinect.users[0].onScreen()) {
+        kx = kinect.users[0].x; 
+        ky = kinect.users[0].y;
+      } 
+      else {
+        kx = buffer.width / 2; 
+        ky = buffer.height / 2;
+      }
+    }
     else {
       kx = buffer.width / 2; 
       ky = buffer.height / 2;

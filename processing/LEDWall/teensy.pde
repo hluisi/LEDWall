@@ -10,7 +10,7 @@ int sendingCount = 0;
 int[][] gammaTable;
 int max_brightness = 192;
 
-final int TEENSY_TOTAL  = 2;
+final int TEENSY_TOTAL  = 4;
 final int TEENSY_WIDTH  = 80;
 final int TEENSY_HEIGHT = 16;
 
@@ -28,8 +28,12 @@ void setupTeensys() {
   println(list);
 
   // SETUP TEENSYs
-  teensys[0] = new Teensy(this, 5, "COM4", true);
-  teensys[1] = new Teensy(this, 5, "COM5", false);
+  teensys[0] = new Teensy(this, 5, "COM8", false);
+  teensys[1] = new Teensy(this, 4, "COM7", false);
+  teensys[2] = new Teensy(this, 2, "COM6", false);
+  teensys[3] = new Teensy(this, 3, "COM9", true);
+  //teensys[4] = new Teensy(this, 2, "COM10", false);
+  
   setupGamma();
   println("TEENSYS SETUP!!");
   println();
@@ -166,8 +170,9 @@ class Teensy extends Thread {
 
   void send() {
     if (isMaster) {  // are we the master?
+      //port.write('@');
       data[0] = '*';  
-      int usec = (int)((1000000.0 / frameRate) * 0.75); // using processing's frameRate to fix timing
+      int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
       data[1] = (byte)(usec);   // request the frame sync pulse
       data[2] = (byte)(usec >> 8); // at 75% of the frame time
     } 

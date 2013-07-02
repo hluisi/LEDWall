@@ -173,6 +173,7 @@ void loop() {
     digitalWrite(13, LOW);
 
   } else if (startChar == '$') {
+    digitalWrite(13, HIGH);
     // receive a "master" frame - we send the frame sync to other boards
     // we are controlling the video pace.  The 16 bit number is how long
     // after the prior frame sync to wait until showing this frame
@@ -187,13 +188,15 @@ void loop() {
       elapsedUsecSinceLastFrameSync -= usecUntilFrameSync;
       digitalWrite(12, LOW);
       // WS2811 update begins immediately after falling edge of frame sync
-      digitalWrite(13, HIGH);
+      //digitalWrite(13, HIGH);
       leds.show();
-      digitalWrite(13, LOW);
+      //digitalWrite(13, LOW);
     }
+    digitalWrite(13, LOW);
 
   } else if (startChar == '%') {
     // receive a "slave" frame - wait to show it until the frame sync arrives
+    digitalWrite(13, HIGH);
     pinMode(12, INPUT_PULLUP);
     unsigned int unusedField = 0;
     int count = Serial.readBytes((char *)&unusedField, 2);
@@ -205,12 +208,28 @@ void loop() {
       while (digitalRead(12) != LOW && wait < 30) ;  // wait for sync high->low
       // WS2811 update begins immediately after falling edge of frame sync
       if (wait < 30) {
-        digitalWrite(13, HIGH);
+        //digitalWrite(13, HIGH);
         leds.show();
-        digitalWrite(13, LOW);
+        //digitalWrite(13, LOW);
       }
+    digitalWrite(13, LOW);
     }
-
+  } else if (startChar == '#') {
+    // receive a "slave" frame - wait to show it until the frame sync arrives
+    digitalWrite(13, HIGH);
+    digitalWrite(12, HIGH);
+    pinMode(12, OUTPUT);
+    unsigned int unusedField = 0;
+    int count = Serial.readBytes((char *)&unusedField, 2);
+    if (count != 2) return;
+    count = Serial.readBytes((char *)drawingMemory, sizeof(drawingMemory));
+    if (count == sizeof(drawingMemory)) {
+      digitalWrite(12, LOW);
+      leds.show();
+    }
+    
+    digitalWrite(13, LOW);
+    
   } else if (startChar == '@') {
     // reset the elapsed frame time, for startup of '$' message playing
     elapsedUsecSinceLastFrameSync = 0;

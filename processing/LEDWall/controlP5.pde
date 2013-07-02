@@ -150,13 +150,15 @@ void auto_mode(boolean theFlag) {
 }
 
 void map_user(boolean theFlag) {
-  if (theFlag==true) {
-    kinect.mapUser = true;
-    println("User Map: ON");
-  } 
-  else {
-    kinect.mapUser = false;
-    println("User Map: OFF");
+  if (USE_KINECT) {
+    if (theFlag==true) {
+      kinect.mapUser = true;
+      println("User Map: ON");
+    } 
+    else {
+      kinect.mapUser = false;
+      println("User Map: OFF");
+    }
   }
 }
 

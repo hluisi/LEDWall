@@ -70,7 +70,7 @@ class VideoWall {
     send_buffer.imageMode(CENTER);
     send_buffer.translate(send_buffer.width / 2, send_buffer.height / 2);
     send_buffer.rotate(radians(90));
-    send_buffer.image(buffer, 0, 0);
+    send_buffer.image(buffer.get(), 0, 0);
     send_buffer.popMatrix();
     send_buffer.endDraw();
 

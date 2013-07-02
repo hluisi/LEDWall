@@ -14,9 +14,14 @@ void setupRainbow() {
 
 void doRainbow() {
   //buffer.blendMode(BLEND);
-  if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-    rainbow.setLocation(kinect.users[0].x, kinect.users[0].y );
-  } 
+  if (USE_KINECT) {
+    if (kinect.users.length > 0 && kinect.users[0].onScreen()) {
+      rainbow.setLocation(kinect.users[0].x, kinect.users[0].y );
+    } 
+    else {
+      rainbow.setLocation(buffer.width / 2, buffer.height / 2 );
+    }
+  }
   else {
     rainbow.setLocation(buffer.width / 2, buffer.height / 2 );
   }
