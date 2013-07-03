@@ -4,7 +4,7 @@
 import SimpleOpenNI.*;  // import simple open ni
 import java.util.Map;   // import hash map
 
-final boolean USE_KINECT = false;
+final boolean USE_KINECT = true;
 
 final int KINECT_WIDTH  = 640;  // the x size of the kinect's depth image
 final int KINECT_HEIGHT = 320;  // the y size of the kinect's depth image 
