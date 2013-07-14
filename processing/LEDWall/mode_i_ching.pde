@@ -1,12 +1,13 @@
 // NOT HAPPY WITH THIS YET.  NEEDS SOME TWEAKING
 
-IChing rune1, rune2;
+IChing rune1, rune2, rune3;
 
 float rtest = 0;
 
 void setupIChing() {
-  rune1 = new IChing(40, 18, 60, true);
-  rune2 = new IChing(120, 18, 60, true);
+  rune1 = new IChing(25, 40, 55, false);
+  rune2 = new IChing(80, 40, 55, false);
+  rune3 = new IChing(135, 40, 55, false);
 }
 
 void doIChing() {
@@ -20,13 +21,17 @@ void doIChing() {
       if (rtest < 0.3) {
         rune1.update();
       } 
-      if (rtest > 0.6) {
+      else if (rtest < 0.6 && rtest > 0.3) {
         rune2.update();
+      }
+      else {
+        rune3.update();
       }
     }
   }
 
   rune1.display();
+  rune3.display();
   rune2.display();
 }
 
@@ -36,6 +41,7 @@ class IChing {
 
   float radius, half, third;
   int cindex = 0;
+  int a = 5;
   boolean showText;
 
   PFont font;
@@ -44,7 +50,7 @@ class IChing {
 
 
   IChing(float x, float y, float r, boolean show) {
-    set(2);
+    set(1);
 
     updateLocation(x, y);
     setHexRadius(r);
@@ -349,11 +355,11 @@ class IChing {
   void drawHex(float x, float y, boolean state) {
     buffer.rectMode(CENTER);
     if (state) {
-      buffer.rect(x, y, radius, third / 2);
+      buffer.rect(x, y, radius, (third / 2) + a);
     } 
     else {
-      buffer.rect(x - (half / 2), y, half - third, third / 2);
-      buffer.rect(x + (half / 2), y, half - third, third / 2);
+      buffer.rect(x - (half / 2), y, half - third, (third / 2) + a);
+      buffer.rect(x + (half / 2), y, half - third, (third / 2) + a);
     }
   }
 
@@ -370,7 +376,7 @@ class IChing {
     int i = cindex + 1;
     
     buffer.fill( audio.colors.get(i) );
-    drawHex(x, y - ((third / 2) + (third * 2)), hexagram[5]);
+    drawHex(x, y - ((third / 2) + (third * 2)) + 1, hexagram[5]);
     i++;
     buffer.fill( audio.colors.get(i) );
     drawHex(x, y - ((third / 2) + third), hexagram[4]);
@@ -385,7 +391,7 @@ class IChing {
     drawHex(x, y + ((third / 2) + third), hexagram[1]);
     i++;
     buffer.fill( audio.colors.get(i) );
-    drawHex(x, y + ((third / 2) + (third * 2)), hexagram[0]);
+    drawHex(x, y + ((third / 2) + (third * 2)) - 1, hexagram[0]);
 
     if (showText) {
       buffer.text( meaning, x, y + ((third / 2) + (third * 3)) );
