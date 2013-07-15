@@ -31,8 +31,8 @@ void drawDebug() {
 
   text("dB: " + String.format("%.2f", audio.volume.dB), DEBUG_TEXT_X, DEBUG_WINDOW_START + 95);
 
-  //text("WATTS: " + String.format("%.2f", teensys[0].watts), DEBUG_TEXT_X, DEBUG_WINDOW_START + 125);
-  //text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 100, DEBUG_WINDOW_START + 125);
+  text("WATTS: " + String.format("%.2f", WALL_WATTS), DEBUG_TEXT_X, DEBUG_WINDOW_START + 125);
+  text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 100, DEBUG_WINDOW_START + 125);
 
   text("Clips speed: " + clips.current_speed, DEBUG_TEXT_X, DEBUG_WINDOW_START + 140);
   if (USE_KINECT) text("Users: " + userHash.size(), DEBUG_TEXT_X, DEBUG_WINDOW_START + 170);
@@ -49,6 +49,8 @@ void drawDebug() {
       }
     }
   }
+  
+  text("Send Time: " + SEND_TIME, DEBUG_TEXT_X, DEBUG_WINDOW_START + 200);
 
   //fill(#212121);
 

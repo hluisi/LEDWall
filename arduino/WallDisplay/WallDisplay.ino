@@ -161,10 +161,10 @@ void loop() {
       if (endAt - startAt < usecUntilFrameSync) {
         usToWaitBeforeSyncOutput = usecUntilFrameSync - (endAt - startAt);
       }
-      digitalWrite(12, HIGH);
-      pinMode(12, OUTPUT);
-      delayMicroseconds(usToWaitBeforeSyncOutput);
-      digitalWrite(12, LOW);
+      //digitalWrite(12, HIGH);
+      //pinMode(12, OUTPUT);
+      //delayMicroseconds(usToWaitBeforeSyncOutput);
+      //digitalWrite(12, LOW);
       // WS2811 update begins immediately after falling edge of frame sync
       //digitalWrite(13, HIGH);
       leds.show();

@@ -133,7 +133,7 @@ class SpecCity {
   void draw() {
     buffer.beginShape(); 
     buffer.fill(audio.colors.background); 
-    buffer.strokeWeight(3);
+    buffer.strokeWeight(2);
     if (USE_KINECT) {
       if (kinect.users.length > 0 && kinect.users[0].onScreen() && USE_KINECT) {
         kx = kinect.users[0].x; 
@@ -219,7 +219,7 @@ class Pulsar {
     }
 
     for (int i = 0; i < (audio.fullSpecs.length - 1) / 2; i++) {
-      buffer.strokeWeight(3);
+      buffer.strokeWeight(2);
       buffer.stroke( setColor(i) );
       //buffer.stroke( kinect.user_color );
 

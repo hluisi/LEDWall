@@ -18,22 +18,23 @@ final int DEBUG_TEXT_X = DEBUG_WINDOW_XSIZE - 200;
 
 int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 
+int SEND_TIME = 9;
+
 boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 
 VideoWall wall;
 
 void setupWall() {
   wall = new VideoWall();                    // create the wall
-  for (int i = 0; i < TEENSY_TOTAL; i++) {   // start teensy threads
-    teensys[i].start();
-  }
+  //for (int i = 0; i < TEENSY_TOTAL; i++) {   // start teensy threads
+    //teensys[i].start();
+  //}
   println("WALL SETUP ...");
 }
 
 class VideoWall {
   PImage[] teensyImages = new PImage [10];
   PGraphics send_buffer;
-  int send_time = 0;
 
   VideoWall() {
     send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
@@ -75,19 +76,58 @@ class VideoWall {
     send_buffer.endDraw();
 
     WALL_WATTS = 0;  // reset the wattage tracking
-
+    
+    
     // set the teensy image array
     for (int i = 0; i < teensyImages.length; i++) {
       arrayCopy(send_buffer.pixels, i * (80 * 16), teensyImages[i].pixels, 0, 80 * 16);
       teensyImages[i].updatePixels();
 
-      if (i < TEENSY_TOTAL) {
-        //teensys[i].update(teensyImages[i]);
-        WALL_WATTS += teensys[i].watts;
-        teensys[i].trigger();
-      }
+      //if (i < TEENSY_TOTAL) {
+        
+        //teensys[i].update();
+        //teensys[i].send();
+       
+        //WALL_WATTS += teensys[i].watts;
+        
+      //}
     }
-
+    
+    int start_time = millis();
+    //for (int i =0; i < teensys.length; i++) {
+    //  teensys[i].send();
+    //  teensys[i].send();
+    //  WALL_WATTS += teensys[i].watts;
+    //}
+    
+    
+    teensys[0].trigger();
+    teensys[1].trigger();
+    teensys[2].trigger();
+    
+    while (sendingCount > 0) {
+      // do nothing
+    }
+    
+    teensys[3].trigger();
+    teensys[4].trigger();
+    
+    while (sendingCount > 0) {
+      // do nothing
+    }
+    
+    //teensys[4].trigger();
+    
+    //while (sendingCount > 0) {
+      // do nothing
+    //}
+    
+    
+    int end_time = millis();
+    SEND_TIME = end_time - start_time;
+    
+    
+    WALL_WATTS = teensys[0].watts + teensys[1].watts + teensys[2].watts + teensys[3].watts + teensys[4].watts;
     MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
 
     //int check = millis();

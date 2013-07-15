@@ -70,7 +70,7 @@ void setup() {
     DEBUG_WINDOW_START = ROWS*2;
   }
 
-  size(x, y, P2D);
+  size(x, y, JAVA2D);
 
 
   //smooth();
@@ -85,9 +85,7 @@ void setup() {
 
   setupBuffer();
   setupMinim();
-  setupTeensys();
-
-  setupWall();
+ 
   if (USE_KINECT) setupKinect();
 
   setupRainbow();
@@ -99,14 +97,17 @@ void setup() {
   setupClips();
   setupIChing();
 
+  setupTeensys();
 
+  setupWall();
 
   // must be last
   setupControl();
-  frameRate(300);
+  frameRate(600);
 
   frame.setTitle("Wall of Light");
   background(0);
+  startThreads();
 }
 
 void autoMode() {

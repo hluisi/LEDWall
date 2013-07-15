@@ -28,13 +28,14 @@ void setupTeensys() {
   println(list);
 
   // SETUP TEENSYs
-  teensys[0] = new Teensy(this, 0, "COM4",  true);
-  teensys[1] = new Teensy(this, 1, "COM5",  false);
-  teensys[2] = new Teensy(this, 2, "COM14", false);
-  teensys[3] = new Teensy(this, 3, "COM15", false);
-  teensys[4] = new Teensy(this, 4, "COM16", false);
-  
+  teensys[0] = new Teensy(this, 2, "COM10",  true);
+  teensys[1] = new Teensy(this, 3, "COM6",  true);
+  teensys[2] = new Teensy(this, 4, "COM9", true);
+  teensys[3] = new Teensy(this, 5, "COM7", true);
+  teensys[4] = new Teensy(this, 6, "COM8", true);
   setupGamma();
+  
+  
   println("TEENSYS SETUP!!");
   println();
 }
@@ -47,6 +48,14 @@ void setupGamma() {
     gammaTable[i][0] = floor(255 * pow(d, RED_GAMMA) + 0.5); // RED
     gammaTable[i][1] = floor(255 * pow(d, GREEN_GAMMA) + 0.5); // GREEN
     gammaTable[i][2] = floor(255 * pow(d, BLUE_GAMMA) + 0.5); // BLUE
+  }
+}
+
+void startThreads() {
+  println("STARTING THREADS");
+  for (int i = 0; i < teensys.length; i++) {
+    teensys[i].start();
+    
   }
 }
 
@@ -115,7 +124,7 @@ class Teensy extends Thread {
     g = int( map( g, 0, 255, 0, max_brightness ) );  // map green to max LED brightness
     b = int( map( b, 0, 255, 0, max_brightness ) );  // map blue to max LED brightness
 
-      r = gammaTable[r][0];  // map red to gamma correction table
+    r = gammaTable[r][0];  // map red to gamma correction table
     g = gammaTable[g][1];  // map green to gamma correction table
     b = gammaTable[b][2];  // map blue to gamma correction table
 
@@ -172,12 +181,12 @@ class Teensy extends Thread {
     if (isMaster) {  // are we the master?
       //port.write('@');
       data[0] = '*';  
-      int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
+      int usec = (int)((1000000.0 / frameRate ) * 0.75); // using processing's frameRate to fix timing
       data[1] = (byte)(usec);   // request the frame sync pulse
       data[2] = (byte)(usec >> 8); // at 75% of the frame time
     } 
     else {
-      data[0] = '%';  // others sync to the master board
+      data[0] = '$';  // others sync to the master board
       data[1] = 0;
       data[2] = 0;
     }
@@ -278,7 +287,7 @@ class STeensy {
     g = int( map( g, 0, 255, 0, max_brightness ) );  // map green to max LED brightness
     b = int( map( b, 0, 255, 0, max_brightness ) );  // map blue to max LED brightness
 
-      r = gammaTable[r][0];  // map red to gamma correction table
+    r = gammaTable[r][0];  // map red to gamma correction table
     g = gammaTable[g][1];  // map green to gamma correction table
     b = gammaTable[b][2];  // map blue to gamma correction table
 
@@ -332,6 +341,7 @@ class STeensy {
   }
 
   void send() {
+    update();
     if (isMaster) {  // are we the master?
       //port.write('@');
       data[0] = '*';  

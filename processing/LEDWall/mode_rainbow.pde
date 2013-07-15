@@ -170,7 +170,7 @@ class Rainbow {
     buffer.blendMode(BLEND);
     //buffer.noStroke();
     buffer.stroke(0);
-    buffer.strokeWeight(0.5);
+    buffer.strokeWeight(1);
 
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);
