@@ -28,11 +28,18 @@ void setupTeensys() {
   println(list);
 
   // SETUP TEENSYs
-  teensys[0] = new Teensy(this, 2, "COM10",  true);
-  teensys[1] = new Teensy(this, 3, "COM6",  true);
-  teensys[2] = new Teensy(this, 4, "COM9", true);
-  teensys[3] = new Teensy(this, 5, "COM7", true);
-  teensys[4] = new Teensy(this, 6, "COM8", true);
+  //teensys[0] = new Teensy(this, 2, "COM10",  true);
+  //teensys[1] = new Teensy(this, 3, "COM6",  true);
+  //teensys[2] = new Teensy(this, 4, "COM9", true);
+  //teensys[3] = new Teensy(this, 5, "COM7", true);
+  //teensys[4] = new Teensy(this, 6, "COM8", true);
+  
+  teensys[0] = new Teensy(this, 2, "COM4",  true);
+  teensys[1] = new Teensy(this, 3, "COM5",  true);
+  teensys[2] = new Teensy(this, 4, "COM14", true);
+  teensys[3] = new Teensy(this, 5, "COM15", true);
+  teensys[4] = new Teensy(this, 6, "COM16", true);
+  
   setupGamma();
   
   
