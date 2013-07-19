@@ -29,6 +29,7 @@
 // STILL NEEDS REWRITE
 
 int DISPLAY_MODE = 1;
+int LAST_MODE =1;
 float xoff = 0.0;
 
 final int DISPLAY_MODE_TEST    = 0;
@@ -57,8 +58,6 @@ PImage smpte, test, wall_image;
 DisposeHandler dh;
 
 void setup() {
-  //hint(ENABLE_STROKE_PURE);
-
   int x, y;
   if (DEBUG_SHOW_WALL) {
     x = DEBUG_WINDOW_XSIZE;
@@ -71,9 +70,7 @@ void setup() {
   }
 
   size(x, y, JAVA2D);
-
-
-  //smooth();
+  smooth(4);
 
   dh = new DisposeHandler(this);
 
@@ -103,11 +100,10 @@ void setup() {
 
   // must be last
   setupControl();
-  frameRate(600);
+  frameRate(30);
 
   frame.setTitle("Wall of Light");
   background(0);
-  startThreads();
 }
 
 void autoMode() {
@@ -117,7 +113,6 @@ void autoMode() {
       int count = round( random(1, 10) );
       DISPLAY_MODE = count;
       r.activate(count);
-      //println("MODE - " + DISPLAY_STR[count]);
     }
   }
 }
@@ -161,6 +156,8 @@ void draw() {
 
 
 void doMode() {
+  
+  
   if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
   if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)  doEQ();
   if (DISPLAY_MODE == DISPLAY_MODE_USERBG)  doUserBg();
@@ -173,6 +170,12 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
   if (DISPLAY_MODE == DISPLAY_MODE_CHING)   doIChing();
   displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
+  
+  if (DISPLAY_MODE != LAST_MODE) teensys[0].resetSync();
+  
+  LAST_MODE = DISPLAY_MODE;
+  
+  
 }
 
 void keyPressed() {
@@ -206,10 +209,6 @@ public class DisposeHandler {
     // always close Minim audio classes when you are done with them
     audio.close();
     minim.stop();
-
-    for (int i = 0; i < teensys.length; i++) {
-      teensys[i].quit();
-    }
   }
 }
 

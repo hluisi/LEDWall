@@ -1,11 +1,7 @@
-
-
 import processing.serial.*;
 
 float WALL_WATTS = 0;
 float MAX_WATTS = 0;
-
-int sendingCount = 0;
 
 int[][] gammaTable;
 int max_brightness = 192;
@@ -27,22 +23,15 @@ void setupTeensys() {
   println("Serial Ports List:");
   println(list);
 
-  // SETUP TEENSYs
-  //teensys[0] = new Teensy(this, 2, "COM10",  true);
-  //teensys[1] = new Teensy(this, 3, "COM6",  true);
-  //teensys[2] = new Teensy(this, 4, "COM9", true);
-  //teensys[3] = new Teensy(this, 5, "COM7", true);
-  //teensys[4] = new Teensy(this, 6, "COM8", true);
-  
-  teensys[0] = new Teensy(this, 2, "COM4",  true);
-  teensys[1] = new Teensy(this, 3, "COM5",  true);
-  teensys[2] = new Teensy(this, 4, "COM14", true);
-  teensys[3] = new Teensy(this, 5, "COM15", true);
-  teensys[4] = new Teensy(this, 6, "COM16", true);
-  
+  teensys[0] = new Teensy(this, 2, "COM4", true);
+  teensys[1] = new Teensy(this, 3, "COM5", false);
+  teensys[2] = new Teensy(this, 4, "COM14", false);
+  teensys[3] = new Teensy(this, 5, "COM15", false);
+  teensys[4] = new Teensy(this, 6, "COM16", false);
+
   setupGamma();
-  
-  
+
+  teensys[0].port.write('@');
   println("TEENSYS SETUP!!");
   println();
 }
@@ -58,36 +47,25 @@ void setupGamma() {
   }
 }
 
-void startThreads() {
-  println("STARTING THREADS");
-  for (int i = 0; i < teensys.length; i++) {
-    teensys[i].start();
-    
-  }
-}
-
-class Teensy extends Thread {
-
-  boolean running;  // thread is running
+class Teensy {
   boolean isMaster; // teensy is master
-  boolean triggerSend; // start send
   int     id;       // id of the image that will be sent to teensy
   float   watts;
   byte[]  data;     // converted image data that gets sent
   Serial  port;     // serial port of the teensy
   String  portName; // serial port name
+  int t;
 
     Teensy(PApplet parent, int ID, String name, boolean master) {
     println("Setting up teensy: " + name + " ...");
     data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
-    running  = false;   // are we runing?
     isMaster = master;  // are we the master teensy?  (used for display sync)
     portName = name;    // set the port name
     id       = ID;      // set the id 
 
     // setup serial port
     try {
-      port = new Serial(parent, portName);           // create the port
+      port = new Serial(parent, portName, 128000);           // create the port
       if (port == null) throw new NullPointerException();    // was the port created?
       port.write('?');                                       // send ident char to teensy
     } 
@@ -183,176 +161,17 @@ class Teensy extends Thread {
       }
     }
   }
-
-  void send() {
-    if (isMaster) {  // are we the master?
-      //port.write('@');
-      data[0] = '*';  
-      int usec = (int)((1000000.0 / frameRate ) * 0.75); // using processing's frameRate to fix timing
-      data[1] = (byte)(usec);   // request the frame sync pulse
-      data[2] = (byte)(usec >> 8); // at 75% of the frame time
-    } 
-    else {
-      data[0] = '$';  // others sync to the master board
-      data[1] = 0;
-      data[2] = 0;
-    }
-
-    port.write(data);  // send data over serial to teensy
-  }
-
-  // Overloading start
-  void start() {
-    running = true;
-    println("Starting " + portName + " thread...");
-    clear();
-    super.start();
-  }
-
-  void trigger() {
-    triggerSend = true;
-  }
-
-  void run() {
-    while (running) {
-      if (triggerSend) {
-        triggerSend = false;
-        sendingCount++;
-        update();
-        send(); 
-        sendingCount--;
-      }
-    }
-  }
-
-  void quit() {
-    println("Quitting thread: " + portName); 
-    clear();         // clear the screen
-    running = false; // Setting running to false ends the loop in run()
-    interrupt();     // in case the thread is waiting...
-  }
-}
-
-class STeensy {
-  boolean isMaster; // teensy is master
-  int     id;       // id of the image that will be sent to teensy
-  float   watts;
-  byte[]  data;     // converted image data that gets sent
-  Serial  port;     // serial port of the teensy
-  String  portName; // serial port name
-
-    STeensy(PApplet parent, int ID, String name, boolean master) {
-    println("Setting up teensy: " + name + " ...");
-    data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
-    isMaster = master;  // are we the master teensy?  (used for display sync)
-    portName = name;    // set the port name
-    id       = ID;      // set the id 
-
-    // setup serial port
-    try {
-      port = new Serial(parent, portName);           // create the port
-      if (port == null) throw new NullPointerException();    // was the port created?
-      port.write('?');                                       // send ident char to teensy
-    } 
-    catch (Throwable e) {  // got errors?
-      println("Serial port " + portName + " does not exist or is non-functional");
-      exit();
-    }
-
-    delay(50); // wait for teensy to send back ident data
-
-    String line = port.readStringUntil(10);  // give me everything up to the linefeed
-
-    if (line == null) {  //  no data back from the teensy? 
-      println("Serial port " + portName + " is not responding.");
-      println("Is it really a Teensy 3.0 running VideoDisplay?");
-      exit();
-    }
-
-    String param[] = line.split(",");  // get the param's (which we don't really need)
-    if (param.length != 12) { // didn't get 12 back?  bad news...
-      println("Error: port " + portName + " did not respond to LED config query");
-      exit();
-    }
-
-    println(portName + " SETUP!!");
-  }
-
-  void clear() {
-    for (int i = 0; i < data.length; i++) {
-      data[i] = 0;
-    }
-    send();
-  }
-
-  color updateColor(color c) {
-    int r = (c >> 16) & 0xFF;  // get the red
-    int g = (c >> 8) & 0xFF;   // get the green
-    int b = c & 0xFF;          // get the blue 
-
-    r = int( map( r, 0, 255, 0, max_brightness ) );  // map red to max LED brightness
-    g = int( map( g, 0, 255, 0, max_brightness ) );  // map green to max LED brightness
-    b = int( map( b, 0, 255, 0, max_brightness ) );  // map blue to max LED brightness
-
-    r = gammaTable[r][0];  // map red to gamma correction table
-    g = gammaTable[g][1];  // map green to gamma correction table
-    b = gammaTable[b][2];  // map blue to gamma correction table
-
-    float pixel_watts = map(r + g + b, 0, 768, 0, 0.24);  // get the wattage of the pixel
-    watts += pixel_watts; // add pixel wattage to total wattage count (watts is added to WALL_WATTS in wall tab)
-
-    return color(g, r, b, 255); // translate the 24 bit color from RGB to the actual order used by the LED wiring.  GRB is the most common.
-  }
-
-  // converts an image to OctoWS2811's raw data format.
-  // The number of vertical pixels in the image must be a multiple
-  // of 8.  The data array must be the proper size for the image.
-  void update() { 
-    watts = 0;
-    int offset = 3;
-    int x, y, xbegin, xend, xinc, mask;
-    int linesPerPin = wall.teensyImages[id].height / 8;
-    int pixel[] = new int[8];
-
-    boolean layout = true;
-
-    for (y = 0; y < linesPerPin; y++) {
-      if ((y & 1) == (layout ? 0 : 1)) {
-        // even numbered rows are left to right
-        xbegin = 0;
-        xend = wall.teensyImages[id].width;
-        xinc = 1;
-      } 
-      else {
-        // odd numbered rows are right to left
-        xbegin = wall.teensyImages[id].width - 1;
-        xend = -1;
-        xinc = -1;
-      }
-      for (x = xbegin; x != xend; x += xinc) {
-        for (int i=0; i < 8; i++) {
-          // fetch 8 pixels from the image, 1 for each pin
-          pixel[i] = wall.teensyImages[id].pixels[x + (y + linesPerPin * i) * wall.teensyImages[id].width];
-          pixel[i] = updateColor(pixel[i]);
-        }
-        // convert 8 pixels to 24 bytes
-        for (mask = 0x800000; mask != 0; mask >>= 1) {
-          byte b = 0;
-          for (int i=0; i < 8; i++) {
-            if ((pixel[i] & mask) != 0) b |= (1 << i);
-          }
-          data[offset++] = b;
-        }
-      }
-    }
+  
+  void resetSync() {
+    port.write('@');
   }
 
   void send() {
     update();
     if (isMaster) {  // are we the master?
-      //port.write('@');
-      data[0] = '*';  
+      data[0] = '$';  
       int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
+      t = usec;
       data[1] = (byte)(usec);   // request the frame sync pulse
       data[2] = (byte)(usec >> 8); // at 75% of the frame time
     } 
@@ -364,6 +183,5 @@ class STeensy {
 
     port.write(data);  // send data over serial to teensy
   }
-
 }
 

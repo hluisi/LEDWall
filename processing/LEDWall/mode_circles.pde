@@ -87,7 +87,7 @@ class ConcCircles {
       for (int n = 0; n < numCircles; n++) {
         buffer.fill( getCircleColor(i) );
         if (USE_KINECT) {
-          if (kinect.users.length > 0 && kinect.users[0].onScreen() ) {
+          if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
             kx = kinect.users[0].x; 
             ky = kinect.users[0].y;
           } 
@@ -135,7 +135,7 @@ class SpecCity {
     buffer.fill(audio.colors.background); 
     buffer.strokeWeight(2);
     if (USE_KINECT) {
-      if (kinect.users.length > 0 && kinect.users[0].onScreen() && USE_KINECT) {
+      if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
         kx = kinect.users[0].x; 
         ky = kinect.users[0].y;
       } 
@@ -204,7 +204,7 @@ class Pulsar {
   void draw() {
     buffer.noFill();
     if (USE_KINECT) {
-      if (kinect.users.length > 0 && kinect.users[0].onScreen()) {
+      if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
         kx = kinect.users[0].x; 
         ky = kinect.users[0].y;
       } 

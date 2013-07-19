@@ -19,7 +19,7 @@ class AverageListener implements AudioListener {
   FFT fft;           // FFT 
   BeatDetect beat;   // beat detect
 
-    boolean gotBeat = false, gotMode = false, gotKinect = false;
+  boolean gotBeat = false, gotMode = false, gotKinect = false;
 
   int last_update = millis();
   int BPM = 0, check = 0;

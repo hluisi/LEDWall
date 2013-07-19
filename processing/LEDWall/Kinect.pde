@@ -50,6 +50,7 @@ class Kinect {
 
     Kinect(PApplet parent) {
     context = new SimpleOpenNI(parent, SimpleOpenNI.RUN_MODE_MULTI_THREADED);  // init the kinect
+    //context = new SimpleOpenNI(parent, SimpleOpenNI.RUN_MODE_SINGLE_THREADED);  // init the kinect
     defaults();                     // setup defaults
   }
 
@@ -77,7 +78,7 @@ class Kinect {
     context.setMirror(true);             // turn on mirroring
   }
 
-  void updateUsersArray() {
+  synchronized void updateUsersArray() {
     for (Map.Entry u : userHash.entrySet() ) {  // loop through the user hash table
       User thisUser = userHash.get( u.getKey() );
       if ( thisUser != null ) {
@@ -96,7 +97,7 @@ class Kinect {
   void updateUsersImage() {
     if (mapUser) {                        // are we mapping the user's depth?
       depthImage = context.depthImage();    // if so get the latest depth image
-      depthImage.loadPixels();
+      //depthImage.loadPixels();
     }
 
     userMap = context.getUsersPixels(SimpleOpenNI.USERS_ALL);  // get the userMap (it's n 2D array of user numbers for each pixel)
@@ -137,6 +138,7 @@ class Kinect {
         buffer.text(users[i].i, users[i].x, users[i].y);
       }
     }
+    buffer.text(users.length, COLUMNS - 20, ROWS - 20);
   }
 
   void draw() {

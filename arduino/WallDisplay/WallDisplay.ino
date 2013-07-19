@@ -105,7 +105,7 @@ void setup() {
   pinMode(12, INPUT_PULLUP); // Frame Sync
   pinMode(13, OUTPUT);
   Serial.setTimeout(50);
-  Serial.begin(57600);
+  Serial.begin(128000);
   leds.begin();
   leds.show();
 }
@@ -161,10 +161,10 @@ void loop() {
       if (endAt - startAt < usecUntilFrameSync) {
         usToWaitBeforeSyncOutput = usecUntilFrameSync - (endAt - startAt);
       }
-      //digitalWrite(12, HIGH);
-      //pinMode(12, OUTPUT);
-      //delayMicroseconds(usToWaitBeforeSyncOutput);
-      //digitalWrite(12, LOW);
+      digitalWrite(12, HIGH);
+      pinMode(12, OUTPUT);
+      delayMicroseconds(usToWaitBeforeSyncOutput);
+      digitalWrite(12, LOW);
       // WS2811 update begins immediately after falling edge of frame sync
       //digitalWrite(13, HIGH);
       leds.show();
@@ -215,18 +215,15 @@ void loop() {
     digitalWrite(13, LOW);
     }
   } else if (startChar == '#') {
-    // receive a "slave" frame - wait to show it until the frame sync arrives
+    // receive a "single" frame - no sync 
     digitalWrite(13, HIGH);
-    digitalWrite(12, HIGH);
-    pinMode(12, OUTPUT);
     unsigned int unusedField = 0;
     int count = Serial.readBytes((char *)&unusedField, 2);
     if (count != 2) return;
     count = Serial.readBytes((char *)drawingMemory, sizeof(drawingMemory));
-    if (count == sizeof(drawingMemory)) {
-      digitalWrite(12, LOW);
+    //if (count == sizeof(drawingMemory)) {
       leds.show();
-    }
+    //}
     
     digitalWrite(13, LOW);
     
@@ -266,4 +263,3 @@ void loop() {
     // discard unknown characters
   }
 }
-

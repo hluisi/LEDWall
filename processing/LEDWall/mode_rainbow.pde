@@ -15,7 +15,7 @@ void setupRainbow() {
 void doRainbow() {
   //buffer.blendMode(BLEND);
   if (USE_KINECT) {
-    if (kinect.users.length > 0 && kinect.users[0].onScreen()) {
+    if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
       rainbow.setLocation(kinect.users[0].x, kinect.users[0].y );
     } 
     else {

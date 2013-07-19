@@ -25,10 +25,7 @@ boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 VideoWall wall;
 
 void setupWall() {
-  wall = new VideoWall();                    // create the wall
-  //for (int i = 0; i < TEENSY_TOTAL; i++) {   // start teensy threads
-    //teensys[i].start();
-  //}
+  wall = new VideoWall();     // create the wall
   println("WALL SETUP ...");
 }
 
@@ -79,66 +76,29 @@ class VideoWall {
     
     
     // set the teensy image array
+    int start_time = millis();
     for (int i = 0; i < teensyImages.length; i++) {
       arrayCopy(send_buffer.pixels, i * (80 * 16), teensyImages[i].pixels, 0, 80 * 16);
       teensyImages[i].updatePixels();
 
-      //if (i < TEENSY_TOTAL) {
-        
-        //teensys[i].update();
-        //teensys[i].send();
-       
-        //WALL_WATTS += teensys[i].watts;
-        
-      //}
+      if (i < TEENSY_TOTAL) {
+        teensys[i].send();
+        WALL_WATTS += teensys[i].watts;
+      }
     }
     
-    int start_time = millis();
-    //for (int i =0; i < teensys.length; i++) {
-    //  teensys[i].send();
-    //  teensys[i].send();
-    //  WALL_WATTS += teensys[i].watts;
-    //}
-    
-    
-    teensys[0].trigger();
-    teensys[1].trigger();
-    teensys[2].trigger();
-    
-    while (sendingCount > 0) {
-      // do nothing
+    for (int i = 0; i < teensys.length; i++) {
+      teensys[i].send();
     }
-    
-    teensys[3].trigger();
-    teensys[4].trigger();
-    
-    while (sendingCount > 0) {
-      // do nothing
-    }
-    
-    //teensys[4].trigger();
-    
-    //while (sendingCount > 0) {
-      // do nothing
-    //}
-    
     
     int end_time = millis();
     SEND_TIME = end_time - start_time;
     
-    
-    WALL_WATTS = teensys[0].watts + teensys[1].watts + teensys[2].watts + teensys[3].watts + teensys[4].watts;
     MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
-
-    //int check = millis();
-    //while (sendingCount > 0) {
-    // wait till threads are donesending
-    //}
-    //send_time = millis() - check;
   }
 
   void draw() {
-    buffer.updatePixels();
+    //buffer.updatePixels();
     send();
     if (DEBUG_SHOW_WALL) display();
   }

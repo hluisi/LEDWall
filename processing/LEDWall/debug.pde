@@ -51,6 +51,7 @@ void drawDebug() {
   }
   
   text("Send Time: " + SEND_TIME, DEBUG_TEXT_X, DEBUG_WINDOW_START + 200);
+  text("Usec Time: " + teensys[0].t, DEBUG_TEXT_X, DEBUG_WINDOW_START + 215);
 
   //fill(#212121);
 
