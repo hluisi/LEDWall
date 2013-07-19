@@ -87,6 +87,7 @@ class VideoWall {
       }
     }
     
+    // send data again to simulate 10 teensy's
     for (int i = 0; i < teensys.length; i++) {
       teensys[i].send();
     }

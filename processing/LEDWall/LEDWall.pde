@@ -42,14 +42,13 @@ final int DISPLAY_MODE_PULSAR  = 6;
 final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
-final int DISPLAY_MODE_CHING   = 10;
 
 boolean AUTOMODE = false;
 boolean useAudio = true;
 boolean AUDIO_BG_ON = false;
 
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS", "iCHING"
+  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
 };
 
 
@@ -69,7 +68,7 @@ void setup() {
     DEBUG_WINDOW_START = ROWS*2;
   }
 
-  size(x, y, JAVA2D);
+  size(x, y, P2D);
   smooth(4);
 
   dh = new DisposeHandler(this);
@@ -110,7 +109,7 @@ void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
     if (test < 0.15) {
-      int count = round( random(1, 10) );
+      int count = round( random(1, 9) );
       DISPLAY_MODE = count;
       r.activate(count);
     }
@@ -168,7 +167,6 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
-  if (DISPLAY_MODE == DISPLAY_MODE_CHING)   doIChing();
   displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
   
   if (DISPLAY_MODE != LAST_MODE) teensys[0].resetSync();
@@ -190,7 +188,6 @@ void keyPressed() {
   if (key == '7') DISPLAY_MODE = DISPLAY_MODE_CITY;
   if (key == '8') DISPLAY_MODE = DISPLAY_MODE_ATARI;
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
-  if (key == '-') DISPLAY_MODE = DISPLAY_MODE_CHING;
   //if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
 
   r.activate(DISPLAY_MODE);
@@ -204,11 +201,18 @@ public class DisposeHandler {
 
   void dispose() {
     System.out.println("CLOSING DOWN!!!");
+    for (int i = 0; i < teensys.length; i++) {
+      teensys[i].clear();
+    }
+    
+    delay(50); // wait a bit for teensys to clear
+    
     if (USE_KINECT) kinect.close();
 
     // always close Minim audio classes when you are done with them
     audio.close();
     minim.stop();
+    
   }
 }
 

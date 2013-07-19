@@ -23,11 +23,11 @@ void setupTeensys() {
   println("Serial Ports List:");
   println(list);
 
-  teensys[0] = new Teensy(this, 2, "COM4", true);
+  teensys[0] = new Teensy(this, 2, "COM4", false);
   teensys[1] = new Teensy(this, 3, "COM5", false);
   teensys[2] = new Teensy(this, 4, "COM14", false);
   teensys[3] = new Teensy(this, 5, "COM15", false);
-  teensys[4] = new Teensy(this, 6, "COM16", false);
+  teensys[4] = new Teensy(this, 6, "COM16", true);
 
   setupGamma();
 
@@ -73,8 +73,8 @@ class Teensy {
       println("Serial port " + portName + " does not exist or is non-functional");
       exit();
     }
-
-    delay(50); // wait for teensy to send back ident data
+    
+    delay(50);
 
     String line = port.readStringUntil(10);  // give me everything up to the linefeed
 
@@ -94,10 +94,7 @@ class Teensy {
   }
 
   void clear() {
-    for (int i = 0; i < data.length; i++) {
-      data[i] = 0;
-    }
-    send();
+    port.write('!');
   }
 
   color updateColor(color c) {
@@ -169,11 +166,13 @@ class Teensy {
   void send() {
     update();
     if (isMaster) {  // are we the master?
-      data[0] = '$';  
-      int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
-      t = usec;
-      data[1] = (byte)(usec);   // request the frame sync pulse
-      data[2] = (byte)(usec >> 8); // at 75% of the frame time
+      data[0] = '#';  
+      //int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
+      //t = usec;
+      //data[1] = (byte)(usec);   // request the frame sync pulse
+      //data[2] = (byte)(usec >> 8); // at 75% of the frame time
+      data[1] = 0;
+      data[2] = 0;
     } 
     else {
       data[0] = '%';  // others sync to the master board

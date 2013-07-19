@@ -221,16 +221,17 @@ void loop() {
     int count = Serial.readBytes((char *)&unusedField, 2);
     if (count != 2) return;
     count = Serial.readBytes((char *)drawingMemory, sizeof(drawingMemory));
-    //if (count == sizeof(drawingMemory)) {
+    if (count == sizeof(drawingMemory)) {
       leds.show();
-    //}
+    }
     
     digitalWrite(13, LOW);
     
   } else if (startChar == '@') {
     // reset the elapsed frame time, for startup of '$' message playing
     elapsedUsecSinceLastFrameSync = 0;
-
+    
+  
   } else if (startChar == '?') {
     // when the video application asks, give it all our info
     // for easy and automatic configuration
@@ -258,6 +259,16 @@ void loop() {
     Serial.write(',');
     Serial.print(0);
     Serial.println();
+  
+  } else if (startChar == '!') {
+    for (int tx = 0; tx < ledsPerStrip; tx++) {
+      for (int ty = 0; ty < 8; ty++) {
+        leds.setPixel(tx + ty*ledsPerStrip, 0x000000);
+      }
+      
+    }
+    leds.show();
+  
 
   } else if (startChar >= 0) {
     // discard unknown characters

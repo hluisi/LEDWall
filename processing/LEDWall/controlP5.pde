@@ -72,9 +72,8 @@ void setupControl() {
                                       .addItem("City", 7)
                                         .addItem("Atari", 8)
                                           .addItem("Clips", 9)
-                                            .addItem("iChing", 10)
-                                              .activate(1)
-                                                ;
+                                            .activate(1)
+                                              ;
 
   for (Toggle t:r.getItems()) {
     t.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);

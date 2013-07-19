@@ -11,6 +11,8 @@ Comparator<User> UserByY;
 Comparator<User> UserByZ;
 Comparator<User> UserByI;
 
+int[] fibonacci = { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };
+
 void setupUtils() {
   PVectorByX = new PVectorXComparator();
   PVectorByY = new PVectorYComparator();
@@ -20,6 +22,26 @@ void setupUtils() {
   UserByZ = new UserZComparator();
   UserByI = new UserIComparator();
 } 
+
+// multiply a value to the fibonacci (kind of...)
+float fib( float v, float s, float e) {
+  int i = round( map(v, s, e, 0, 9) );
+  return v * fibonacci[i];
+}
+
+int fib( int v, float s, float e) {
+  int i = round( map(v, s, e, 0, 9) );
+  return round( v * fibonacci[i] );
+}
+  
+  
+// delay() removed so we have to make our own 
+void delay(int mil) {
+  int d = millis();
+  while(millis() - d < mil) {  
+    // do nothing
+  }
+}
 
 String[] getFileNames(String dir, String ext) {
   String thisdir = sketchPath + "\\data\\" + dir;
