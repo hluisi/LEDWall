@@ -110,10 +110,10 @@ class Kinect {
           int tr = (thisUser.c >> 16) & 0xFF;                         // get the red value of the user's color
           int tg = (thisUser.c >> 8) & 0xFF;                          // get the green value of the user's color
           int tb =  thisUser.c & 0xFF;                                // get the blue value of the user's color
-          float depth_brightness = brightness(depthImage.pixels[i]);  // get the brightness from the user depth image
-          float r = map(depth_brightness, 0, 255, 0, tr) * 1.15;             // map brightness from depth image to the red of the user color
-          float g = map(depth_brightness, 0, 255, 0, tg) * 1.15;             // map brightness from depth image to the green of the user color
-          float b = map(depth_brightness, 0, 255, 0, tb) * 1.15;             // map brightness from depth image to the blue of the user color
+          float depth_brightness = brightness(depthImage.pixels[i]) * 2;  // get the brightness from the user depth image
+          float r = map(depth_brightness, 0, 511, 0, tr) * 1.15;             // map brightness from depth image to the red of the user color
+          float g = map(depth_brightness, 0, 511, 0, tg) * 1.15;             // map brightness from depth image to the green of the user color
+          float b = map(depth_brightness, 0, 511, 0, tb) * 1.15;             // map brightness from depth image to the blue of the user color
           thisUser.setPixel(i, color(r, g, b) );                      // set user's pixel using new color
         } else {
           thisUser.setPixel(i);                                       // set user's pixel using the user's own color

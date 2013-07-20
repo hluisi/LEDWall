@@ -90,7 +90,6 @@
 #define VIDEO_WIDTH    80
 #define VIDEO_HEIGHT   16
 
-
 const int ledsPerStrip = LED_WIDTH * LED_HEIGHT / 8;
 
 DMAMEM int displayMemory[ledsPerStrip*6];
@@ -129,10 +128,16 @@ void loop() {
 //         control the pacing of video playback by updating the
 //         LEDs based on time elapsed from the previous frame.
 //
+//   '#' = Frame of image data, with frame sync pulse to be sent
+//         as soon as all data is received. This is used when you 
+//         want the Teensy to sync after all data is received. By 
+//         sending the last teensy this command you can update each 
+//         frame as quickly as possible. 
+//
 //   '%' = Frame of image data, to be displayed with a frame sync
 //         pulse is received from another board.  In a multi-board
 //         system, the sender would normally transmit one '*' or '$'
-//         message and '%' messages to all other boards, so every
+//         or '#' message and '%' messages to all other boards, so every
 //         Teensy 3.0 updates at the exact same moment.
 //
 //   '@' = Reset the elapsed time, used for '$' messages.  This
@@ -142,6 +147,8 @@ void loop() {
 //   
 //   '?' = Query LED and Video parameters.  Teensy 3.0 responds
 //         with a comma delimited list of information.
+//
+//   '!' = Clears and sets all pixels to black. 
 //
   int startChar = Serial.read();
 
@@ -193,6 +200,22 @@ void loop() {
       //digitalWrite(13, LOW);
     }
     digitalWrite(13, LOW);
+  
+  } else if (startChar == '#') {
+    // receive the "LAST" frame then send sync - we send the frame sync to other boards
+    // as soon as all data is received.  
+    digitalWrite(13, HIGH);
+    unsigned int unusedField = 0;
+    int count = Serial.readBytes((char *)&unusedField, 2);
+    if (count != 2) return;
+    count = Serial.readBytes((char *)drawingMemory, sizeof(drawingMemory));
+    if (count == sizeof(drawingMemory)) {
+      digitalWrite(12, HIGH);
+      pinMode(12, OUTPUT);
+      digitalWrite(12, LOW);
+      leds.show();
+    }
+    digitalWrite(13, LOW);
 
   } else if (startChar == '%') {
     // receive a "slave" frame - wait to show it until the frame sync arrives
@@ -214,18 +237,7 @@ void loop() {
       }
     digitalWrite(13, LOW);
     }
-  } else if (startChar == '#') {
-    // receive a "single" frame - no sync 
-    digitalWrite(13, HIGH);
-    unsigned int unusedField = 0;
-    int count = Serial.readBytes((char *)&unusedField, 2);
-    if (count != 2) return;
-    count = Serial.readBytes((char *)drawingMemory, sizeof(drawingMemory));
-    if (count == sizeof(drawingMemory)) {
-      leds.show();
-    }
-    
-    digitalWrite(13, LOW);
+  
     
   } else if (startChar == '@') {
     // reset the elapsed frame time, for startup of '$' message playing
@@ -261,6 +273,7 @@ void loop() {
     Serial.println();
   
   } else if (startChar == '!') {
+    // set all pixels to BLACK.  
     for (int tx = 0; tx < ledsPerStrip; tx++) {
       for (int ty = 0; ty < 8; ty++) {
         leds.setPixel(tx + ty*ledsPerStrip, 0x000000);
@@ -272,5 +285,6 @@ void loop() {
 
   } else if (startChar >= 0) {
     // discard unknown characters
+    
   }
 }
