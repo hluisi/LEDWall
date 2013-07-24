@@ -29,27 +29,30 @@ int kBs;
 int kBs_timer;
 int kBs_tracker;
 int MAX_KBS;
+int simCount;
 float MIN_FPS = 99999;
 
 boolean toggleLines = false;
 boolean lastState = toggleLines;
+boolean simulate_10 = false;
 
 PImage showImage;
 PFont font;
 
 void setup() {
   size(COLUMNS * 3, COLUMNS * 3, P2D);
-  setupBuffers();
-  setupMovie();
-  setupTeensys();
-  showImage = createImage(frameBuffer.width*3, frameBuffer.height*3, RGB);
-  DEBUG_Y = showImage.height + 16;
-  DEBUG_X = 5;
-  font = loadFont("Verdana-Bold-16.vlw");
-  textFont(font);
-  kBs_tracker = 0;
-  kBs_timer = millis();
-  MAX_KBS = 0;
+  setupBuffers();  // setup buffers
+  setupMovie();    // load test movie
+  setupTeensys();  // setup Teensy's
+  showImage = createImage(frameBuffer.width*3, frameBuffer.height*3, RGB);  // create the pc image
+  DEBUG_Y = showImage.height + 16;  // debug Y start
+  DEBUG_X = 5;                      // debug X start
+  font = loadFont("Verdana-Bold-14.vlw");  // load the font
+  textFont(font);  // set the font  
+  kBs_tracker = 0;      // reset kB/s tracker
+  kBs_timer = millis(); // start kB/s timer
+  MAX_KBS = 0;          // reset max kB/s tracker
+  simCount = 10 - teensys.length;  // set the sim count
 }
 
 void draw() {
@@ -95,14 +98,31 @@ void drawScreen() {
   text("FPS: " + String.format("%.2f", frameRate) + " / " + String.format("%.2f", MIN_FPS), DEBUG_X, DEBUG_Y); // FPS current and min
   //text("Watts: " + String.format("%.2f", WALL_WATTS) + " / " + String.format("%.2f", MAX_WATTS), width / 2, DEBUG_Y); // Watts current and min
   text("kB/s: " + kBs + " / " + MAX_KBS, width / 2, DEBUG_Y); // Watts current and min
-  text("Send millis: " + SEND_TIME + " / " + MAX_SEND, DEBUG_X, DEBUG_Y + 18);   // total send time (current and max)
-  text("Frame millis: " + FRAME_TIME + " / " + MAX_FRAME, width / 2, DEBUG_Y + 18);  // total frame processing time (current and max)
-  text("-----------------------------------------------------------", DEBUG_X, DEBUG_Y + 36); // spacer
+  text("Send millis: " + SEND_TIME + " / " + MAX_SEND, DEBUG_X, DEBUG_Y + 16);   // total send time (current and max)
+  text("Frame millis: " + FRAME_TIME + " / " + MAX_FRAME, width / 2, DEBUG_Y + 16);  // total frame processing time (current and max)
+  text("------------------------  Teensy Data  ---------------------------", DEBUG_X, DEBUG_Y + 36); // spacer
   
   // per teensy send and processing time (current and mx)
   for (int i = 0; i < teensys.length; i++) {
-    text("T" + i + " send millis: " + teensys[i].send_time + " / " + teensys[i].max_send, DEBUG_X + 5, DEBUG_Y + ((i+3) * 18)); 
-    text("T" + i + " frame millis: " + teensys[i].proc_time + " / " + teensys[i].max_proc, width / 2, DEBUG_Y + ((i+3) * 18));
+    text("T" + i + " send millis: " + teensys[i].send_time + " / " + teensys[i].max_send, DEBUG_X + 5, DEBUG_Y + 4 + ((i+3) * 16)); 
+    text("T" + i + " frame millis: " + teensys[i].proc_time + " / " + teensys[i].max_proc, width / 2, DEBUG_Y + 4 + ((i+3) * 16));
+  }
+  pushStyle();
+  textAlign(CENTER);
+  textSize(12);
+  text("Left click adds more CPU, right reset maxs, anykey simulates 10 teensy's", width / 2, height - 5);
+  popStyle();
+}
+
+void resetMaxs() {
+  MIN_FPS = 99999;
+  MAX_SEND = 0;
+  MAX_FRAME = 0;
+  MAX_WATTS = 0;
+  MAX_KBS = 0;
+  for (int i = 0; i < teensys.length; i++) {
+    teensys[i].max_send = 0;
+    teensys[i].max_proc = 0;
   }
 }
 
@@ -111,15 +131,13 @@ void mousePressed() {
   if (mouseButton == LEFT) {         // left button toggles lines
     toggleLines = !toggleLines;  
   } else if (mouseButton == RIGHT) { // right button resets max/min values
-    MIN_FPS = 99999;
-    MAX_SEND = 0;
-    MAX_FRAME = 0;
-    MAX_WATTS = 0;
-    MAX_KBS = 0;
-    for (int i = 0; i < teensys.length; i++) {
-      teensys[i].max_send = 0;
-      teensys[i].max_proc = 0;
-    }
+    resetMaxs();
   }
 }
+
+void keyPressed() {
+  simulate_10 = !simulate_10; // any key simulates 10 teensy's
+  //resetMaxs();
+}
+  
 

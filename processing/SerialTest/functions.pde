@@ -1,12 +1,12 @@
 import processing.video.*;
 
-int TSEND_TIME;   // the amount of millis it takes to send data to all the teensy
-int TPROC_TIME;   // the amount of millis it takes to process pixels for the teensy
-int FPROC_TIME;   // the amount of millis it takes to generate the frame buffer
-int TOTAL_TIME;   // the amount of millis spent for each frame
-float TSEND_AVRG;   // the average amount of millis it takes to send data to a single teensy
-float TPROC_AVRG;   // the average amount of millis it takes to process pixels for a single teensy
-float TOTAL_AVRG;   // the average amount of millis it takes to send & process data for a single teensy
+//int TSEND_TIME;   // the amount of millis it takes to send data to all the teensy
+//int TPROC_TIME;   // the amount of millis it takes to process pixels for the teensy
+//int FPROC_TIME;   // the amount of millis it takes to generate the frame buffer
+//int TOTAL_TIME;   // the amount of millis spent for each frame
+//float TSEND_AVRG;   // the average amount of millis it takes to send data to a single teensy
+//float TPROC_AVRG;   // the average amount of millis it takes to process pixels for a single teensy
+//float TOTAL_AVRG;   // the average amount of millis it takes to send & process data for a single teensy
 
 Movie movie;
 
@@ -72,13 +72,8 @@ void sendFrame() {
   teensyBuffer.popMatrix();
   teensyBuffer.endDraw();
 
-  // reset teensy timers and watts
-  TSEND_TIME = 0;
-  TPROC_TIME = 0;
+  // reset teensy watts
   WALL_WATTS = 0;
-
-  // start total timer
-  int stime = millis();
 
   // loop throught the teensy image array and set the images
   for (int i = 0; i < teensyImages.length; i++) {
@@ -88,16 +83,30 @@ void sendFrame() {
     if (i < TEENSY_TOTAL) {
       teensys[i].send(teensyImages[i]);
       WALL_WATTS  += teensys[i].watts;
-      TSEND_TIME  += teensys[i].send_time;
-      TPROC_TIME  += teensys[i].proc_time;
       kBs_tracker += teensys[i].data.length;
     }
   }
-
-  TOTAL_TIME = millis() - stime;
-  TSEND_AVRG = TSEND_TIME / 10.0;
-  TPROC_AVRG = TPROC_TIME / 10.0;
-  TOTAL_AVRG = TOTAL_TIME / 10.0;
+  
+  // simulate 10 teensy's of data?
+  if (simulate_10 && simCount > 0) {
+    int i = 0;
+    int j = 0;
+    while (j < simCount) {
+      if (i < TEENSY_TOTAL) {
+        int tsend  = teensys[i].send_time;
+        int tproc  = teensys[i].proc_time;
+        teensys[i].send(teensyImages[i]);
+        WALL_WATTS  += teensys[i].watts;
+        teensys[i].addSend(tsend);
+        teensys[i].addProc(tproc);
+        kBs_tracker += teensys[i].data.length;
+        i++; j++;
+      } else { 
+        i = 0;
+      }
+    }
+  }
+  
   MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
 }
 

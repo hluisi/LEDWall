@@ -234,5 +234,16 @@ class Teensy {
 
     sendData();     // send the data array
   }
+  
+  // used used when simulating 
+  void addSend(int v) {
+    send_time += v;
+    max_send = max(send_time, max_send);
+  }
+  // used used when simulating 
+  void addProc(int v) {
+    proc_time += v;
+    max_proc = max(proc_time, max_proc);
+  }
 }
 
