@@ -25,6 +25,10 @@ int FRAME_TIME;
 int MAX_FRAME;
 int SEND_TIME;
 int MAX_SEND;
+int kBs;
+int kBs_timer;
+int kBs_tracker;
+int MAX_KBS;
 float MIN_FPS = 99999;
 
 boolean toggleLines = false;
@@ -43,9 +47,15 @@ void setup() {
   DEBUG_X = 5;
   font = loadFont("Verdana-Bold-16.vlw");
   textFont(font);
+  kBs_tracker = 0;
+  kBs_timer = millis();
+  MAX_KBS = 0;
 }
 
 void draw() {
+  if (millis() - kBs_timer > 999) {
+    clac_kBs();
+  }
   MIN_FPS = min(frameRate, MIN_FPS);       // set the min fps
   int stime;                               // int start time
   stime = millis();                        // set the start to current millis
@@ -83,7 +93,8 @@ void drawScreen() {
   image(showImage, 0, 0);  // add the image
   fill(220);               // set text to offwhite 
   text("FPS: " + String.format("%.2f", frameRate) + " / " + String.format("%.2f", MIN_FPS), DEBUG_X, DEBUG_Y); // FPS current and min
-  text("Watts: " + String.format("%.2f", WALL_WATTS) + " / " + String.format("%.2f", MAX_WATTS), width / 2, DEBUG_Y); // Watts current and min
+  //text("Watts: " + String.format("%.2f", WALL_WATTS) + " / " + String.format("%.2f", MAX_WATTS), width / 2, DEBUG_Y); // Watts current and min
+  text("kB/s: " + kBs + " / " + MAX_KBS, width / 2, DEBUG_Y); // Watts current and min
   text("Send millis: " + SEND_TIME + " / " + MAX_SEND, DEBUG_X, DEBUG_Y + 18);   // total send time (current and max)
   text("Frame millis: " + FRAME_TIME + " / " + MAX_FRAME, width / 2, DEBUG_Y + 18);  // total frame processing time (current and max)
   text("-----------------------------------------------------------", DEBUG_X, DEBUG_Y + 36); // spacer
@@ -104,6 +115,7 @@ void mousePressed() {
     MAX_SEND = 0;
     MAX_FRAME = 0;
     MAX_WATTS = 0;
+    MAX_KBS = 0;
     for (int i = 0; i < teensys.length; i++) {
       teensys[i].max_send = 0;
       teensys[i].max_proc = 0;

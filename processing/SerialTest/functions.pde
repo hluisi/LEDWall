@@ -24,6 +24,13 @@ void delay(int mil) {
   while (millis () - d < mil);
 }
 
+void clac_kBs() {
+  kBs = kBs_tracker / 1000;
+  kBs_tracker = 0;
+  kBs_timer = millis();
+  MAX_KBS = max(kBs, MAX_KBS);
+}
+
 // play the movie
 void drawMovie() {
   if ( movie.available() ) { // got a new frame?
@@ -80,9 +87,10 @@ void sendFrame() {
 
     if (i < TEENSY_TOTAL) {
       teensys[i].send(teensyImages[i]);
-      WALL_WATTS += teensys[i].watts;
-      TSEND_TIME += teensys[i].send_time;
-      TPROC_TIME += teensys[i].proc_time;
+      WALL_WATTS  += teensys[i].watts;
+      TSEND_TIME  += teensys[i].send_time;
+      TPROC_TIME  += teensys[i].proc_time;
+      kBs_tracker += teensys[i].data.length;
     }
   }
 
