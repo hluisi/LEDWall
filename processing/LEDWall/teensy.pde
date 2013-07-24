@@ -9,6 +9,7 @@ int max_brightness = 192;
 final int TEENSY_TOTAL  = 5;
 final int TEENSY_WIDTH  = 80;
 final int TEENSY_HEIGHT = 16;
+final int BAUD_RATE = 921600; //115200;
 
 final float RED_GAMMA = 2.1;
 final float GREEN_GAMMA = 2.1;
@@ -27,11 +28,17 @@ void setupTeensys() {
   teensys[1] = new Teensy(this, 3, "COM5", false);
   teensys[2] = new Teensy(this, 4, "COM14", false);
   teensys[3] = new Teensy(this, 5, "COM15", false);
-  teensys[4] = new Teensy(this, 6, "COM16", true);
+  teensys[4] = new Teensy(this, 6, "COM16", false);
+  
+  //teensys[0] = new Teensy(this, 2, "COM10", true);
+  //teensys[1] = new Teensy(this, 3, "COM6", true);
+  //teensys[2] = new Teensy(this, 4, "COM9", true);
+  //teensys[3] = new Teensy(this, 5, "COM7", true);
+  //teensys[4] = new Teensy(this, 6, "COM8", true);
 
   setupGamma();
+  //println(gammaTable);
 
-  teensys[0].port.write('@');
   println("TEENSYS SETUP!!");
   println();
 }
@@ -47,25 +54,29 @@ void setupGamma() {
   }
 }
 
+
+
 class Teensy {
-  boolean isMaster; // teensy is master
+  boolean threadData; // teensy is master
   int     id;       // id of the image that will be sent to teensy
   float   watts;
   byte[]  data;     // converted image data that gets sent
   Serial  port;     // serial port of the teensy
+  tThread t;
   String  portName; // serial port name
-  int t;
+  int send_time = 0;
+  int proc_time = 0;
 
-    Teensy(PApplet parent, int ID, String name, boolean master) {
+    Teensy(PApplet parent, int ID, String name, boolean threadData) {
     println("Setting up teensy: " + name + " ...");
     data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
-    isMaster = master;  // are we the master teensy?  (used for display sync)
+    this.threadData = threadData;  // should we thread the data?
     portName = name;    // set the port name
     id       = ID;      // set the id 
 
     // setup serial port
     try {
-      port = new Serial(parent, portName, 128000);           // create the port
+      port = new Serial(parent, portName, BAUD_RATE);           // create the port
       if (port == null) throw new NullPointerException();    // was the port created?
       port.write('?');                                       // send ident char to teensy
     } 
@@ -74,7 +85,7 @@ class Teensy {
       exit();
     }
     
-    delay(50);
+    delay(100);
 
     String line = port.readStringUntil(10);  // give me everything up to the linefeed
 
@@ -91,10 +102,20 @@ class Teensy {
     }
 
     println(portName + " SETUP!!");
+    if (threadData) {
+      t = new tThread(port);
+      t.start();
+    } else {
+      println(data.length);
+    }
   }
 
   void clear() {
-    port.write('!');
+    //port.write('!');
+    if (threadData) {
+      t.done();
+      t.interrupt();
+    }
   }
 
   color updateColor(color c) {
@@ -120,7 +141,10 @@ class Teensy {
   // The number of vertical pixels in the image must be a multiple
   // of 8.  The data array must be the proper size for the image.
   void update() { 
+    proc_time = 0;
     watts = 0;
+    
+    int stime = millis();
     int offset = 3;
     int x, y, xbegin, xend, xinc, mask;
     int linesPerPin = wall.teensyImages[id].height / 8;
@@ -157,30 +181,90 @@ class Teensy {
         }
       }
     }
+    proc_time = millis() - stime;
   }
   
-  void resetSync() {
-    port.write('@');
+  void sendData() {
+    send_time = 0;
+    int stime = millis();
+    port.write(data);  // send data over serial to teensy
+    send_time = millis() - stime;
   }
 
   void send() {
     update();
-    if (isMaster) {  // are we the master?
-      data[0] = '#';  
+    
+    //if (isMaster) {  // are we the master?
+    //  data[0] = '#';  
       //int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
       //t = usec;
       //data[1] = (byte)(usec);   // request the frame sync pulse
       //data[2] = (byte)(usec >> 8); // at 75% of the frame time
-      data[1] = 0;
-      data[2] = 0;
-    } 
-    else {
-      data[0] = '%';  // others sync to the master board
-      data[1] = 0;
-      data[2] = 0;
+   //   data[1] = 0;
+   //   data[2] = 0;
+    //} 
+   // else {
+    //  data[0] = '%';  // others sync to the master board
+   //   data[1] = 0;
+    //  data[2] = 0;
+   // }
+   
+   data[0] = '#'; data[1] = 0; data[2] = 0;
+    
+    if (threadData) {
+      t.send(data);
+      send_time = t.getTime();
     }
+    else {
+      sendData();
+    }
+  }
+}
 
-    port.write(data);  // send data over serial to teensy
+class tThread extends Thread {
+  Serial  port;
+  int send_time;
+  boolean running;
+  boolean sendData;
+  byte[] data;
+  
+  tThread(Serial port) {
+    this.port = port;
+    setDaemon(true);
+    setPriority(5);
+    //println(getPriority());
+    running = false;
+    sendData = false;
+    send_time = 0;
+  }
+  
+  void start() {
+    running = true;
+    super.start();
+  }
+  
+  synchronized void send(byte[] data) {
+    this.data = data;
+    sendData = true;
+  }
+  
+  int getTime() {
+    return send_time;
+  }
+  
+  void done() {
+    running = false;
+  }
+  
+  void run() {
+    while (running) {
+      if (sendData) {
+        int stime = millis();
+        sendData = false;
+        port.write(data);  // send data over serial to teensy
+        send_time = millis() - stime;
+      }
+    }
   }
 }
 

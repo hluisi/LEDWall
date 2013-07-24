@@ -169,8 +169,6 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
   displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
   
-  if (DISPLAY_MODE != LAST_MODE) teensys[0].resetSync();
-  
   LAST_MODE = DISPLAY_MODE;
   
   

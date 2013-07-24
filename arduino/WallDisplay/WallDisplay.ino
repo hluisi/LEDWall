@@ -104,7 +104,7 @@ void setup() {
   pinMode(12, INPUT_PULLUP); // Frame Sync
   pinMode(13, OUTPUT);
   Serial.setTimeout(50);
-  Serial.begin(128000);
+  //Serial.begin(115200);
   leds.begin();
   leds.show();
 }
@@ -210,9 +210,9 @@ void loop() {
     if (count != 2) return;
     count = Serial.readBytes((char *)drawingMemory, sizeof(drawingMemory));
     if (count == sizeof(drawingMemory)) {
-      digitalWrite(12, HIGH);
-      pinMode(12, OUTPUT);
-      digitalWrite(12, LOW);
+      //digitalWrite(12, HIGH);
+      //pinMode(12, OUTPUT);
+      //digitalWrite(12, LOW);
       leds.show();
     }
     digitalWrite(13, LOW);

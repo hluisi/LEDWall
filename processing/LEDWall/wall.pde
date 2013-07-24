@@ -18,7 +18,10 @@ final int DEBUG_TEXT_X = DEBUG_WINDOW_XSIZE - 200;
 
 int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
 
-int SEND_TIME = 9;
+int SEND_TIME;
+int PROC_TIME;
+int TOTAL_TIME; 
+
 
 boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 
@@ -73,10 +76,13 @@ class VideoWall {
     send_buffer.endDraw();
 
     WALL_WATTS = 0;  // reset the wattage tracking
+    SEND_TIME = 0;
+    PROC_TIME = 0;
+    TOTAL_TIME = 0;
     
     
     // set the teensy image array
-    int start_time = millis();
+    int stime = millis();
     for (int i = 0; i < teensyImages.length; i++) {
       arrayCopy(send_buffer.pixels, i * (80 * 16), teensyImages[i].pixels, 0, 80 * 16);
       teensyImages[i].updatePixels();
@@ -84,16 +90,19 @@ class VideoWall {
       if (i < TEENSY_TOTAL) {
         teensys[i].send();
         WALL_WATTS += teensys[i].watts;
+        SEND_TIME += teensys[i].send_time;
+        PROC_TIME += teensys[i].proc_time;
       }
     }
     
     // send data again to simulate 10 teensy's
     for (int i = 0; i < teensys.length; i++) {
       teensys[i].send();
+      SEND_TIME += teensys[i].send_time;
+      PROC_TIME += teensys[i].proc_time;
     }
     
-    int end_time = millis();
-    SEND_TIME = end_time - start_time;
+    TOTAL_TIME = millis() - stime;
     
     MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
   }
