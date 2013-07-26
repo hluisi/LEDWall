@@ -40,7 +40,9 @@ PImage showImage;
 PFont font;
 
 void setup() {
-  size(COLUMNS * 3, COLUMNS * 3, P2D);
+  
+  size(COLUMNS * 3, COLUMNS * 3, P3D);
+  smooth(4);
   setupBuffers();  // setup buffers
   setupMovie();    // load test movie
   setupTeensys();  // setup Teensy's
@@ -53,6 +55,7 @@ void setup() {
   kBs_timer = millis(); // start kB/s timer
   MAX_KBS = 0;          // reset max kB/s tracker
   simCount = 10 - teensys.length;  // set the sim count
+  frameRate(30);
 }
 
 void draw() {

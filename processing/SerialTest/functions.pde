@@ -71,6 +71,7 @@ void sendFrame() {
   teensyBuffer.image(frameBuffer.get(), 0, 0);
   teensyBuffer.popMatrix();
   teensyBuffer.endDraw();
+  teensyBuffer.loadPixels();
 
   // reset teensy watts
   WALL_WATTS = 0;

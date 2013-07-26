@@ -30,11 +30,11 @@ void setupTeensys() {
   println(list);
   println();
 
-  teensys[0] = new Teensy(this, "COM4");
-  teensys[1] = new Teensy(this, "COM5");
-  teensys[2] = new Teensy(this, "COM14");
-  teensys[3] = new Teensy(this, "COM15");
-  teensys[4] = new Teensy(this, "COM16");
+  teensys[0] = new Teensy(this, "COM3");
+  teensys[1] = new Teensy(this, "COM4");
+  teensys[2] = new Teensy(this, "COM5");
+  teensys[3] = new Teensy(this, "COM6");
+  teensys[4] = new Teensy(this, "COM7");
   
   /*
   teensys[5] = new Teensy(this, "COM10");
@@ -104,7 +104,7 @@ class Teensy {
     }
 
     String param[] = line.split(",");  // get the param's 
-    if (param.length != 4) {          // didn't get 12 back?  bad news...
+    if (param.length != 8) {          // didn't get 12 back?  bad news...
       println("Error: port " + port_name + " did not respond to LED config query");
       exit();
     } 

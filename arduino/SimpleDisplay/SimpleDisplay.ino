@@ -3,6 +3,10 @@
 #define LED_WIDTH      80   // number of LEDs horizontally
 #define LED_HEIGHT     16   // number of LEDs vertically (must be multiple of 8)
 #define LED_LAYOUT     0    // 0 = even rows left->right, 1 = even rows right->left
+#define VIDEO_XOFFSET  0
+#define VIDEO_YOFFSET  0       // display entire image
+#define VIDEO_WIDTH    100
+#define VIDEO_HEIGHT   100
 
 #define BAUD_RATE 921600 //115200  does nothing???
 
@@ -57,6 +61,14 @@ void loop() {
     Serial.print(LED_HEIGHT);
     Serial.write(',');
     Serial.print(LED_LAYOUT);
+    Serial.write(',');
+    Serial.print(VIDEO_XOFFSET);
+    Serial.write(',');
+    Serial.print(VIDEO_YOFFSET);
+    Serial.write(',');
+    Serial.print(VIDEO_WIDTH);
+    Serial.write(',');
+    Serial.print(VIDEO_HEIGHT);
     Serial.write(',');
     Serial.print(0);
     Serial.println();
