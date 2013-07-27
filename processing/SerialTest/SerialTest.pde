@@ -19,7 +19,7 @@
 final int COLUMNS = 160;             // the amount of LEDs per column (x)
 final int ROWS    = 80;              // the amount of LEDs per row (y)
 final int TOTAL   = COLUMNS * ROWS;  // the total amount of LEDs on the wall
-final boolean SHOW_COMS = true;
+final boolean SHOW_COMS = false;
 
 int DEBUG_X, DEBUG_Y;
 int FRAME_TIME;
