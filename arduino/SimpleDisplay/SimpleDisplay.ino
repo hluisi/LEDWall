@@ -160,4 +160,5 @@ void clearLeds() {
     }
   }
   leds.show();
+  digitalWrite(13, LOW);
 }

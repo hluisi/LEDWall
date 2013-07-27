@@ -1,15 +1,6 @@
 import processing.video.*;
 
-//int TSEND_TIME;   // the amount of millis it takes to send data to all the teensy
-//int TPROC_TIME;   // the amount of millis it takes to process pixels for the teensy
-//int FPROC_TIME;   // the amount of millis it takes to generate the frame buffer
-//int TOTAL_TIME;   // the amount of millis spent for each frame
-//float TSEND_AVRG;   // the average amount of millis it takes to send data to a single teensy
-//float TPROC_AVRG;   // the average amount of millis it takes to process pixels for a single teensy
-//float TOTAL_AVRG;   // the average amount of millis it takes to send & process data for a single teensy
-
 Movie movie;
-
 
 // loads the test movie from the data directory
 void setupMovie() {
@@ -43,10 +34,7 @@ void drawMovie() {
 // draw some random lines to push the CPU
 // based on performance line rendering example
 void drawLines() {
-  //frameBuffer.background(0, 10);
-  //int amount = round( random(50000) );                            // amount of lines
-
-    for (int i = 0; i < 25000; i++) {
+  for (int i = 0; i < 25000; i++) {
     float x0 = random( frameBuffer.width );
     float y0 = random( frameBuffer.height );
     float z0 = random(-100, 100);
@@ -59,9 +47,26 @@ void drawLines() {
   }
 }
 
+void drawComs() {
+  if (SHOW_COMS) {
+    for (int i = 0; i < teensys.length; i++) {
+      String p = teensys[i].port_name;
+      int y = round( (TEENSY_WIDTH / 2) + (textWidth(p) / 2) - 4);
+      int x = (TEENSY_HEIGHT * i) - (TEENSY_HEIGHT / 2);
+      frameBuffer.pushMatrix();
+      frameBuffer.translate(x, y);
+      frameBuffer.rotate( radians(-90) );
+      frameBuffer.fill(255);
+      frameBuffer.text(p, 0, 0);
+      frameBuffer.popMatrix();
+    }
+  }
+}
+
 // Takes an image of the frame buffer, rotates it,  
 // then divides it into images for the teensy.
 void sendFrame() {
+  
   // create the teensy buffer frame
   teensyBuffer.beginDraw();
   teensyBuffer.pushMatrix();
@@ -87,7 +92,7 @@ void sendFrame() {
       kBs_tracker += teensys[i].data.length;
     }
   }
-  
+
   // simulate 10 teensy's of data?
   if (simulate_10 && simCount > 0) {
     int i = 0;
@@ -101,15 +106,15 @@ void sendFrame() {
         teensys[i].addSend(tsend);
         teensys[i].addProc(tproc);
         kBs_tracker += teensys[i].data.length;
-        i++; j++;
-      } else { 
+        i++; 
+        j++;
+      } 
+      else { 
         i = 0;
       }
     }
   }
-  
+
   MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
 }
-
-
 

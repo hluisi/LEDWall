@@ -70,6 +70,8 @@ void setup() {
 
   size(x, y, P3D);
   smooth(4);
+  hint(DISABLE_DEPTH_TEST);
+  hint(DISABLE_DEPTH_MASK);
 
   dh = new DisposeHandler(this);
 

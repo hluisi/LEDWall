@@ -25,7 +25,7 @@ void setupTeensys() {
   println(list);
 
   teensys[0] = new Teensy(this, 2, "COM5", false);
-  teensys[1] = new Teensy(this, 3, "COM3", false);
+  teensys[1] = new Teensy(this, 3, "COM3", true);
   teensys[2] = new Teensy(this, 4, "COM4", false);
   teensys[3] = new Teensy(this, 5, "COM6", false);
   teensys[4] = new Teensy(this, 6, "COM7", false);

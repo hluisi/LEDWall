@@ -235,6 +235,10 @@ class Teensy {
     sendData();     // send the data array
   }
   
+  void clear() {
+    port.write('!');
+  }
+  
   // used used when simulating 
   void addSend(int v) {
     send_time += v;

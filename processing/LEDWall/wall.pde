@@ -42,7 +42,8 @@ class VideoWall {
     send_buffer.beginDraw();
     send_buffer.background(0);
     send_buffer.endDraw();
-    send_buffer.loadPixels(); // load the pixels to make sure the array is not set to null
+    send_buffer.hint(DISABLE_DEPTH_TEST);
+    send_buffer.hint(DISABLE_DEPTH_MASK);
 
     for (int i = 0; i < teensyImages.length; i++) {
       teensyImages[i] = createImage(80, 16, RGB);

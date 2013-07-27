@@ -19,6 +19,7 @@
 final int COLUMNS = 160;             // the amount of LEDs per column (x)
 final int ROWS    = 80;              // the amount of LEDs per row (y)
 final int TOTAL   = COLUMNS * ROWS;  // the total amount of LEDs on the wall
+final boolean SHOW_COMS = true;
 
 int DEBUG_X, DEBUG_Y;
 int FRAME_TIME;
@@ -39,13 +40,19 @@ boolean simulate_10 = false;
 PImage showImage;
 PFont font;
 
+DisposeHandler dh;
+
 void setup() {
-  
+
   size(COLUMNS * 3, COLUMNS * 3, P3D);
   smooth(4);
+
+  dh = new DisposeHandler(this);
+
   setupBuffers();  // setup buffers
   setupMovie();    // load test movie
-  setupTeensys();  // setup Teensy's
+  setupTeensys();  // setup Teensy(s)
+
   showImage = createImage(frameBuffer.width*3, frameBuffer.height*3, RGB);  // create the pc image
   DEBUG_Y = showImage.height + 16;  // debug Y start
   DEBUG_X = 5;                      // debug X start
@@ -85,10 +92,12 @@ void drawFrame() {
   if (toggleLines) {               // should we draw lines?
     drawMovie();                   // draw movie frame
     drawLines();                   // draw lines
-  } else {                         // just draw the movie
+  } 
+  else {                         // just draw the movie
     frameBuffer.background(0);     // draw background
     drawMovie();                   // draw the movie
   }
+  drawComs();
   frameBuffer.endDraw();           // close the frame buffer
 }
 
@@ -104,7 +113,7 @@ void drawScreen() {
   text("Send millis: " + SEND_TIME + " / " + MAX_SEND, DEBUG_X, DEBUG_Y + 16);   // total send time (current and max)
   text("Frame millis: " + FRAME_TIME + " / " + MAX_FRAME, width / 2, DEBUG_Y + 16);  // total frame processing time (current and max)
   text("------------------------  Teensy Data  ---------------------------", DEBUG_X, DEBUG_Y + 36); // spacer
-  
+
   // per teensy send and processing time (current and mx)
   for (int i = 0; i < teensys.length; i++) {
     text("T" + i + " send millis: " + teensys[i].send_time + " / " + teensys[i].max_send, DEBUG_X + 5, DEBUG_Y + 4 + ((i+3) * 16)); 
@@ -132,15 +141,30 @@ void resetMaxs() {
 // mouse controls
 void mousePressed() {
   if (mouseButton == LEFT) {         // left button toggles lines
-    toggleLines = !toggleLines;  
-  } else if (mouseButton == RIGHT) { // right button resets max/min values
+    toggleLines = !toggleLines;
+  } 
+  else if (mouseButton == RIGHT) { // right button resets max/min values
     resetMaxs();
   }
 }
 
 void keyPressed() {
   simulate_10 = !simulate_10; // any key simulates 10 teensy's
-  //resetMaxs();
 }
-  
+
+public class DisposeHandler {
+
+  DisposeHandler(PApplet p) {
+    p.registerDispose(this);
+  }
+
+  void dispose() {
+    System.out.println("CLOSING DOWN!!!");
+    for (int i = 0; i < teensys.length; i++) {
+      teensys[i].clear();
+    }
+
+    delay(50); // wait a bit for teensys to clear
+  }
+}
 
