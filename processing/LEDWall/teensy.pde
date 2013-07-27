@@ -24,11 +24,11 @@ void setupTeensys() {
   println("Serial Ports List:");
   println(list);
 
-  teensys[0] = new Teensy(this, 2, "COM4", false);
-  teensys[1] = new Teensy(this, 3, "COM5", false);
-  teensys[2] = new Teensy(this, 4, "COM14", false);
-  teensys[3] = new Teensy(this, 5, "COM15", false);
-  teensys[4] = new Teensy(this, 6, "COM16", false);
+  teensys[0] = new Teensy(this, 2, "COM5", false);
+  teensys[1] = new Teensy(this, 3, "COM3", false);
+  teensys[2] = new Teensy(this, 4, "COM4", false);
+  teensys[3] = new Teensy(this, 5, "COM6", false);
+  teensys[4] = new Teensy(this, 6, "COM7", false);
   
   //teensys[0] = new Teensy(this, 2, "COM10", true);
   //teensys[1] = new Teensy(this, 3, "COM6", true);
@@ -111,7 +111,7 @@ class Teensy {
   }
 
   void clear() {
-    //port.write('!');
+    port.write('!');
     if (threadData) {
       t.done();
       t.interrupt();
@@ -209,7 +209,7 @@ class Teensy {
     //  data[2] = 0;
    // }
    
-   data[0] = '#'; data[1] = 0; data[2] = 0;
+   data[0] = '*'; data[1] = 0; data[2] = 0;
     
     if (threadData) {
       t.send(data);
@@ -231,7 +231,7 @@ class tThread extends Thread {
   tThread(Serial port) {
     this.port = port;
     setDaemon(true);
-    setPriority(5);
+    setPriority(3);
     //println(getPriority());
     running = false;
     sendData = false;

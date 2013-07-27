@@ -2,8 +2,11 @@
 
 void drawDebug() {
   if (!DEBUG_SHOW_WALL) { // show the buffer
-    wall_image.copy(buffer.get(), 0, 0, KINECT_WIDTH, KINECT_HEIGHT, 0, 0, COLUMNS*2, ROWS*2); 
-    image(wall_image, (width / 2) - ( (COLUMNS*2) / 2), 0);
+    wall_image.copy(buffer.get(), 0, 0, buffer.width, buffer.height, 0, 0, COLUMNS*3, ROWS*3); 
+    pushStyle();
+    imageMode(CENTER);
+    image(wall_image, width / 2, wall_image.height / 2);
+    popStyle();
   }
 
   textSize(11);  

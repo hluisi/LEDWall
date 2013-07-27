@@ -92,7 +92,7 @@ void setupControl() {
           .setColorForeground(color(#515151))
             .setColorActive(color(255))
               .setColorLabel(color(255))
-                .setValue(true)
+                .setValue(false)
                   .setMode(ControlP5.SWITCH)
                     ;
 

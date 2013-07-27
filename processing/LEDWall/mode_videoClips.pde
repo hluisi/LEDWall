@@ -40,7 +40,7 @@ class MovieClips {
     // switch clips?
     if ( audio.isOnBeat() ) {
       float test = random(0, 1);
-      if (test < 0.65) {
+      if (test > 0.75) {
         int next = int( random(clips.length) );
         if (next >= clips.length) next--;
         current = next;
@@ -66,7 +66,7 @@ class MovieClips {
     }
 
     // set the speed of the next frame according to the current BPM
-    current_speed = map(audio.BPM, 0, 180, 0.5, 1.35);
+    current_speed = map(audio.BPM, 0, 120, 0.5, 1);
     clips[current].speed(current_speed);
   }
 

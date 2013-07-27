@@ -41,13 +41,13 @@ class AverageListener implements AudioListener {
 
     averageSpecs = new AudioSpectrum [ fft.avgSize() ];
     fullSpecs = new AudioSpectrum [ fft.specSize() ];
-    for (int i = 0; i < averageSpecs.length; i++) averageSpecs[i] = new AudioSpectrum();
-    for (int i = 0; i < fullSpecs.length; i++) fullSpecs[i] = new AudioSpectrum();
+    for (int i = 0; i < averageSpecs.length; i++) averageSpecs[i] = new AudioSpectrum("" + fft.getAverageCenterFrequency(i) + " Hz");
+    for (int i = 0; i < fullSpecs.length; i++) fullSpecs[i] = new AudioSpectrum("" + fft.indexToFreq(i) + " Hz");
 
-    volume = new AudioSpectrum();
-    bass   = new AudioSpectrum();
-    mids   = new AudioSpectrum();
-    treb   = new AudioSpectrum();
+    volume = new AudioSpectrum("Volume");
+    bass   = new AudioSpectrum("Bass");
+    mids   = new AudioSpectrum("Mids");
+    treb   = new AudioSpectrum("Treb");
 
     colors = new Colors();
 
@@ -146,7 +146,9 @@ class AverageListener implements AudioListener {
 }
 
 class AudioSpectrum {
-  final int FRAME_TRIGGER = 60; // how many frames must the peak and low values 
+  final int FRAME_TRIGGER = 60; // how many frames must pass before changing the peak and low values 
+  
+  String name;
 
   float raw_peak = 0;           // the peak or max level of the spectrum
   float max_peak = 0;           // the current max peak level
@@ -154,8 +156,7 @@ class AudioSpectrum {
   float raw    = 0;             // the raw level of the spectrum
 
   float dB = 0;                 // current db of the level
-  float spectrumGain = 1.5;     // the gain of the level.  No idea id this is right, but it seems to 
-  // work have spending many hours of tail and error on it. 
+  float spectrumGain = 1.5;     // the gain of the level.  No idea id this is right, but it seems to work 
 
   int value = 0;                // raw value mapped from 0 to 100
   int peak = 0;                 // current peak
@@ -169,7 +170,8 @@ class AudioSpectrum {
 
   boolean lowerPeak = false;    // are we lowering the peak?
 
-  AudioSpectrum() {
+  AudioSpectrum(String name) {
+    this.name = name;
   }
 
   void set(float v) {

@@ -107,9 +107,13 @@ class Kinect {
       User thisUser = userHash.get(userMap[i]);                       // get the current user
       if ( thisUser != null && thisUser.isActive() && thisUser.onScreen() ) {                // do we have a user?
         if (mapUser) {                                                // do we map the user's brightness?
-          int tr = (thisUser.c >> 16) & 0xFF;                         // get the red value of the user's color
-          int tg = (thisUser.c >> 8) & 0xFF;                          // get the green value of the user's color
-          int tb =  thisUser.c & 0xFF;                                // get the blue value of the user's color
+          pushStyle();
+          colorMode(HSB, 360, 1.0, 1.0);
+          color c = color(hue(thisUser.c), 1.0, 1.0);
+          popStyle();
+          int tr = (c >> 16) & 0xFF;                         // get the red value of the user's color
+          int tg = (c >> 8) & 0xFF;                          // get the green value of the user's color
+          int tb =  c & 0xFF;                                // get the blue value of the user's color
           float depth_brightness = brightness(depthImage.pixels[i]) * 2;  // get the brightness from the user depth image
           float r = map(depth_brightness, 0, 511, 0, tr) * 1.15;             // map brightness from depth image to the red of the user color
           float g = map(depth_brightness, 0, 511, 0, tg) * 1.15;             // map brightness from depth image to the green of the user color

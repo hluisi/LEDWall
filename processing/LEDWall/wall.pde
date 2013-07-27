@@ -37,7 +37,11 @@ class VideoWall {
   PGraphics send_buffer;
 
   VideoWall() {
-    send_buffer = createGraphics(ROWS, COLUMNS, JAVA2D);
+    send_buffer = createGraphics(ROWS, COLUMNS, P3D);
+    send_buffer.smooth(4);
+    send_buffer.beginDraw();
+    send_buffer.background(0);
+    send_buffer.endDraw();
     send_buffer.loadPixels(); // load the pixels to make sure the array is not set to null
 
     for (int i = 0; i < teensyImages.length; i++) {
@@ -74,6 +78,7 @@ class VideoWall {
     send_buffer.image(buffer.get(), 0, 0);
     send_buffer.popMatrix();
     send_buffer.endDraw();
+    send_buffer.loadPixels();
 
     WALL_WATTS = 0;  // reset the wattage tracking
     SEND_TIME = 0;

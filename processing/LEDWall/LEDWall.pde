@@ -29,7 +29,7 @@
 // STILL NEEDS REWRITE
 
 int DISPLAY_MODE = 1;
-int LAST_MODE =1;
+int LAST_MODE = 1;
 float xoff = 0.0;
 
 final int DISPLAY_MODE_TEST    = 0;
@@ -64,18 +64,18 @@ void setup() {
   } 
   else {
     x = DEBUG_WINDOW_XSIZE;
-    y = DEBUG_WINDOW_YSIZE + (ROWS*2);
-    DEBUG_WINDOW_START = ROWS*2;
+    y = DEBUG_WINDOW_YSIZE + (ROWS*3);
+    DEBUG_WINDOW_START = ROWS*3;
   }
 
-  size(x, y, P2D);
+  size(x, y, P3D);
   smooth(4);
 
   dh = new DisposeHandler(this);
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
-  wall_image = createImage(COLUMNS * 2, ROWS * 2, RGB);
+  wall_image = createImage(COLUMNS * 3, ROWS * 3, RGB);
   
   setupUtils();
 
@@ -91,7 +91,6 @@ void setup() {
   setupCircles();
   setupAtari();
   setupClips();
-  setupIChing();
 
   setupTeensys();
 
@@ -99,7 +98,7 @@ void setup() {
 
   // must be last
   setupControl();
-  frameRate(30);
+  frameRate(60);
 
   frame.setTitle("Wall of Light");
   background(0);
