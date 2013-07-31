@@ -3,8 +3,8 @@
 import processing.video.*;
 
 MovieClips movies;
-Toggle allowSwitch;
-Toggle allowJumps;
+Slider movieSlider;
+Slider movieSpeed;
 
 void setupClips() {
   println("VIDEO CLIPS - starting setup...");
@@ -15,25 +15,52 @@ void setupClips() {
   int m = movies.clips.length - 1;
 
   // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
-  createSlider("doMovieSlider", 0, m, movies.current, x, y, TAB_MAX_WIDTH + 20, 40, "Brightness", 20, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createSlider("doMovieSpeed", movies.minSpeed, movies.maxSpeed, movies.speed, TAB_MAX_WIDTH-200, DEBUG_WINDOW_START+50, 180, 20, "Speed", 10, 12, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  
+  movieSlider = 
+    createSlider("doMovieSlider", 0, m, movies.current, x, y, TAB_MAX_WIDTH + 20, 40, "Brightness", 20, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  movieSpeed = 
+    createSlider("doMovieSpeed", movies.minSpeed, movies.maxSpeed, movies.speed, TAB_MAX_WIDTH-220, DEBUG_WINDOW_START+50, 220, 50, "Speed", 14, 16, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+
   // controll name, text name, x, y, width, height, text size, value, move 2 tab
-  createToggle("allowMovieSwitch", "Random", TAB_START + 10,  DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.switchOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createToggle("allowMovieJumps",  "Jump"  , TAB_START + 80,  DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.jumpsOn , DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createToggle("allowMovieBPM",    "BPM"   , TAB_START + 140, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.bpmOn   , DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createToggle("allowMovieSwitch", "Random", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.switchOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createToggle("allowMovieJumps", "Jump", TAB_START + 80, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.jumpsOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createToggle("allowMovieBPM", "BPM", TAB_START + 140, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.bpmOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+
+  createTextfield("setMinSpeed", "MIN", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(movies.minSpeed, 1, 0), 16, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  cp5.getController("setMinSpeed").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
+  createTextfield("setMaxSpeed", "MAX", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+80, 50, 20, nf(movies.maxSpeed, 1, 0), 16, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createTextfield("setMaxBPM", "MAX BPM", TAB_MAX_WIDTH + 70, DEBUG_WINDOW_START+65, 50, 30, nf(movies.maxBPM, 1), 16, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  cp5.getController("setMaxBPM").captionLabel().align(ControlP5.RIGHT_OUTSIDE, ControlP5.CENTER).setPaddingX(5);
 
   println("VIDEO CLIPS - setup finished!");
 }
 
 void doMovieSlider(int v) {
   movies.setClip(v);
-  //cp5.getController("doMovieSlider").setValue(v);
 }
 
 void doMovieSpeed(float v) {
   if (!movies.bpmOn) movies.setSpeed(v);
-  //cp5.getController("doMovieSpeed").setValue(v);
+}
+
+void setMinSpeed(String valueString) {
+  float minSpeed  = float(valueString);
+  movies.minSpeed = minSpeed;
+  movieSpeed.setMin(minSpeed);
+  movieSpeed.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  movieSpeed.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+}
+
+void setMaxSpeed(String valueString) {
+  float maxSpeed  = float(valueString);
+  movies.maxSpeed = maxSpeed;
+  movieSpeed.setMax(maxSpeed);
+  movieSpeed.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  movieSpeed.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+}
+
+void setMaxBPM(String valueString) {
+  int maxBPM  = int(valueString);
+  movies.maxBPM = maxBPM;
 }
 
 void allowMovieSwitch(boolean b) {
@@ -58,12 +85,12 @@ class MovieClips {
   float minSpeed = 0.5;
   float maxSpeed = 1.25;
   int maxBPM = 130;
-  
+
   int current = 0;
   Movie[] clips;
   int switch_count = 0;
   String[] names;
-  
+
   boolean switchOn = true;
   boolean jumpsOn  = true;
   boolean bpmOn    = true;
@@ -81,7 +108,7 @@ class MovieClips {
       clips[i].loop();
     }
   }
-  
+
   void setClip(int v) {
     current = v;
     switch_count++;
@@ -90,27 +117,28 @@ class MovieClips {
       int seed = int(random(frameCount));
       randomSeed(seed);
     }
-    cp5.getController("doMovieSlider").getCaptionLabel().setText(names[current]);
+    movieSlider.getCaptionLabel().setText(names[current]);
   }
-  
+
   void setRandomClip() {
     int next = round( random(clips.length - 1) );
     setClip(next);
-    cp5.getController("doMovieSlider").setValue(current);
+    movieSlider.setValue(current);
   }
-  
+
   void setSpeed(float v) {
     clips[current].speed(v);
     speed = v;
   }
-  
+
   void update() {
     // switch clips?
     if ( audio.isOnBeat() ) {
       float test = random(0, 1);
       if (test > 0.75 && switchOn) {
         setRandomClip();
-      } else {
+      } 
+      else {
         if (jumpsOn) {
           float spot = noise(xoff) * clips[current].duration();
           clips[current].jump( spot );
@@ -127,7 +155,7 @@ class MovieClips {
     if (bpmOn) {
       speed = map(audio.BPM, 0, maxBPM, minSpeed, maxSpeed);
       clips[current].speed(speed);
-      cp5.getController("doMovieSpeed").setValue(speed);
+      movieSpeed.setValue(speed);
     }
   }
 

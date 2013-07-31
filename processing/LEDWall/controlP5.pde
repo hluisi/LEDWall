@@ -29,8 +29,6 @@ void setupControl() {
   
   // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
   createSlider("doSliderBrightness", 0, 255, b, TAB_START - 60, DEBUG_WINDOW_START + 35, 50, DEBUG_WINDOW_YSIZE - 60, "Brightness", 10, 12, Slider.FLEXIBLE, "default");
-  //cp5.getController("doSliderBrightness").getValueLabel().align(ControlP5.CENTER, ControlP5.TOP).setPaddingX(0);
-  //cp5.getController("doSliderBrightness").getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(3);
 
   createToggle("doToggleAutoMode",    "Auto",  10, DEBUG_WINDOW_START + 35, 30, 30, 12, ControlP5.DEFAULT, AUTO_MODE,      "default");
   createToggle("doToggleUserMap",     "User",  50, DEBUG_WINDOW_START + 35, 30, 30, 12, ControlP5.DEFAULT, kinect.mapUser, "default");
@@ -38,13 +36,26 @@ void setupControl() {
   createToggle("doToggleScreenDebug", "Debug", 50, DEBUG_WINDOW_START + 95, 30, 30, 12, ControlP5.DEFAULT, SCREEN_DEBUG,   "default");
 }
 
-
-      
+Textfield createTextfield(String cN, String lN, int x, int y, int w, int h, String value, int ts, int ty, String m2t) {
+  Textfield tf = cp5.addTextfield(cN, x, y, w, h);
+  
+  tf.setPosition(x, y);
+  tf.setText(value);
+  tf.setSize(w, h);                                                  // set size to 50x50
+  tf.setInputFilter(ty);
+  tf.moveTo(m2t);
+  tf.setAutoClear(false);
+  tf.captionLabel().getFont().setSize(ts);   
+  tf.captionLabel().setText(lN);    
+  tf.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE); // set alignment
+  tf.valueLabel().align(ControlP5.CENTER, ControlP5.CENTER);
+  tf.setColorBackground(color(20,0,0));
+  return tf;
+}
 
 // create a Slider controller
 // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
-void createSlider(String cN, float s, float e, float v, int x, int y, int w, int h, String lN, int hs, int ts, int ty, String m2t) {
-  //println("   creating slider: " + cN);
+Slider createSlider(String cN, float s, float e, float v, int x, int y, int w, int h, String lN, int hs, int ts, int ty, String m2t) {
   Slider sc = cp5.addSlider(cN, s, e, v, x, y, w, h);
 
   sc.setLabel(lN);
@@ -56,12 +67,10 @@ void createSlider(String cN, float s, float e, float v, int x, int y, int w, int
   sc.getValueLabel().getFont().setSize(ts);
   sc.getCaptionLabel().getFont().setSize(ts);
   sc.captionLabel().toUpperCase(false);
-  //println("DONE  creating slider: " + cN);
-  
+  return sc;
 }
 
-
-void createToggle(String controllerName, String textName, int x, int y, int w, int h, int ts, int tm, boolean value, String m2t) {
+Toggle createToggle(String controllerName, String textName, int x, int y, int w, int h, int ts, int tm, boolean value, String m2t) {
   Toggle tc = cp5.addToggle(controllerName);
   tc.setPosition(x, y);
   tc.setValue(value);
@@ -70,8 +79,9 @@ void createToggle(String controllerName, String textName, int x, int y, int w, i
   tc.captionLabel().setText(textName);                                 // set name
   tc.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE); // set alignment
   tc.captionLabel().getFont().setSize(ts);                             // set text size
-  //tc.captionLabel().toUpperCase(false);
+  tc.captionLabel().toUpperCase(false);
   tc.moveTo(m2t);
+  return tc;
 }
 
 void setTab(String cName, String tabName, int ID, int w, int h, int ts, boolean activate, boolean alwaysActive) {

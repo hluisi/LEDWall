@@ -5,6 +5,7 @@ final float SHAPES_SIZE = 16;
 
 PShape[] svgs;
 Shapes shapes;
+Slider shapesSlider;
 
 void setupShapes() {
   // load the svgs
@@ -24,7 +25,8 @@ void setupShapes() {
   int m = svgs.length - 1;
 
   // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
-  createSlider("doShapeSlider", 0, m, shapes.current, x, y, TAB_MAX_WIDTH + 20, 40, "shapes", 40, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
+  shapesSlider = 
+    createSlider("doShapeSlider", 0, m, shapes.current, x, y, TAB_MAX_WIDTH + 20, 40, "shapes", 40, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
 
   println("Shapes SETUP ...");
 }
@@ -60,7 +62,7 @@ class Shapes {
   void randomShape() {
     int new_shape = round(random(svgs.length - 1));
     setShape(new_shape);
-    cp5.getController("doShapeSlider").setValue(current);
+    shapesSlider.setValue(current);
   }
   
   void setShape(int v) {
@@ -69,7 +71,7 @@ class Shapes {
       p.setShape(v);
     }
     String name = svgs[particles[0].pShape].getName();
-    cp5.getController("doShapeSlider").getCaptionLabel().setText(name);
+    shapesSlider.getCaptionLabel().setText(name);
   }
 
   void update() {

@@ -51,7 +51,7 @@ boolean SCREEN_DEBUG = false;  // show debug info on wall?
 boolean USE_AUDIO    = true;   // use audio?  
 boolean USE_KINECT   = true;   // use kinect?
 boolean USE_TEENSYS  = false;  // use teensy's?
-boolean SHOW_WALL    = false;  // show the wall on the computer screen wall?
+boolean SHOW_WALL    = true;  // show the wall on the computer screen wall?
 
 int MAX_BRIGHTNESS = 255;  // starting brightness of the wall
 
@@ -205,6 +205,7 @@ void doMode() {
   
 }
 
+/*
 void keyPressed() {
 
   if (key == '0') DISPLAY_MODE = DISPLAY_MODE_TEST;
@@ -221,6 +222,7 @@ void keyPressed() {
 
   //r.activate(DISPLAY_MODE);
 }
+*/
 
 public class DisposeHandler {
 
