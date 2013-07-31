@@ -253,7 +253,7 @@ class Colors {
 
   void updateGrey() {
     int temp = audio.volume.value + 16;
-    if (temp > max_brightness) temp = max_brightness;
+    if (temp > MAX_BRIGHTNESS) temp = MAX_BRIGHTNESS;
     grey = color(temp);
   }
 

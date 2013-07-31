@@ -10,8 +10,8 @@ float MAX_WATTS = 0;
 int[][] gammaTable;
 int MAX_BRIGHTNESS = 255;
 
-final int TEENSY_TOTAL  = 5;
-//final int TEENSY_TOTAL  = 10;
+//final int TEENSY_TOTAL  = 5;
+final int TEENSY_TOTAL  = 10;
 
 final float RED_GAMMA = 2.1;
 final float GREEN_GAMMA = 2.1;
@@ -29,20 +29,17 @@ void setupTeensys() {
   println("Serial Ports List:");
   println(list);
   println();
-
-  teensys[0] = new Teensy(this, "COM5");
-  teensys[1] = new Teensy(this, "COM3");
-  teensys[2] = new Teensy(this, "COM4");
-  teensys[3] = new Teensy(this, "COM6");
-  teensys[4] = new Teensy(this, "COM7");
   
-  /*
-  teensys[5] = new Teensy(this, "COM10");
-  teensys[6] = new Teensy(this, "COM6");
-  teensys[7] = new Teensy(this, "COM9");
-  teensys[8] = new Teensy(this, "COM7");
-  teensys[9] = new Teensy(this, "COM8");
-  */
+  teensys[0] = new Teensy(this, "COM12");
+  teensys[1] = new Teensy(this, "COM8");
+  teensys[2] = new Teensy(this, "COM11");
+  teensys[3] = new Teensy(this, "COM9");
+  teensys[4] = new Teensy(this, "COM10");
+  teensys[5] = new Teensy(this, "COM4");
+  teensys[6] = new Teensy(this, "COM5");
+  teensys[7] = new Teensy(this, "COM3");
+  teensys[8] = new Teensy(this, "COM6");
+  teensys[9] = new Teensy(this, "COM7");
 
   setupGamma();
 

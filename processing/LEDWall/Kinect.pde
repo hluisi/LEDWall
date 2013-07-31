@@ -4,7 +4,7 @@
 import SimpleOpenNI.*;  // import simple open ni
 import java.util.Map;   // import hash map
 
-final boolean USE_KINECT = true;
+
 
 final int KINECT_WIDTH  = 640;  // the x size of the kinect's depth image
 final int KINECT_HEIGHT = 320;  // the y size of the kinect's depth image 
@@ -66,6 +66,8 @@ class Kinect {
       exit();
       return;
     }
+    
+    context.enableRGB();
 
     // enable user
     if (context.enableUser(SimpleOpenNI.SKEL_PROFILE_ALL) == false) {  // enable user tracking
@@ -143,7 +145,12 @@ class Kinect {
       }
     }
     buffer.fill(255);
-    buffer.text(users.length, COLUMNS - 5, ROWS - 7);
+    if (SCREEN_DEBUG) {
+      buffer.pushStyle();
+      buffer.textAlign(CENTER, CENTER);
+      buffer.text(users.length, COLUMNS - 5, ROWS - 7);
+      buffer.popStyle();
+    }
   }
 
   void draw() {

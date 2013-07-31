@@ -23,17 +23,11 @@
     THE SOFTWARE.
 */
 
-
-
- 
 // STILL NEEDS REWRITE
 
-int DISPLAY_MODE = 1;
-int LAST_MODE = 1;
-float xoff = 0.0;
 
-final int DISPLAY_MODE_TEST    = 0;
-final int DISPLAY_MODE_SHOWEQ  = 1;
+// MODES
+final int DISPLAY_MODE_EQ      = 1;
 final int DISPLAY_MODE_USERBG  = 2;
 final int DISPLAY_MODE_RAINBOW = 3;
 final int DISPLAY_MODE_SHAPES  = 4;
@@ -42,49 +36,73 @@ final int DISPLAY_MODE_PULSAR  = 6;
 final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
+final int DISPLAY_MODE_TEST    = 10;
 
-boolean AUTOMODE = false;
-boolean useAudio = true;
-boolean AUDIO_BG_ON = false;
+final int TOTAL_MODES = 10;
 
+// mode names
 final String[] DISPLAY_STR = { 
-  "TEST", "EQ", "USER BG", "RAINBOW", "SHAPES", "SPIN", "PULSAR", "CITY", "ATARI", "CLIPS"
+  "Globals", "EQ", "Users", "Rainbow", "Shapes", "Spin", "Pulsar", "Spec", "Atari", "Movies", "Test", "Debug"
 };
 
+boolean AUTO_MODE    = true;   // start in auto mode?
+boolean AUDIO_BG_ON  = false;  // start with audio background?
+boolean SCREEN_DEBUG = false;  // show debug info on wall?
+boolean USE_AUDIO    = true;   // use audio?  
+boolean USE_KINECT   = true;   // use kinect?
+boolean USE_TEENSYS  = false;  // use teensy's?
+boolean SHOW_WALL    = false;  // show the wall on the computer screen wall?
 
-PImage smpte, test, wall_image;
+int MAX_BRIGHTNESS = 255;  // starting brightness of the wall
 
+int DISPLAY_MODE = 1;          // starting mode
+int LAST_MODE    = 0;  // start on the right tab
+float xoff = 0.0;              // used for perlin noise
+int IMAGE_MULTI = 6;           // how much should we blowup the image 
+
+
+
+// images... needs it's own mode (backgrounds?)
+PImage smpte, test, wall_image, camera;
+
+// exit handler
 DisposeHandler dh;
 
 void setup() {
-  int x, y;
-  if (DEBUG_SHOW_WALL) {
-    x = DEBUG_WINDOW_XSIZE;
-    y = (ROWS * DEBUG_REAL_PIXEL_SIZE_Y) + DEBUG_WINDOW_YSIZE;
-  } 
-  else {
-    x = DEBUG_WINDOW_XSIZE;
-    y = DEBUG_WINDOW_YSIZE + (ROWS*3);
-    DEBUG_WINDOW_START = ROWS*3;
+  
+  if (SHOW_WALL) {
+    WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;  // the x size of the debug window
+    WINDOW_YSIZE = ROWS * DEBUG_REAL_PIXEL_SIZE_Y;  // the x size of the debug window
+  } else {
+    WINDOW_XSIZE = COLUMNS * IMAGE_MULTI;
+    WINDOW_YSIZE = ROWS * IMAGE_MULTI;
   }
-
-  size(x, y, P3D);
+  DEBUG_WINDOW_START = WINDOW_YSIZE;
+  DEBUG_TEXT_X = WINDOW_XSIZE - INFO_WINDOW_SIZE + 10;
+  
+  size(WINDOW_XSIZE, WINDOW_YSIZE + DEBUG_WINDOW_YSIZE, P3D);
   smooth(4);
   hint(DISABLE_DEPTH_TEST);
   hint(DISABLE_DEPTH_MASK);
+  
+  noStroke();
 
   dh = new DisposeHandler(this);
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
-  wall_image = createImage(COLUMNS * 3, ROWS * 3, RGB);
+  wall_image = createImage(COLUMNS * IMAGE_MULTI, ROWS * IMAGE_MULTI, RGB);
+  camera = createImage(COLUMNS, ROWS, RGB);
   
   setupUtils();
+  setupGamma();
 
   setupBuffer();
   setupMinim();
  
   if (USE_KINECT) setupKinect();
+  
+  setupControl();
 
   setupRainbow();
   setupEQ();
@@ -94,12 +112,12 @@ void setup() {
   setupAtari();
   setupClips();
 
-  setupTeensys();
+  if (USE_TEENSYS) setupTeensys();
 
   setupWall();
 
   // must be last
-  setupControl();
+  
   frameRate(60);
 
   frame.setTitle("Wall of Light");
@@ -110,9 +128,9 @@ void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
     if (test < 0.15) {
-      int count = round( random(1, 9) );
+      int count = round( random(1, TOTAL_MODES - 1) );
       DISPLAY_MODE = count;
-      r.activate(count);
+      //r.activate(count);
     }
   }
 }
@@ -127,7 +145,7 @@ void draw() {
   //if (AUDIO_BG_ON) buffer.background(audio.colors.background); else buffer.background(0);
   buffer.background(0);
 
-  if (AUTOMODE) autoMode();   // auto change mode to audio beat
+  if (AUTO_MODE) autoMode();   // auto change mode to audio beat
 
   doMode();                   // do the current mode(s)
 
@@ -142,6 +160,15 @@ void draw() {
 
   if (USE_KINECT) {  // using the kinect?
     kinect.draw();
+  }
+  
+  if (SCREEN_DEBUG) {
+    buffer.pushStyle();
+    buffer.textAlign(CENTER, CENTER);
+    buffer.text(String.format("%.2f", frameRate), 20, ROWS - 7);
+    buffer.text(audio.BPM, COLUMNS / 2, ROWS - 7);
+    buffer.text(kinect.users.length, COLUMNS - 5, ROWS - 7);
+    buffer.popStyle();
   }
 
   buffer.noStroke(); // reset stroke
@@ -159,7 +186,7 @@ void doMode() {
   
   
   if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
-  if (DISPLAY_MODE == DISPLAY_MODE_SHOWEQ)  doEQ();
+  if (DISPLAY_MODE == DISPLAY_MODE_EQ)      doEQ();
   if (DISPLAY_MODE == DISPLAY_MODE_USERBG)  doUserBg();
   if (DISPLAY_MODE == DISPLAY_MODE_SPIN)    doCircles();
   if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)  doPulsar();
@@ -168,9 +195,12 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
-  displayModeText.setText( DISPLAY_STR[DISPLAY_MODE] );
   
-  LAST_MODE = DISPLAY_MODE;
+  if (LAST_MODE != DISPLAY_MODE) {
+     cp5.getTab(DISPLAY_STR[DISPLAY_MODE]).bringToFront();
+     LAST_MODE = DISPLAY_MODE;
+  }
+  
   
   
 }
@@ -178,7 +208,7 @@ void doMode() {
 void keyPressed() {
 
   if (key == '0') DISPLAY_MODE = DISPLAY_MODE_TEST;
-  if (key == '1') DISPLAY_MODE = DISPLAY_MODE_SHOWEQ;
+  if (key == '1') DISPLAY_MODE = DISPLAY_MODE_EQ;
   if (key == '2') DISPLAY_MODE = DISPLAY_MODE_USERBG;
   if (key == '3') DISPLAY_MODE = DISPLAY_MODE_RAINBOW;
   if (key == '4') DISPLAY_MODE = DISPLAY_MODE_SHAPES;
@@ -189,7 +219,7 @@ void keyPressed() {
   if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
   //if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
 
-  r.activate(DISPLAY_MODE);
+  //r.activate(DISPLAY_MODE);
 }
 
 public class DisposeHandler {
@@ -200,11 +230,12 @@ public class DisposeHandler {
 
   void dispose() {
     System.out.println("CLOSING DOWN!!!");
-    for (int i = 0; i < teensys.length; i++) {
-      teensys[i].clear();
+    if (USE_TEENSYS) {
+      for (int i = 0; i < teensys.length; i++) {
+        teensys[i].clear();
+      }
+      delay(50); // wait a bit for teensys to clear
     }
-    
-    delay(50); // wait a bit for teensys to clear
     
     if (USE_KINECT) kinect.close();
 

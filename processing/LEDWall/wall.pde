@@ -5,25 +5,28 @@ final int COLUMNS = 160;             // the amount of LEDs per column (x)
 final int ROWS    = 80;              // the amount of LEDs per row (y)
 final int TOTAL   = COLUMNS * ROWS;  // the total amount of LEDs on the wall
 
-final int DEBUG_PIXEL_SIZE      = 2;  // size of each debug pixel
+final int DEBUG_PIXEL_SIZE      = 3;  // size of each debug pixel
 final int DEBUG_PIXEL_SPACING_X = 3;  // the X spacing for each debug pixel
 final int DEBUG_PIXEL_SPACING_Y = 3;  // the X spacing for each debug pixel
 
 final int DEBUG_REAL_PIXEL_SIZE_X = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_X; // the total X size of each debug pixel
 final int DEBUG_REAL_PIXEL_SIZE_Y = DEBUG_PIXEL_SIZE + DEBUG_PIXEL_SPACING_Y; // the total Y size of each debug pixel
 
-final int DEBUG_WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;         // the x size of the debug window
 final int DEBUG_WINDOW_YSIZE = 220;                                       // the y size of the debug window
-final int DEBUG_TEXT_X = DEBUG_WINDOW_XSIZE - 200;
+final int INFO_WINDOW_SIZE = 200;
 
-int DEBUG_WINDOW_START = DEBUG_REAL_PIXEL_SIZE_Y * ROWS;
+
+
+int WINDOW_XSIZE;  // the x size of the debug window
+int WINDOW_YSIZE;  // the x size of the debug window
+int DEBUG_TEXT_X;
+int DEBUG_WINDOW_START;
 
 int SEND_TIME;
 int PROC_TIME;
 int TOTAL_TIME; 
 
 
-boolean DEBUG_SHOW_WALL  = false;  // show the wall on the computer screen wall?
 
 VideoWall wall;
 
@@ -54,19 +57,35 @@ class VideoWall {
   private void drawPixel(int x, int y, color c) {
     int screenX = (x * DEBUG_REAL_PIXEL_SIZE_X) + (DEBUG_REAL_PIXEL_SIZE_X / 2);
     int screenY = (y * DEBUG_REAL_PIXEL_SIZE_Y) + (DEBUG_REAL_PIXEL_SIZE_Y / 2);
+    int r = (c >> 16) & 0xFF;  // get the red
+    int g = (c >> 8) & 0xFF;   // get the green
+    int b = c & 0xFF;          // get the blue 
+
+    r = int( map( r, 0, 255, 0, MAX_BRIGHTNESS ) );  // map red to max LED brightness
+    g = int( map( g, 0, 255, 0, MAX_BRIGHTNESS ) );  // map green to max LED brightness
+    b = int( map( b, 0, 255, 0, MAX_BRIGHTNESS ) );  // map blue to max LED brightness
+    
+    float pixel_watts = map(r + g + b, 0, 768, 0, 0.24); 
+    
+    WALL_WATTS += pixel_watts;
+    
     noStroke();
-    fill(c);
+    fill( color(r,g,b) );
+    pushStyle();
     rectMode(CENTER);
     rect(screenX, screenY, DEBUG_PIXEL_SIZE, DEBUG_PIXEL_SIZE);
+    popStyle();
   }
 
   void display() {
+    WALL_WATTS = 0;
     buffer.loadPixels(); // load the current pixels
     for (int i = 0; i < TOTAL; i++) {
       int x = i % COLUMNS; 
       int y = i / COLUMNS;
       drawPixel(x, y, buffer.pixels[i]);
     }
+    MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
   }
 
   private void send() {
@@ -82,8 +101,8 @@ class VideoWall {
     send_buffer.loadPixels();
 
     WALL_WATTS = 0;  // reset the wattage tracking
-    SEND_TIME = 0;
-    PROC_TIME = 0;
+    SEND_TIME  = 0;
+    PROC_TIME  = 0;
     TOTAL_TIME = 0;
     
     
@@ -102,11 +121,11 @@ class VideoWall {
     }
     
     // send data again to simulate 10 teensy's
-    for (int i = 0; i < teensys.length; i++) {
-      teensys[i].send();
-      SEND_TIME += teensys[i].send_time;
-      PROC_TIME += teensys[i].proc_time;
-    }
+    //for (int i = 0; i < teensys.length; i++) {
+      //teensys[i].send();
+      //SEND_TIME += teensys[i].send_time;
+      //PROC_TIME += teensys[i].proc_time;
+    //}
     
     TOTAL_TIME = millis() - stime;
     
@@ -115,8 +134,9 @@ class VideoWall {
 
   void draw() {
     //buffer.updatePixels();
-    send();
-    if (DEBUG_SHOW_WALL) display();
+    if (USE_TEENSYS) send();         // send data
+    else delay(30);                  // or simulate sending of data
+    if (SHOW_WALL) display();  // show simulation of wall
   }
 }
 

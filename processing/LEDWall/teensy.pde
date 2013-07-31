@@ -4,9 +4,9 @@ float WALL_WATTS = 0;
 float MAX_WATTS = 0;
 
 int[][] gammaTable;
-int max_brightness = 192;
 
-final int TEENSY_TOTAL  = 5;
+
+final int TEENSY_TOTAL  = 10;
 final int TEENSY_WIDTH  = 80;
 final int TEENSY_HEIGHT = 16;
 final int BAUD_RATE = 921600; //115200;
@@ -23,20 +23,19 @@ void setupTeensys() {
   delay(20);
   println("Serial Ports List:");
   println(list);
-
-  teensys[0] = new Teensy(this, 2, "COM5", false);
-  teensys[1] = new Teensy(this, 3, "COM3", true);
-  teensys[2] = new Teensy(this, 4, "COM4", false);
-  teensys[3] = new Teensy(this, 5, "COM6", false);
-  teensys[4] = new Teensy(this, 6, "COM7", false);
   
-  //teensys[0] = new Teensy(this, 2, "COM10", true);
-  //teensys[1] = new Teensy(this, 3, "COM6", true);
-  //teensys[2] = new Teensy(this, 4, "COM9", true);
-  //teensys[3] = new Teensy(this, 5, "COM7", true);
-  //teensys[4] = new Teensy(this, 6, "COM8", true);
+  teensys[0] = new Teensy(this, 0, "COM12", false);
+  teensys[1] = new Teensy(this, 1, "COM8", false);
+  teensys[2] = new Teensy(this, 2, "COM11", false);
+  teensys[3] = new Teensy(this, 3, "COM9", false);
+  teensys[4] = new Teensy(this, 4, "COM10", false);
+  teensys[5] = new Teensy(this, 5, "COM5", false);
+  teensys[7] = new Teensy(this, 6, "COM6", false);
+  teensys[6] = new Teensy(this, 7, "COM4", true);
+  teensys[8] = new Teensy(this, 8, "COM3", false);  
+  teensys[9] = new Teensy(this, 9, "COM7", false);
 
-  setupGamma();
+  
   //println(gammaTable);
 
   println("TEENSYS SETUP!!");
@@ -123,9 +122,9 @@ class Teensy {
     int g = (c >> 8) & 0xFF;   // get the green
     int b = c & 0xFF;          // get the blue 
 
-    r = int( map( r, 0, 255, 0, max_brightness ) );  // map red to max LED brightness
-    g = int( map( g, 0, 255, 0, max_brightness ) );  // map green to max LED brightness
-    b = int( map( b, 0, 255, 0, max_brightness ) );  // map blue to max LED brightness
+    r = int( map( r, 0, 255, 0, MAX_BRIGHTNESS ) );  // map red to max LED brightness
+    g = int( map( g, 0, 255, 0, MAX_BRIGHTNESS ) );  // map green to max LED brightness
+    b = int( map( b, 0, 255, 0, MAX_BRIGHTNESS ) );  // map blue to max LED brightness
 
     r = gammaTable[r][0];  // map red to gamma correction table
     g = gammaTable[g][1];  // map green to gamma correction table

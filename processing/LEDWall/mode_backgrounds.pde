@@ -1,7 +1,12 @@
 // NOT SURE, WAVE MODE?  
+
+
+
  
 void doUserBg() {
   buffer.background(audio.colors.background);
+  //camera.copy(kinect.context.rgbImage().get(), 0, 0, 640, 320, 0, 0, camera.width, camera.height);
+  //buffer.background(camera);
   buffer.blendMode(ADD);
   buffer.stroke(255);
   buffer.strokeWeight(2);

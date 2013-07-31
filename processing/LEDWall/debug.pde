@@ -1,27 +1,31 @@
 // ALWAYS NEEDS A REWRITE
 
 void drawDebug() {
-  if (!DEBUG_SHOW_WALL) { // show the buffer
-    wall_image.copy(buffer.get(), 0, 0, buffer.width, buffer.height, 0, 0, COLUMNS*3, ROWS*3); 
+  noStroke();
+  if (!SHOW_WALL) { // show the buffer
+    wall_image.copy(buffer.get(), 0, 0, buffer.width, buffer.height, 0, 0, COLUMNS*IMAGE_MULTI, ROWS*IMAGE_MULTI); 
     pushStyle();
     imageMode(CENTER);
     image(wall_image, width / 2, wall_image.height / 2);
     popStyle();
   }
 
-  textSize(11);  
-  fill(#313131);
-  stroke(0);
-  strokeWeight(1);
+  textSize(11);
   rectMode(CORNER);
-  rect(0, DEBUG_WINDOW_START, DEBUG_WINDOW_XSIZE, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
+  
+  // globals tab
+  fill(#450003);
+  rect(0, DEBUG_WINDOW_START, TAB_START, DEBUG_WINDOW_START + WINDOW_YSIZE);
+  
+  // other tabs
+  fill(#230003);
+  rect(TAB_START, DEBUG_WINDOW_START, WINDOW_XSIZE - TAB_START, DEBUG_WINDOW_START + WINDOW_YSIZE);
 
   // fill text display background
-  fill(#212121);
-  //rect(5, DEBUG_WINDOW_START + 5, 200, 210);
-  rect(DEBUG_WINDOW_XSIZE - 205, DEBUG_WINDOW_START + 5, 200, 210);
+  fill(#450003);
+  rect(WINDOW_XSIZE - INFO_WINDOW_SIZE, DEBUG_WINDOW_START, INFO_WINDOW_SIZE, WINDOW_YSIZE);
 
-  fill(255);
+  fill(cp5.getColor().getCaptionLabel());
   //text("Display Mode: " + DISPLAY_STR[DISPLAY_MODE], DEBUG_TEXT_X, DEBUG_WINDOW_START + 20);
   text("FPS: " + String.format("%.2f", frameRate), DEBUG_TEXT_X, DEBUG_WINDOW_START + 50);
 
@@ -37,7 +41,7 @@ void drawDebug() {
   text("WATTS: " + String.format("%.2f", WALL_WATTS), DEBUG_TEXT_X, DEBUG_WINDOW_START + 125);
   text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 100, DEBUG_WINDOW_START + 125);
 
-  text("Clips speed: " + clips.current_speed, DEBUG_TEXT_X, DEBUG_WINDOW_START + 140);
+  text("Clips speed: " + movies.speed, DEBUG_TEXT_X, DEBUG_WINDOW_START + 140);
   if (USE_KINECT) text("Users: " + userHash.size(), DEBUG_TEXT_X, DEBUG_WINDOW_START + 170);
   
   if (USE_KINECT) {

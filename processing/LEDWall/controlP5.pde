@@ -3,172 +3,116 @@
 import controlP5.*;
 
 ControlP5 cp5;
-Println console;
-RadioButton r;
-Toggle auto_mode_toggle;
-Toggle map_user_toggle;
-Toggle audio_back_toggle;
-Slider bright;
-Textlabel displayModeText;
-Textlabel globalHeader;
-Group g1, g2, g3;
+final int TAB_START  = 150;
+final int TAB_HEIGHT = 25;
+int TAB_MAX_WIDTH;
+int TAB_WIDTH;
 
 void setupControl() {
-  strokeWeight(1);
-  stroke(0);
   cp5 = new ControlP5(this);
+  cp5.window().setPositionOfTabs(0, DEBUG_WINDOW_START);
+  cp5.setColor(ControlP5.RED);
+  
+  TAB_MAX_WIDTH = WINDOW_XSIZE - INFO_WINDOW_SIZE - TAB_START - 40;
+  TAB_WIDTH = TAB_MAX_WIDTH / TOTAL_MODES;
 
-  g1 = cp5.addGroup("global_group")
-    .setPosition(0, DEBUG_WINDOW_START)
-      .setBackgroundHeight(DEBUG_WINDOW_YSIZE)
-        .setWidth(200)
-          .setBackgroundColor(color(#212121))
-            .hideBar()
-              ;
+  // create and setup the tabs
+  setTab("default", DISPLAY_STR[0], 0, TAB_START - 5, TAB_HEIGHT, 14, false, true);
 
-  globalHeader = cp5.addTextlabel("g_head")
-    .setText("Modes")
-      .setPosition(60, 0)
-        .setColor(color(255))
-          .setFont(createFont("Verdana-Bold", 22))
-            .setGroup(g1)
-              ;
-
-  bright = cp5.addSlider("Brightness")
-    .setSize(180, 25)
-      .setPosition(10, DEBUG_WINDOW_YSIZE - 40)
-        .setRange(0, 255)
-          .setValue(192)
-            .setColorForeground(color(255))
-              .setColorBackground(color(#151515))
-                .setColorActive(color(255, 255, 0))
-                  .setSliderMode(Slider.FLEXIBLE)
-                    .setHandleSize(20)
-                      .setGroup(g1)
-                        ;
-  bright.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);
-  bright.captionLabel().setPaddingY(3);
-  bright.valueLabel().align(ControlP5.RIGHT, ControlP5.CENTER);
-  //bright.valueLabel().setPaddingY(3);
-
-  r = cp5.addRadioButton("modeButton")
-    .setPosition(15, 30)
-      .setGroup(g1)
-        .setSize(40, 20)
-          .setColorBackground(color(#151515))
-            .setColorForeground(color(#515151))
-              .setColorActive(color(255))
-                .setColorLabel(color(255))
-                  .setItemsPerRow(3)
-                    .setSpacingColumn(20)
-                      .setSpacingRow(17)
-                        .addItem("Test", 0)
-                          .addItem("EQ", 1)
-                            .addItem("UserBG", 2)
-                              .addItem("Rainbow", 3)
-                                .addItem("Shapes", 4)
-                                  .addItem("Spin", 5)
-                                    .addItem("Pulsar", 6)
-                                      .addItem("City", 7)
-                                        .addItem("Atari", 8)
-                                          .addItem("Clips", 9)
-                                            .activate(1)
-                                              ;
-
-  for (Toggle t:r.getItems()) {
-    t.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE);
-    t.captionLabel().setPaddingY(3);
+  for (int i = 1; i <= TOTAL_MODES; i++) {
+    String name = DISPLAY_STR[i];
+    cp5.addTab(name);
+    setTab(name, name, i, TAB_WIDTH, TAB_HEIGHT, 14, true, false);
   }
 
-  displayModeText = cp5.addTextlabel("mode_text")
-    .setPosition(200, DEBUG_WINDOW_START + 5)
-      .setColor(color(255))
-        .setFont(createFont("Georgia", 20));
+  int b = MAX_BRIGHTNESS;
+  
+  // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
+  createSlider("doSliderBrightness", 0, 255, b, TAB_START - 60, DEBUG_WINDOW_START + 35, 50, DEBUG_WINDOW_YSIZE - 60, "Brightness", 10, 12, Slider.FLEXIBLE, "default");
+  //cp5.getController("doSliderBrightness").getValueLabel().align(ControlP5.CENTER, ControlP5.TOP).setPaddingX(0);
+  //cp5.getController("doSliderBrightness").getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(3);
 
-  auto_mode_toggle = cp5.addToggle("auto_mode")
-    .setPosition(225, DEBUG_WINDOW_START + 150)
-      .setSize(40, 20)
-        .setColorBackground(color(#151515))
-          .setColorForeground(color(#515151))
-            .setColorActive(color(255))
-              .setColorLabel(color(255))
-                .setValue(false)
-                  .setMode(ControlP5.SWITCH)
-                    ;
-
-  auto_mode_toggle.captionLabel().setText("Auto Mode");
-
-  map_user_toggle = cp5.addToggle("map_user")
-    .setPosition(275, DEBUG_WINDOW_START + 150)
-      .setSize(40, 20)
-        .setColorBackground(color(#151515))
-          .setColorForeground(color(#515151))
-            .setColorActive(color(255))
-              .setColorLabel(color(255))
-                .setValue(false)
-                  .setMode(ControlP5.SWITCH)
-                    ;
-
-  map_user_toggle.captionLabel().setText("User Map");
-
-  audio_back_toggle = cp5.addToggle("audio_bg")
-    .setPosition(325, DEBUG_WINDOW_START + 150)
-      .setSize(40, 20)
-        .setColorBackground(color(#151515))
-          .setColorForeground(color(#515151))
-            .setColorActive(color(255))
-              .setColorLabel(color(255))
-                .setValue(false)
-                  .setMode(ControlP5.SWITCH)
-                    ;
-
-  audio_back_toggle.captionLabel().setText("BACK GND");
+  createToggle("doToggleAutoMode",    "Auto",  10, DEBUG_WINDOW_START + 35, 30, 30, 12, ControlP5.DEFAULT, AUTO_MODE,      "default");
+  createToggle("doToggleUserMap",     "User",  50, DEBUG_WINDOW_START + 35, 30, 30, 12, ControlP5.DEFAULT, kinect.mapUser, "default");
+  createToggle("doToggleAudioBack",   "Audio", 10, DEBUG_WINDOW_START + 95, 30, 30, 12, ControlP5.DEFAULT, AUDIO_BG_ON,    "default");
+  createToggle("doToggleScreenDebug", "Debug", 50, DEBUG_WINDOW_START + 95, 30, 30, 12, ControlP5.DEFAULT, SCREEN_DEBUG,   "default");
 }
 
-public void Brightness(int value) {
-  max_brightness = value;
+
+      
+
+// create a Slider controller
+// controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
+void createSlider(String cN, float s, float e, float v, int x, int y, int w, int h, String lN, int hs, int ts, int ty, String m2t) {
+  //println("   creating slider: " + cN);
+  Slider sc = cp5.addSlider(cN, s, e, v, x, y, w, h);
+
+  sc.setLabel(lN);
+  sc.setHandleSize(hs);
+  sc.setSliderMode(ty);
+  sc.moveTo(m2t);
+  sc.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  sc.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+  sc.getValueLabel().getFont().setSize(ts);
+  sc.getCaptionLabel().getFont().setSize(ts);
+  sc.captionLabel().toUpperCase(false);
+  //println("DONE  creating slider: " + cN);
+  
 }
 
-public void modeButton(int v) {
-  if (v < 0) { 
-    v = 1;
-    r.activate(1);
-  }
-  DISPLAY_MODE = v;
+
+void createToggle(String controllerName, String textName, int x, int y, int w, int h, int ts, int tm, boolean value, String m2t) {
+  Toggle tc = cp5.addToggle(controllerName);
+  tc.setPosition(x, y);
+  tc.setValue(value);
+  tc.setSize(w, h);                                                  // set size to 50x50
+  tc.setMode(tm);
+  tc.captionLabel().setText(textName);                                 // set name
+  tc.captionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE); // set alignment
+  tc.captionLabel().getFont().setSize(ts);                             // set text size
+  //tc.captionLabel().toUpperCase(false);
+  tc.moveTo(m2t);
 }
 
-void auto_mode(boolean theFlag) {
-  if (theFlag==true) {
-    AUTOMODE = true;
-    println("Auto Mode: ON");
-  } 
-  else {
-    AUTOMODE = false;
-    println("Auto Mode: OFF");
+void setTab(String cName, String tabName, int ID, int w, int h, int ts, boolean activate, boolean alwaysActive) {
+  
+  Tab tab = cp5.getTab(cName);                                 // get tab
+  tab.setLabel(tabName);
+  tab.setId(ID);                                                 // set id
+  tab.setAlwaysActive(alwaysActive);
+  tab.activateEvent(activate);                                       // set active
+  tab.setHeight(h);                                             // set height
+  tab.setWidth(w);                                       // set width
+  tab.captionLabel().getFont().setSize(ts);                      // set label font size
+  tab.captionLabel().align(ControlP5.CENTER, ControlP5.CENTER);  //set label font alignment
+  tab.captionLabel().toUpperCase(false);
+}
+
+void doSliderBrightness(int v) {
+  MAX_BRIGHTNESS = v;
+}
+
+void controlEvent(ControlEvent theEvent) {
+  // tab?
+  if ( theEvent.isTab() ) {
+    int ID = theEvent.getTab().getId();
+    if (ID > 0) DISPLAY_MODE = ID;
   }
 }
 
-void map_user(boolean theFlag) {
-  if (USE_KINECT) {
-    if (theFlag==true) {
-      kinect.mapUser = true;
-      println("User Map: ON");
-    } 
-    else {
-      kinect.mapUser = false;
-      println("User Map: OFF");
-    }
-  }
+void doToggleAutoMode(boolean b) {
+  AUTO_MODE = b;
 }
 
-void audio_bg(boolean theFlag) {
-  if (theFlag==true) {
-    AUDIO_BG_ON = true;
-    println("Audio backgroung: ON");
-  } 
-  else {
-    AUDIO_BG_ON = false;
-    println("Audio background: OFF");
-  }
+void doToggleUserMap(boolean b) {
+  kinect.mapUser = b;
+}
+
+void doToggleAudioBack(boolean b) {
+  AUDIO_BG_ON = b;
+}
+
+void doToggleScreenDebug(boolean b) {
+  SCREEN_DEBUG = b;
 }
 

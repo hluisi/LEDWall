@@ -10,16 +10,21 @@ void setupShapes() {
   // load the svgs
   String[] shape_file_names = getFileNames("shapes", "svg"); // get the svg file names
 
-    svgs = new PShape [shape_file_names.length];               // set the length of the svg array
+  svgs = new PShape [shape_file_names.length];               // set the length of the svg array
   for (int i = 0; i < svgs.length; i++) {
     svgs[i] = loadShape(shape_file_names[i]);
     svgs[i].disableStyle();
-    //svgs[i].stroke(0);
-    //svgs[i].strokeWeight(1);
     println(i + ": " + svgs[i].getName());
   }
 
   shapes = new Shapes();
+  
+  int x = TAB_START + 10;
+  int y = WINDOW_YSIZE + DEBUG_WINDOW_YSIZE - 80;
+  int m = svgs.length - 1;
+
+  // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
+  createSlider("doShapeSlider", 0, m, shapes.current, x, y, TAB_MAX_WIDTH + 20, 40, "shapes", 40, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
 
   println("Shapes SETUP ...");
 }
@@ -30,9 +35,17 @@ void doShapes() {
   shapes.display();
 }
 
+void doShapeSlider(int v) {
+  shapes.setShape(v);
+}
+
 class Shapes {
   Particle[] particles;
   int current = 0;
+  float switchValue = 0.65;
+  boolean switchOn = true;
+  boolean scaleX = true;
+  boolean scaleY = true;
 
   Shapes() {
     // create the particles
@@ -44,20 +57,27 @@ class Shapes {
     }
   }
 
-  void newShape() {
+  void randomShape() {
     int new_shape = round(random(svgs.length - 1));
+    setShape(new_shape);
+    cp5.getController("doShapeSlider").setValue(current);
+  }
+  
+  void setShape(int v) {
+    current = v;
     for (Particle p: particles) {
-      p.setShape(new_shape);
+      p.setShape(v);
     }
+    String name = svgs[particles[0].pShape].getName();
+    cp5.getController("doShapeSlider").getCaptionLabel().setText(name);
   }
 
   void update() {
     if ( audio.isOnBeat() ) {
       float test = random(0, 1);
-      if (test < 0.65) {
-        current = round( random(svgs.length - 1) );
-        newShape();
-        println( "SHAPES - new shape: " + svgs[particles[0].pShape].getName() );
+      if (test < switchValue && switchOn) {
+        randomShape();
+        //println( "SHAPES - new shape: " + svgs[particles[0].pShape].getName() );
       }
     }
   }

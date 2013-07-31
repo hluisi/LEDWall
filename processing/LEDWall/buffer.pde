@@ -3,9 +3,9 @@
 PGraphics buffer;
 
 void setupBuffer() {
-  buffer = createGraphics(COLUMNS, ROWS, P3D);   //buffer.hint(DISABLE_DEPTH_TEST);
+  buffer = createGraphics(COLUMNS, ROWS, P3D);  
   buffer.smooth(4);
-  buffer.hint(DISABLE_DEPTH_TEST);
+  //buffer.hint(DISABLE_DEPTH_TEST);
   //buffer.hint(DISABLE_DEPTH_MASK);
   buffer.beginDraw();
   buffer.background(0);
