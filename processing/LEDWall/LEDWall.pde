@@ -1,32 +1,42 @@
 /*  LEDWall LEDWall.pde - Code to control a large LED matrix wall. 
-    This code is geared to our "Wall of Light" Mutant Vehicle (bike) 
-    for burning man 2013
-    
-    Copyright (c) 2013 Hunter Luisi / hunterluisi.com
+ This code is geared to our "Wall of Light" Mutant Vehicle (bike) 
+ for burning man 2013
+ 
+ Copyright (c) 2013 Hunter Luisi / hunterluisi.com
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-*/
-
-// STILL NEEDS REWRITE
+////////////////////////////////////////////////////////
+// LEDWall hardware
+////////////////////////////////////////////////////////
+// Use below if you don't have some of the hardware needed 
+// to successfully run the LED wall  
+final boolean USE_MINIM   = true;  // load minim and use minim for audio reaction
+final boolean USE_SOPENNI = true;  // load and use simpleOpenNi for kinect interaction
+final boolean USE_TEENSYS = false; // send data to teensy's via serial
 
 
-// MODES
+////////////////////////////////////////////////////////
+// LEDWall MODES
+////////////////////////////////////////////////////////
+// Constants used for switching modes
 final int DISPLAY_MODE_EQ      = 1;
 final int DISPLAY_MODE_USERBG  = 2;
 final int DISPLAY_MODE_RAINBOW = 3;
@@ -37,71 +47,92 @@ final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
 final int DISPLAY_MODE_TEST    = 10;
-
 final int TOTAL_MODES = 10;
 
-// mode names
 final String[] DISPLAY_STR = { 
   "Globals", "EQ", "Users", "Rainbow", "Shapes", "Spin", "Pulsar", "Spec", "Atari", "Movies", "Test", "Debug"
 };
 
-boolean AUTO_MODE    = true;   // start in auto mode?
-boolean AUDIO_BG_ON  = false;  // start with audio background?
-boolean SCREEN_DEBUG = false;  // show debug info on wall?
-boolean USE_AUDIO    = true;   // use audio?  
-boolean USE_KINECT   = true;   // use kinect?
-boolean USE_TEENSYS  = false;  // use teensy's?
-boolean SHOW_WALL    = true;  // show the wall on the computer screen wall?
 
-int MAX_BRIGHTNESS = 255;  // starting brightness of the wall
+////////////////////////////////////////////////////////
+// LEDWall defaults
+////////////////////////////////////////////////////////
+// Use below to set the defaults when first starting
+// the LED wall  
+boolean autoOn   = true;   // start in auto mode?
+boolean audioOn  = true;   // start with audio reation on?
+boolean aBackOn  = true;  // start with audio background on?
+boolean debugOn  = false;  // show debug info on wall?
+boolean kinectOn = true;  // show kinect users  
+boolean wallOn   = true;   // send data to teensy's
+boolean simulateOn = false; // simulate the leds on the PC screen
+boolean delayOn    = false;
+
+
+////////////////////////////////////////////////////////
+// LEDWall timers (in milliseconds)
+////////////////////////////////////////////////////////
+int SEND_TIME;  // the time it takes to send the data to the teensy's
+int MAX_SEND;
+int TBUFFER_TIME; // the time it takes to update the teensy buffer
+int MAX_TBUFFER;
+int MODE_TIME;  // the time it takes to do the current mode
+int MAX_MODE;
+int SIMULATE_TIME;  // the time it takes to simulate the wall or display it's image (in non sumilate mode)
+int MAX_SIMULATE;
+int KINECT_TIME;
+int MAX_KINECT;
+int MAP_TIME;
+int MAX_MAP;
+int AUDIO_TIME;
+int MAX_AUDIO;
+int DEBUG_TIME; // the time it takes to draw the debug info
+int MAX_DEBUG;
+int CP5_TIME;
+int MAX_CP5;
+
+int MAX_BRIGHTNESS = 192;  // starting brightness of the wall
 
 int DISPLAY_MODE = 1;          // starting mode
 int LAST_MODE    = 0;  // start on the right tab
-float xoff = 0.0;              // used for perlin noise
-int IMAGE_MULTI = 6;           // how much should we blowup the image 
-
+float xoff = 0.0, yoff = 0.0, zoff = 0.0;              // used for perlin noise
+float noiseInc = 0.2;
+int IMAGE_MULTI = 3;           // how much should we blowup the image 
+int PIXEL_SIZE = 3;
 
 
 // images... needs it's own mode (backgrounds?)
-PImage smpte, test, wall_image, camera;
+PImage smpte, test;
 
 // exit handler
 DisposeHandler dh;
 
 void setup() {
-  
-  if (SHOW_WALL) {
-    WINDOW_XSIZE = COLUMNS * DEBUG_REAL_PIXEL_SIZE_X;  // the x size of the debug window
-    WINDOW_YSIZE = ROWS * DEBUG_REAL_PIXEL_SIZE_Y;  // the x size of the debug window
-  } else {
-    WINDOW_XSIZE = COLUMNS * IMAGE_MULTI;
-    WINDOW_YSIZE = ROWS * IMAGE_MULTI;
-  }
-  DEBUG_WINDOW_START = WINDOW_YSIZE;
-  DEBUG_TEXT_X = WINDOW_XSIZE - INFO_WINDOW_SIZE + 10;
-  
-  size(WINDOW_XSIZE, WINDOW_YSIZE + DEBUG_WINDOW_YSIZE, P3D);
+
+  size(WINDOW_XSIZE, WINDOW_YSIZE, P3D);
   smooth(4);
-  hint(DISABLE_DEPTH_TEST);
-  hint(DISABLE_DEPTH_MASK);
-  
+
+
+  //textFont(sFont);
+
   noStroke();
 
   dh = new DisposeHandler(this);
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
-  wall_image = createImage(COLUMNS * IMAGE_MULTI, ROWS * IMAGE_MULTI, RGB);
-  camera = createImage(COLUMNS, ROWS, RGB);
-  
+
   setupUtils();
   setupGamma();
 
   setupBuffer();
-  setupMinim();
- 
-  if (USE_KINECT) setupKinect();
-  
+
+  if (USE_MINIM) setupMinim();
+  else audioOn = false;
+
+  if (USE_SOPENNI) setupKinect();
+  else kinectOn = false;
+
   setupControl();
 
   setupRainbow();
@@ -113,15 +144,21 @@ void setup() {
   setupClips();
 
   if (USE_TEENSYS) setupTeensys();
+  else delayOn = true;
 
   setupWall();
 
   // must be last
-  
+
   frameRate(60);
 
   frame.setTitle("Wall of Light");
-  background(0);
+
+  hint(DISABLE_DEPTH_MASK);
+  hint(DISABLE_DEPTH_TEST);
+  hint(DISABLE_DEPTH_SORT);
+  //hint(DISABLE_STROKE_PERSPECTIVE);
+  //hint(DISABLE_TEXTURE_MIPMAPS);
 }
 
 void autoMode() {
@@ -136,55 +173,84 @@ void autoMode() {
 }
 
 void draw() {
-  background(0);      
+  background(0);
 
   buffer.beginDraw();         // begin buffering
+  buffer.pushStyle();
   buffer.noStroke();
   buffer.noFill();
 
-  //if (AUDIO_BG_ON) buffer.background(audio.colors.background); else buffer.background(0);
-  buffer.background(0);
+  if (aBackOn) buffer.background(audio.colors.background); 
+  else buffer.background(0);
+  //buffer.background(0);
 
-  if (AUTO_MODE) autoMode();   // auto change mode to audio beat
+  if (autoOn) autoMode();   // auto change mode to audio beat
 
   doMode();                   // do the current mode(s)
-
-  if (AUDIO_BG_ON) {
-    buffer.blendMode(ADD);
-    buffer.rectMode(CENTER);
-    buffer.fill(audio.colors.background); 
-    buffer.rect(buffer.width / 2, buffer.height / 2, buffer.width + 20, buffer.height + 10);
-  }
-
-  buffer.blendMode(BLEND);    // reset to blend mode
-
-  if (USE_KINECT) {  // using the kinect?
-    kinect.draw();
-  }
   
-  if (SCREEN_DEBUG) {
-    buffer.pushStyle();
-    buffer.textAlign(CENTER, CENTER);
-    buffer.text(String.format("%.2f", frameRate), 20, ROWS - 7);
-    buffer.text(audio.BPM, COLUMNS / 2, ROWS - 7);
-    buffer.text(kinect.users.length, COLUMNS - 5, ROWS - 7);
-    buffer.popStyle();
+  int stime;
+
+  if (kinectOn) {  // using the kinect?
+    KINECT_TIME = 0;
+    stime = millis();
+    kinect.draw();
+    KINECT_TIME = millis() - stime;
+    MAX_KINECT = max(MAX_KINECT, KINECT_TIME);
   }
 
-  buffer.noStroke(); // reset stroke
-  buffer.noFill();   // reset fill
+  if (debugOn) {
+    buffer.textAlign(CENTER, CENTER);
+    buffer.fill(255);
+    buffer.text(nf(frameRate, 2, 2), 20, ROWS - 7);
+    if (audioOn)  buffer.text(audio.BPM, COLUMNS / 2, ROWS - 7);
+    if (kinectOn) buffer.text(kinect.users.length, COLUMNS - 5, ROWS - 7);
+  }
 
+  buffer.popStyle();
   buffer.endDraw();           // end buffering
   wall.draw();                // draw the wall
-  drawDebug();                // draw debug info
-  xoff += 0.2;
+
+  DEBUG_TIME = 0;
+  stime = millis();
+  if (!simulateOn) drawDebug();                // draw debug info
+  DEBUG_TIME = millis() - stime;
+  MAX_DEBUG = max(MAX_DEBUG, DEBUG_TIME);
+
+  CP5_TIME = 0;
+  stime = millis();
+  drawControlBack();
+  cp5.draw();
+  CP5_TIME = millis() - stime;
+  MAX_CP5 = max(MAX_CP5, CP5_TIME);
+
+  updateNoise(); // update noise offsets
+}
+
+void drawControlBack() {
+  rectMode(CORNER);
+  // globals tab
+  fill( color(40, 3, 6) );
+  noStroke();
+  //strokeWeight(1);
+  rect(0, DEBUG_WINDOW_START, TAB_START, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
+
+  //noStroke();
+
+  // other tabs
+  fill( color(16, 1, 2) );
+  rect(TAB_START, DEBUG_WINDOW_START, WINDOW_XSIZE - TAB_START, DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE);
+}
+
+void updateNoise() {
+  xoff = xoff + noiseInc;
+  if ( (frameCount % 2) == 0) yoff = yoff + noiseInc;
+  if ( (frameCount % 3) == 0) zoff = zoff + noiseInc;
 }
 
 
-
 void doMode() {
-  
-  
+
+  int stime = millis();
   if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
   if (DISPLAY_MODE == DISPLAY_MODE_EQ)      doEQ();
   if (DISPLAY_MODE == DISPLAY_MODE_USERBG)  doUserBg();
@@ -195,34 +261,35 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
-  
+  MODE_TIME = millis() - stime;
+  MAX_MODE = max(MAX_MODE, MODE_TIME);
+
   if (LAST_MODE != DISPLAY_MODE) {
-     cp5.getTab(DISPLAY_STR[DISPLAY_MODE]).bringToFront();
-     LAST_MODE = DISPLAY_MODE;
+    cp5.getTab(DISPLAY_STR[DISPLAY_MODE]).bringToFront();
+    LAST_MODE = DISPLAY_MODE;
   }
-  
-  
-  
 }
 
-/*
-void keyPressed() {
-
-  if (key == '0') DISPLAY_MODE = DISPLAY_MODE_TEST;
-  if (key == '1') DISPLAY_MODE = DISPLAY_MODE_EQ;
-  if (key == '2') DISPLAY_MODE = DISPLAY_MODE_USERBG;
-  if (key == '3') DISPLAY_MODE = DISPLAY_MODE_RAINBOW;
-  if (key == '4') DISPLAY_MODE = DISPLAY_MODE_SHAPES;
-  if (key == '5') DISPLAY_MODE = DISPLAY_MODE_SPIN;
-  if (key == '6') DISPLAY_MODE = DISPLAY_MODE_PULSAR;
-  if (key == '7') DISPLAY_MODE = DISPLAY_MODE_CITY;
-  if (key == '8') DISPLAY_MODE = DISPLAY_MODE_ATARI;
-  if (key == '9') DISPLAY_MODE = DISPLAY_MODE_CLIPS;
-  //if (key == ' ') kinect.context.setMirror( !kinect.context.mirror() );
-
-  //r.activate(DISPLAY_MODE);
+void resetMaxs() {
+  MAX_SEND = 0;
+  MAX_TBUFFER = 0;
+  MAX_MODE = 0;
+  MAX_SIMULATE = 0;
+  MAX_KINECT = 0;
+  MAX_MAP = 0;
+  MAX_AUDIO = 0;
+  MAX_DEBUG = 0;
+  MAX_CP5 = 0;
 }
-*/
+
+void mousePressed() {
+  if (mouseButton == LEFT) {         // left button toggles lines
+    //delayOn = !delayOn;
+  } 
+  else if (mouseButton == RIGHT) { // right button resets max/min values
+    resetMaxs();
+  }
+}
 
 public class DisposeHandler {
 
@@ -238,13 +305,14 @@ public class DisposeHandler {
       }
       delay(50); // wait a bit for teensys to clear
     }
-    
-    if (USE_KINECT) kinect.close();
+
+    if (USE_SOPENNI) kinect.close();
 
     // always close Minim audio classes when you are done with them
-    audio.close();
-    minim.stop();
-    
+    if (USE_MINIM) {
+      audio.close();
+      minim.stop();
+    }
   }
 }
 

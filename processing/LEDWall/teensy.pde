@@ -23,7 +23,7 @@ void setupTeensys() {
   delay(20);
   println("Serial Ports List:");
   println(list);
-  
+
   teensys[0] = new Teensy(this, 0, "COM12", false);
   teensys[1] = new Teensy(this, 1, "COM8", false);
   teensys[2] = new Teensy(this, 2, "COM11", false);
@@ -35,7 +35,7 @@ void setupTeensys() {
   teensys[8] = new Teensy(this, 8, "COM3", false);  
   teensys[9] = new Teensy(this, 9, "COM7", false);
 
-  
+
   //println(gammaTable);
 
   println("TEENSYS SETUP!!");
@@ -63,10 +63,10 @@ class Teensy {
   Serial  port;     // serial port of the teensy
   tThread t;
   String  portName; // serial port name
-  int send_time = 0;
-  int proc_time = 0;
+  int sendTime = 0;
+  int maxSend = 0;
 
-    Teensy(PApplet parent, int ID, String name, boolean threadData) {
+  Teensy(PApplet parent, int ID, String name, boolean threadData) {
     println("Setting up teensy: " + name + " ...");
     data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
     this.threadData = threadData;  // should we thread the data?
@@ -83,7 +83,7 @@ class Teensy {
       println("Serial port " + portName + " does not exist or is non-functional");
       exit();
     }
-    
+
     delay(100);
 
     String line = port.readStringUntil(10);  // give me everything up to the linefeed
@@ -104,7 +104,8 @@ class Teensy {
     if (threadData) {
       t = new tThread(port);
       t.start();
-    } else {
+    } 
+    else {
       println(data.length);
     }
   }
@@ -140,10 +141,8 @@ class Teensy {
   // The number of vertical pixels in the image must be a multiple
   // of 8.  The data array must be the proper size for the image.
   void update() { 
-    proc_time = 0;
     watts = 0;
-    
-    int stime = millis();
+
     int offset = 3;
     int x, y, xbegin, xend, xinc, mask;
     int linesPerPin = wall.teensyImages[id].height / 8;
@@ -180,43 +179,30 @@ class Teensy {
         }
       }
     }
-    proc_time = millis() - stime;
   }
-  
+
   void sendData() {
-    send_time = 0;
-    int stime = millis();
     port.write(data);  // send data over serial to teensy
-    send_time = millis() - stime;
   }
 
   void send() {
+    sendTime = 0;
+    int stime = millis();
     update();
-    
-    //if (isMaster) {  // are we the master?
-    //  data[0] = '#';  
-      //int usec = (int)((1000000.0 / 30 ) * 0.75); // using processing's frameRate to fix timing
-      //t = usec;
-      //data[1] = (byte)(usec);   // request the frame sync pulse
-      //data[2] = (byte)(usec >> 8); // at 75% of the frame time
-   //   data[1] = 0;
-   //   data[2] = 0;
-    //} 
-   // else {
-    //  data[0] = '%';  // others sync to the master board
-   //   data[1] = 0;
-    //  data[2] = 0;
-   // }
-   
-   data[0] = '*'; data[1] = 0; data[2] = 0;
-    
+
+    data[0] = '*'; 
+    data[1] = 0; 
+    data[2] = 0;
+
     if (threadData) {
       t.send(data);
-      send_time = t.getTime();
+      sendTime = t.getTime();
     }
     else {
       sendData();
     }
+    sendTime = millis() - stime;
+    maxSend = max(sendTime, maxSend);
   }
 }
 
@@ -226,7 +212,7 @@ class tThread extends Thread {
   boolean running;
   boolean sendData;
   byte[] data;
-  
+
   tThread(Serial port) {
     this.port = port;
     setDaemon(true);
@@ -236,25 +222,25 @@ class tThread extends Thread {
     sendData = false;
     send_time = 0;
   }
-  
+
   void start() {
     running = true;
     super.start();
   }
-  
+
   synchronized void send(byte[] data) {
     this.data = data;
     sendData = true;
   }
-  
+
   int getTime() {
     return send_time;
   }
-  
+
   void done() {
     running = false;
   }
-  
+
   void run() {
     while (running) {
       if (sendData) {

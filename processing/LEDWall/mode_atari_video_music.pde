@@ -9,6 +9,7 @@ void setupAtari() {
 void doAtari() {
   buffer.blendMode(ADD);
   atari.draw();
+  buffer.blendMode(BLEND);
 }
 
 class AtariVideoMusic {
@@ -29,7 +30,7 @@ class AtariVideoMusic {
 
   void changeDisplay() {                 // 1x1 - 1
     //int count = int(random(0,6));
-    int count = int( noise(xoff) * 6 );
+    int count = round( noise(xoff) * 5 );
     if (count == 0) {
       alist[0].set(80, 40, 160, 80);
       display_count = 1;
@@ -111,7 +112,7 @@ class AtariVideoMusic {
       alist[31].set(150, 70, 30, 30);
       display_count = 32;
     }
-    println("ATARI - displaying: " + display_count);
+    //println("ATARI - displaying: " + display_count);
   }
 
   void update() {
@@ -119,9 +120,8 @@ class AtariVideoMusic {
       float test = random(0, 1);
       if (test < 0.25) changeDisplay();
       if (test > 0.75) {
-        //mode = int(random(0,3));
-        mode = int( noise(xoff) * 3 );
-        println("ATARI - mode: " + mode);
+        mode = round( random(2) );
+        //println("ATARI - mode: " + mode);
       }
     }
   }
@@ -133,6 +133,7 @@ class AtariVideoMusic {
       alist[i].draw();
     }
   }
+  
 }
 
 class AtariSingle {
@@ -140,7 +141,7 @@ class AtariSingle {
   final int HOLE  = 1;
   final int RING  = 2;
   int mode = 0;
-  float x, y, w, h, stroke_weight = 2;
+  float x, y, w, h, weight;
 
   AtariSingle() {
   }
@@ -164,18 +165,7 @@ class AtariSingle {
   }
 
   void draw() {
-    if (mode == SOLID) {
-      buffer.noStroke();
-    } 
-    else if (mode == HOLE) {
-      stroke_weight = map(audio.volume.value, 0, 100, 1, (h / 5) /* + 1 */);
-      buffer.strokeWeight(stroke_weight);
-    } 
-    else {
-      stroke_weight = 2;
-      buffer.strokeWeight(stroke_weight);
-    }
-
+    
     for (int i = 0; i < (audio.averageSpecs.length - 1) ; i++) {
       float thisWidth  = (w/8) * (i);
       thisWidth += map(audio.averageSpecs[i].value, 0, 100, 0, (w/8));
@@ -185,15 +175,22 @@ class AtariSingle {
       if (mode == SOLID) {
         buffer.noStroke();
         buffer.fill(thisColor);
-      } 
-      else {
+      } else if (mode == HOLE) {
         buffer.noFill();
         buffer.stroke(thisColor);
+        weight = map(audio.averageSpecs[i].value, 0, 100, 1, (h / 5) /* + 1 */);
+        buffer.strokeWeight(weight);
+      } else {
+        buffer.noFill();
+        buffer.stroke(thisColor);
+        buffer.strokeWeight(2);
       }
-      //buffer.fill(thisColor);
       buffer.rectMode(CENTER);
+      buffer.hint(DISABLE_DEPTH_TEST);
       buffer.rect(x, y, thisWidth, thisHeight);
+      buffer.hint(ENABLE_DEPTH_TEST);
     }
+    buffer.strokeWeight(1);
   }
 }
 

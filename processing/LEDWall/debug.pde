@@ -1,82 +1,108 @@
 // ALWAYS NEEDS A REWRITE
 
-void drawDebug() {
-  noStroke();
-  if (!SHOW_WALL) { // show the buffer
-    wall_image.copy(buffer.get(), 0, 0, buffer.width, buffer.height, 0, 0, COLUMNS*IMAGE_MULTI, ROWS*IMAGE_MULTI); 
-    pushStyle();
-    imageMode(CENTER);
-    image(wall_image, width / 2, wall_image.height / 2);
-    popStyle();
+void debugBack() {
+  fill( 24 );
+  rect(480, 0, WINDOW_XSIZE - 480, WINDOW_YSIZE - DEBUG_WINDOW_YSIZE);
+  fill( 16 );     // background for top area
+  rect(0, 240, WINDOW_XSIZE - 480, WINDOW_YSIZE - DEBUG_WINDOW_YSIZE - 240);
+}
+
+void debugWallImage() {
+  image(buffer, 0, 0, 480, 240);
+}
+
+void debugKinectImages() {
+  textFont(lFont);
+  for (int i = 0; i < kinect.users.length && i < 12; i++) {
+    image(kinect.users[i].img, 0, 240, 480, 240);
+    textAlign(CENTER, CENTER);
+    fill(255);
+    text(kinect.users[i].i, (kinect.users[i].x*3), (kinect.users[i].y*3) + 240 );
+    textAlign(LEFT, BASELINE);
+    if (i < 12) text(nf(kinect.users[i].i, 2) + ": " + 
+      nf(kinect.users[i].x, 3, 1) + "," +
+      nf(kinect.users[i].y, 3, 1) + "," +
+      nf(kinect.users[i].z, 3, 1), 490, 260 + (20 * i));
   }
+}
 
-  textSize(11);
-  rectMode(CORNER);
-  
-  // globals tab
-  fill(#450003);
-  rect(0, DEBUG_WINDOW_START, TAB_START, DEBUG_WINDOW_START + WINDOW_YSIZE);
-  
-  // other tabs
-  fill(#230003);
-  rect(TAB_START, DEBUG_WINDOW_START, WINDOW_XSIZE - TAB_START, DEBUG_WINDOW_START + WINDOW_YSIZE);
-
-  // fill text display background
-  fill(#450003);
-  rect(WINDOW_XSIZE - INFO_WINDOW_SIZE, DEBUG_WINDOW_START, INFO_WINDOW_SIZE, WINDOW_YSIZE);
-
-  fill(cp5.getColor().getCaptionLabel());
-  //text("Display Mode: " + DISPLAY_STR[DISPLAY_MODE], DEBUG_TEXT_X, DEBUG_WINDOW_START + 20);
-  text("FPS: " + String.format("%.2f", frameRate), DEBUG_TEXT_X, DEBUG_WINDOW_START + 50);
-
-  text("BASS: " + audio.bass.value, DEBUG_TEXT_X, DEBUG_WINDOW_START + 65); 
-  text("MIDS: " + audio.mids.value, DEBUG_TEXT_X + 60, DEBUG_WINDOW_START + 65);
-  text("TREB: " + audio.treb.value, DEBUG_TEXT_X + 120, DEBUG_WINDOW_START + 65);
-
-
-  text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, DEBUG_TEXT_X, DEBUG_WINDOW_START + 80);
-
-  text("dB: " + String.format("%.2f", audio.volume.dB), DEBUG_TEXT_X, DEBUG_WINDOW_START + 95);
-
-  text("WATTS: " + String.format("%.2f", WALL_WATTS), DEBUG_TEXT_X, DEBUG_WINDOW_START + 125);
-  text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 100, DEBUG_WINDOW_START + 125);
-
-  text("Clips speed: " + movies.speed, DEBUG_TEXT_X, DEBUG_WINDOW_START + 140);
-  if (USE_KINECT) text("Users: " + userHash.size(), DEBUG_TEXT_X, DEBUG_WINDOW_START + 170);
-  
-  if (USE_KINECT) {
-    if (kinect.users.length > 0) {
-      User u = kinect.users[0];
-      if ( u != null && u.isActive() ) {
-        if ( u.onScreen() ) {
-          text("x: " + String.format("%.2f", u.x), DEBUG_TEXT_X, DEBUG_WINDOW_START + 185);
-          text("y: " + String.format("%.2f", u.y), DEBUG_TEXT_X + 60, DEBUG_WINDOW_START + 185);
-          text("z: " + String.format("%.2f", u.z), DEBUG_TEXT_X + 120, DEBUG_WINDOW_START + 185);
-        }
-      }
+void debugTeensyImages() {
+  int tx =  520;
+  int ty, v, m;
+  fill(255);
+  textFont(mFont);
+  textAlign(LEFT, BASELINE);
+  for (int i =0; i < wall.teensyImages.length; i++) {
+    ty = 10 + (22 * i);
+    text("T:" + i, tx - 25, ty + 12);
+    image(wall.teensyImages[i], tx, ty);
+    if (USE_TEENSYS) {
+      v = teensys[i].sendTime;
+      m = teensys[i].maxSend;
+    } 
+    else {
+      v = SIM_DELAY;
+      m = SIM_DELAY;
     }
+    text(nf(v, 3) + " / " + nf(m, 3), tx + 80 + 10, ty + 12);
+  }
+}
+
+void debugTimers() {
+  textFont(lFont);
+  textAlign(RIGHT, BASELINE);
+  fill(255);
+  text("FPS: " + nf(frameRate, 2, 1), 950, 20);
+  if (audioOn) {
+    text("BPM: " + nf(audio.BPM, 3), 950, 60);
+    text("Vol: " + nf(audio.volume.value, 3), 950, 80);
   }
   
-  text("Send: " + SEND_TIME, DEBUG_TEXT_X, DEBUG_WINDOW_START + 200);
-  text("Proc: " + PROC_TIME, DEBUG_TEXT_X + 60, DEBUG_WINDOW_START + 200);
-  text("Total: " + TOTAL_TIME, DEBUG_TEXT_X + 120, DEBUG_WINDOW_START + 200);
+  text("Mode: " + nf(MODE_TIME,2) + "/" + nf(MAX_MODE,2), 950, 120);
+  text("Audio: " + nf(AUDIO_TIME,2) + "/" + nf(MAX_AUDIO,2), 950, 140);
+  text("Kinect: " + nf(KINECT_TIME,2) + "/" + nf(MAX_KINECT,2), 950, 160);
+  text("User Map: " + nf(MAP_TIME,2) + "/" + nf(MAX_MAP,2), 950, 180);
+  text("TBuffer: " + nf(TBUFFER_TIME,2) + "/" + nf(MAX_TBUFFER,2), 950, 200);
+  text("Send: " + nf(SEND_TIME,2) + "/" + nf(MAX_SEND,2), 950, 220);
+  
+  text("Debug: " + nf(DEBUG_TIME,2) + "/" + nf(MAX_DEBUG,2), 950, 260);
+  text("CP5: " + nf(CP5_TIME,2) + "/" + nf(MAX_CP5,2), 950, 280);
+  text("Simulate: " + nf(SIMULATE_TIME,2) + "/" + nf(MAX_SIMULATE,2), 950, 300);
+  
+  //if (kinectOn) {
+  //  text("USERS: " + nf(kinect.users.length,2), 950, 240);
+  //}
+}
 
-  //fill(#212121);
+void drawDebug() {
+  pushStyle();         // push the style
+  noStroke();          // turn off stroke
+  debugBack();         // draw background
+  debugWallImage();    // draw wall image
+  debugKinectImages(); // draw kinect images
 
-  //rect(DEBUG_WINDOW_XSIZE - 205, DEBUG_WINDOW_START + 5, 200, 210);
+    debugTimers();
+  debugTeensyImages(); // draw teensy images
+
   /*
-  for (int i = 0; i < wall.teensyImages.length; i++) {
-   pushMatrix();
-   int y = DEBUG_WINDOW_START + 14 + (i * 16);
+  fill(cp5.getColor().getCaptionLabel());
+   //text("Display Mode: " + DISPLAY_STR[DISPLAY_MODE], DEBUG_TEXT_X, DEBUG_WINDOW_START + 20);
+   text("FPS: " + String.format("%.2f", frameRate), DEBUG_TEXT_X, DEBUG_WINDOW_START + 50);
    
-   String temp = "Teensy " + i;
-   fill(255);
-   text(temp, DEBUG_WINDOW_XSIZE - 90 - textWidth(temp) - 5, y + (i * 4) + 12);
+   if (audioOn) {
+   text("BASS: " + audio.bass.value, DEBUG_TEXT_X, DEBUG_WINDOW_START + 65); 
+   text("MIDS: " + audio.mids.value, DEBUG_TEXT_X + 60, DEBUG_WINDOW_START + 65);
+   text("TREB: " + audio.treb.value, DEBUG_TEXT_X + 120, DEBUG_WINDOW_START + 65);
+   text("BPM: " + audio.BPM + "  count: " + audio.bpm_count + "  secs: " + audio.sec_count, DEBUG_TEXT_X, DEBUG_WINDOW_START + 80);
+   text("dB: " + String.format("%.2f", audio.volume.dB), DEBUG_TEXT_X, DEBUG_WINDOW_START + 95);
+   }
    
-   translate(DEBUG_WINDOW_XSIZE - 90, y + (i * 4));
-   
-   image(wall.teensyImages[i], 0, 0);
-   popMatrix();
-   } */
+   if (wallOn) {
+   text("WATTS: " + String.format("%.2f", WALL_WATTS), DEBUG_TEXT_X, DEBUG_WINDOW_START + 125);
+   text("Max: "   + String.format("%.2f", MAX_WATTS), DEBUG_TEXT_X + 100, DEBUG_WINDOW_START + 125);
+   }
+   */
+
+  popStyle();
 }
 

@@ -1,44 +1,71 @@
 // NEED TO HAVE SHAPES FOLLOW USERS
 
-final int TOTAL_PARTICLES = 8;
-final float SHAPES_SIZE = 16;
+import geomerative.*;
 
-PShape[] svgs;
+final int TOTAL_PARTICLES = 8;
+final float MARGIN = -10;
+
+
+RShape[] svgs;
 Shapes shapes;
-Slider shapesSlider;
+Slider shapeSlider;
 
 void setupShapes() {
+  RG.init(this);
+  RG.ignoreStyles(true);
+  
   // load the svgs
   String[] shape_file_names = getFileNames("shapes", "svg"); // get the svg file names
 
-  svgs = new PShape [shape_file_names.length];               // set the length of the svg array
+  svgs = new RShape [shape_file_names.length];               // set the length of the svg array
   for (int i = 0; i < svgs.length; i++) {
-    svgs[i] = loadShape(shape_file_names[i]);
-    svgs[i].disableStyle();
-    println(i + ": " + svgs[i].getName());
+    String fileName = shape_file_names[i];
+    String[] test = split(fileName, '\\');
+    String name = test[test.length - 1];
+    svgs[i] = RG.loadShape(fileName);
+    svgs[i] = RG.centerIn(svgs[i], buffer, MARGIN);
+    svgs[i] = RG.polygonize(svgs[i]);
+    
+    svgs[i].setName(name);
+    //svgs[i].scale(0.95);
+    println(i + ": " + svgs[i].name);
   }
 
   shapes = new Shapes();
-  
+
   int x = TAB_START + 10;
-  int y = WINDOW_YSIZE + DEBUG_WINDOW_YSIZE - 80;
+  int y = WINDOW_YSIZE - 80;
   int m = svgs.length - 1;
 
   // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
-  shapesSlider = 
-    createSlider("doShapeSlider", 0, m, shapes.current, x, y, TAB_MAX_WIDTH + 20, 40, "shapes", 40, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
+  shapeSlider = 
+    createSlider("doShapeSlider", 0, m, shapes.current, x, y, TAB_MAX_WIDTH + 20, 40, "shapes", 20, lFont, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
+
+  // controll name, text name, x, y, width, height, text size, value, move 2 tab
+  createToggle("allowShapeSwitch", "Random", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, shapes.switchOn, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
+  createToggle("allowShapeZ", "Scale Z", TAB_START + 80, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, shapes.particles[0].scaleZ, DISPLAY_STR[DISPLAY_MODE_SHAPES]);
 
   println("Shapes SETUP ...");
 }
 
 void doShapes() {
-  buffer.background(0);
-  buffer.blendMode(BLEND);
+  buffer.blendMode(ADD);
   shapes.display();
+  buffer.blendMode(BLEND);
 }
 
 void doShapeSlider(int v) {
   shapes.setShape(v);
+}
+
+void allowShapeSwitch(boolean b) {
+  shapes.switchOn = b;
+}
+
+void allowShapeZ(boolean b) {
+  for (int i = 0; i < shapes.particles.length; i++) {
+    shapes.particles[i].scaleZ = b;
+  }
 }
 
 class Shapes {
@@ -46,15 +73,13 @@ class Shapes {
   int current = 0;
   float switchValue = 0.65;
   boolean switchOn = true;
-  boolean scaleX = true;
-  boolean scaleY = true;
 
   Shapes() {
     // create the particles
     particles = new Particle [TOTAL_PARTICLES];
     int start_shape = int(random(svgs.length - 1));
     for (int i = 0; i < particles.length; i++) {
-      particles[i] = new Particle(SHAPES_SIZE, i % 4);
+      particles[i] = new Particle(i % 4);
       particles[i].setShape( start_shape );
     }
   }
@@ -62,16 +87,16 @@ class Shapes {
   void randomShape() {
     int new_shape = round(random(svgs.length - 1));
     setShape(new_shape);
-    shapesSlider.setValue(current);
+    shapeSlider.setValue(current);
   }
-  
+
   void setShape(int v) {
     current = v;
     for (Particle p: particles) {
       p.setShape(v);
     }
-    String name = svgs[particles[0].pShape].getName();
-    shapesSlider.getCaptionLabel().setText(name);
+    String name = svgs[particles[0].pShape].name;
+    cp5.getController("doShapeSlider").getCaptionLabel().setText(name);
   }
 
   void update() {
@@ -79,7 +104,6 @@ class Shapes {
       float test = random(0, 1);
       if (test < switchValue && switchOn) {
         randomShape();
-        //println( "SHAPES - new shape: " + svgs[particles[0].pShape].getName() );
       }
     }
   }
@@ -97,26 +121,26 @@ class Particle {
   int pSpec;
   int pShape;
   int TOTAL_SHAPES;
+  int minZ = -150;
+  int maxZ = 10;
+  float minPush = 0.025;
+  float maxPush = 10.0;
 
   final int MAX_SPEC = 4;
 
   PVector location;
   PVector velocity;
   PVector acceleration;
-  PVector size;
 
-  float pWidth;
-  float pHeight;
-  float pRadius;
   float pAngle;
   float pDrag = 0.01;
 
   color pColor;
 
-  Particle(float _radius, int _spec) {
-    pSpec   = _spec;
-    pRadius = _radius;
+  boolean scaleZ = true;
 
+  Particle(int _spec) {
+    pSpec   = _spec;
     defaults();
   }
 
@@ -124,21 +148,17 @@ class Particle {
     location = new PVector();
     velocity = new PVector();
     acceleration = new PVector();
-    size     = new PVector();
     pColor   = color(64);
     reset();
   }
 
   void reset() {
-    pWidth   = pRadius;
-    pHeight  = pRadius;
     pShape   = 0;
     pAngle   = 0;
-    location.set( round(random(pWidth, buffer.width - pWidth)), round(random(pHeight, buffer.height - pHeight)) );
+    location.set( round(random(buffer.width)), round(random(buffer.height)) );
     velocity = PVector.random2D();
     velocity.normalize();
     acceleration.set(0, 0);
-    size.set(0, 0, 0);
   }
 
   void set(PVector vec) {
@@ -148,31 +168,6 @@ class Particle {
   void set(float x, float y) {
     location.x = x;
     location.y = y;
-  }
-
-  void checkRadius() {
-    if (pWidth >= pHeight) {
-      pRadius = pWidth;
-    } 
-    else {
-      pRadius = pHeight;
-    }
-  }
-
-  void setWidth(float x) {
-    pWidth = x;
-    checkRadius();
-  }
-
-  void setHeight(float y) {
-    pHeight = y;
-    checkRadius();
-  }
-
-  void setRadius(float r) {
-    pRadius = r;
-    pWidth = r;
-    pHeight = r;
   }
 
   void setShape(int index) {
@@ -201,33 +196,34 @@ class Particle {
     if ( j < 0 ) j = MAX_SPEC - 1;
 
     //pAngle = map(audio.averageSpecs[pSpec].value, 0, 100, -360, 360);
-    size.x = map(audio.averageSpecs[pSpec].value, 0, 100, pWidth, buffer.width/2);
-    size.y = map(audio.averageSpecs[j].value, 0, 100, pHeight, buffer.height);
+    
+    if (scaleZ) location.z = map(audio.averageSpecs[j].value, 0, 100, minZ, maxZ);
+    else location.z = minZ;
 
-    if ( location.x < (size.x/2) || location.x > (buffer.width - (size.x/2)) ) {
+    if ( location.x < 0 + minZ || location.x > buffer.width - minZ) {
       velocity.x *= -1;
     }
-    if ( location.y < (size.y/2) || location.y > (buffer.height - (size.y/2)) ) {
+    if ( location.y < 0 + (minZ / 2) || location.y > buffer.height - (minZ / 2)) {
       velocity.y *= -1;
     }
 
-    size.z = map(audio.averageSpecs[pSpec].value, 0, 100, 0.025, 4);
+    float force = map(audio.averageSpecs[pSpec].value, 0, 100, minPush, maxPush);
     velocity.normalize();
-    velocity.mult(size.z);
+    velocity.mult(force);
 
     pColor = getColor();
   }
 
   void display() {
-    //buffer.stroke(0);
+    //buffer.pushStyle();
     //buffer.strokeWeight(1);
-    buffer.noStroke();
+    //buffer.stroke(color(2,2,2));
     buffer.fill(pColor);
     buffer.pushMatrix();
-    buffer.translate(location.x, location.y);
-    buffer.shapeMode(CENTER);
-    buffer.shape(svgs[pShape], 0, 0, size.x, size.y);
+    buffer.translate(location.x, location.y, location.z);
+    svgs[pShape].draw(buffer);
     buffer.popMatrix();
+    //buffer.popStyle();
   }
 }
 

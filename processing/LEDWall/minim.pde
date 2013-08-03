@@ -126,48 +126,44 @@ class AverageListener implements AudioListener {
   }
 
   void update(float[] samples) {
+    int stime = millis();
+    AUDIO_TIME = 0;
     fft.forward(samples);
     beat.detect(samples);
     mapSpectrums();
     mapRanges();
     mapColors();
     mapBPM();
+    AUDIO_TIME = millis() - stime;
+    MAX_AUDIO = max(MAX_AUDIO, AUDIO_TIME);
   }
 
 
 
   void samples(float[] samps) {
-    update(samps);
+    if (audioOn) update(samps);
   }
 
   void samples(float[] sampsL, float[] sampsR) {
-    //update();
+    if (audioOn) update(sampsL);
   }
 }
 
 class AudioSpectrum {
-  final int FRAME_TRIGGER = 60; // how many frames must pass before changing the peak and low values 
-  
-  String name;
-
+  final int FRAME_TRIGGER = 40; // how many frames must pass before changing the peak and low values 
+  String name;                  // the name of the audio spectrum
   float raw_peak = 0;           // the peak or max level of the spectrum
   float max_peak = 0;           // the current max peak level
   float raw_base = 9999;        // the base or lowest level of the spectrum
-  float raw    = 0;             // the raw level of the spectrum
-
+  float raw      = 0;           // the raw level of the spectrum
   float dB = 0;                 // current db of the level
   float spectrumGain = 1.5;     // the gain of the level.  No idea id this is right, but it seems to work 
-
-  int value = 0;                // raw value mapped from 0 to 100
-  int peak = 0;                 // current peak
-
-  int peak_count = 0;            // counter for smooth
+  byte value = 0;               // raw value mapped from 0 to 100
+  byte peak = 0;                // current peak
+  byte grey = 0;                // level mapped from 0 to 255
+  int peak_count = 0;           // counter for smooth
   int smooth_count = 0;         // counter for peak
-
-  int grey = 0;                 // level mapped from 0 to 255
-
   float peak_check = 0;         // count before max peak is lowered
-
   boolean lowerPeak = false;    // are we lowering the peak?
 
   AudioSpectrum(String name) {
@@ -202,14 +198,14 @@ class AudioSpectrum {
 
     dB = 20*((float)Math.log10(raw)); 
 
-    grey  = round(map(raw, 0, max_peak, 0, 255));
-    grey  = (int) constrain(grey, 0, 255);
+    grey  = (byte) round(map(raw, 0, max_peak, 0, 255));
+    grey  = (byte) constrain(grey, 0, 255);
 
-    value = round(map(raw, 0, max_peak, 0, 100));
-    value = (int) constrain(value, 0, 100);
+    value = (byte) round(map(raw, 0, max_peak, 0, 100));
+    value = (byte) constrain(value, 0, 100);
 
-    peak  = round(map(raw_peak, 0, max_peak, 0, 100));
-    peak  = (int) constrain(peak, 0, 100);
+    peak  = (byte) round(map(raw_peak, 0, max_peak, 0, 100));
+    peak  = (byte) constrain(peak, 0, 100);
 
     raw_base += 0.25; // keep trying to raise the base level a small amount every loop 
     max_peak -= 0.05;

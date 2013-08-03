@@ -11,24 +11,24 @@ void setupClips() {
   movies = new MovieClips(this, "videos");
 
   int x = TAB_START + 10;
-  int y = WINDOW_YSIZE + DEBUG_WINDOW_YSIZE - 80;
+  int y = WINDOW_YSIZE - 80;
   int m = movies.clips.length - 1;
 
   // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
   movieSlider = 
-    createSlider("doMovieSlider", 0, m, movies.current, x, y, TAB_MAX_WIDTH + 20, 40, "Brightness", 20, 28, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+    createSlider("doMovieSlider", 0, m, movies.current, x, y, TAB_MAX_WIDTH + 20, 40, "Brightness", 20, lFont, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
   movieSpeed = 
-    createSlider("doMovieSpeed", movies.minSpeed, movies.maxSpeed, movies.speed, TAB_MAX_WIDTH-220, DEBUG_WINDOW_START+50, 220, 50, "Speed", 14, 16, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+    createSlider("doMovieSpeed", movies.minSpeed, movies.maxSpeed, movies.speed, TAB_MAX_WIDTH-220, DEBUG_WINDOW_START+50, 220, 50, "Speed", 14, mFont, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
 
   // controll name, text name, x, y, width, height, text size, value, move 2 tab
-  createToggle("allowMovieSwitch", "Random", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.switchOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createToggle("allowMovieJumps", "Jump", TAB_START + 80, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.jumpsOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createToggle("allowMovieBPM", "BPM", TAB_START + 140, DEBUG_WINDOW_START + 50, 50, 50, 16, ControlP5.DEFAULT, movies.bpmOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createToggle("allowMovieSwitch", "Random", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, movies.switchOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createToggle("allowMovieJumps", "Jump", TAB_START + 80, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, movies.jumpsOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createToggle("allowMovieBPM", "BPM", TAB_START + 140, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, movies.bpmOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
 
-  createTextfield("setMinSpeed", "MIN", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(movies.minSpeed, 1, 0), 16, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createTextfield("setMinSpeed", "min speed", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(movies.minSpeed, 1, 0), sFont, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
   cp5.getController("setMinSpeed").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
-  createTextfield("setMaxSpeed", "MAX", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+80, 50, 20, nf(movies.maxSpeed, 1, 0), 16, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createTextfield("setMaxBPM", "MAX BPM", TAB_MAX_WIDTH + 70, DEBUG_WINDOW_START+65, 50, 30, nf(movies.maxBPM, 1), 16, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createTextfield("setMaxSpeed", "max speed", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+80, 50, 20, nf(movies.maxSpeed, 1, 0), sFont, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  createTextfield("setMaxBPM", "max bpm", TAB_MAX_WIDTH + 70, DEBUG_WINDOW_START+65, 50, 30, nf(movies.maxBPM, 1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
   cp5.getController("setMaxBPM").captionLabel().align(ControlP5.RIGHT_OUTSIDE, ControlP5.CENTER).setPaddingX(5);
 
   println("VIDEO CLIPS - setup finished!");
@@ -76,19 +76,22 @@ void allowMovieBPM(boolean b) {
 }
 
 void doClips() {
-  buffer.blendMode(ADD);
+  //buffer.blendMode(ADD);
+  buffer.background(0);
   movies.draw();
+  buffer.blendMode(BLEND);
 }
 
 class MovieClips {
   float speed = 1.0;
   float minSpeed = 0.5;
-  float maxSpeed = 1.25;
+  float maxSpeed = 1.0;
   int maxBPM = 130;
 
   int current = 0;
   Movie[] clips;
   int switch_count = 0;
+  int jump_count = 0;
   String[] names;
 
   boolean switchOn = true;
@@ -110,25 +113,38 @@ class MovieClips {
   }
 
   void setClip(int v) {
-    current = v;
-    switch_count++;
-    if (switch_count > 6) {
+    if (switch_count > 7) {
       switch_count = 0;
-      int seed = int(random(frameCount));
+      int seed = round(random(frameCount));
       randomSeed(seed);
     }
-    movieSlider.getCaptionLabel().setText(names[current]);
+    
+    current = v;
+    cp5.getController("doMovieSlider").getCaptionLabel().setText(names[current]);
+    switch_count++;
   }
 
   void setRandomClip() {
     int next = round( random(clips.length - 1) );
     setClip(next);
     movieSlider.setValue(current);
+    //cp5.getController("doMovieSlider").setValue(current);
   }
 
   void setSpeed(float v) {
     clips[current].speed(v);
     speed = v;
+  }
+  
+  void doJump() {
+    if (jump_count > 7) {
+      jump_count = 0;
+      int seed = round(random(frameCount));
+      noiseSeed(seed);
+    }
+    float spot = noise(xoff) * clips[current].duration();
+    clips[current].jump( spot );
+    jump_count++;
   }
 
   void update() {
@@ -139,10 +155,7 @@ class MovieClips {
         setRandomClip();
       } 
       else {
-        if (jumpsOn) {
-          float spot = noise(xoff) * clips[current].duration();
-          clips[current].jump( spot );
-        }
+        if (jumpsOn) doJump();
       }
     }
 
@@ -161,7 +174,7 @@ class MovieClips {
 
   void draw() {
     update();
-    buffer.image(clips[current], 0, 0, buffer.width, buffer.height);
+    buffer.image(clips[current], 0, 0); //, buffer.width, buffer.height);
   }
 }
 

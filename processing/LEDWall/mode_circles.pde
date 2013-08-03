@@ -15,108 +15,98 @@ void setupCircles() {
 void doCircles() {
   buffer.blendMode(ADD);
   circles.draw();
+  buffer.blendMode(BLEND);
 }
 
 void doPulsar() {
   buffer.blendMode(ADD);
   pulsar.draw();
+  buffer.blendMode(BLEND);
 }
 
 void doCity() {
   buffer.blendMode(ADD);
   city.draw();
+  buffer.blendMode(BLEND);
 }
 
-class FracCircles {
-
-  int currentColor = 0;
-  int currentSpec = 0;
-  float divFactor = 3;
-  float currentSize;
-
-  FracCircles() {
-    //
-  }
-
-  void drawCircles(float x, float y, float radius) {
-    if (currentColor > 11) currentColor = 0;
-    buffer.fill( audio.colors.users[currentColor] );
-    buffer.ellipse(x, y, radius, radius);
-    if (radius > 2) {
-      drawCircles( x + (radius / divFactor), y, radius / divFactor);
-      drawCircles( x - (radius / divFactor), y, radius / divFactor);
-    }
-    currentColor++;
-  }
-
-  void update() {
-    currentSize = map(audio.averageSpecs[currentSpec].value, 0, 100, 0, 80);
-    currentSpec++;
-    if (currentSpec > 8) currentSpec = 0;
-  }
-
-  void draw() {
-    currentColor = 0;
-    update();
-    //buffer.strokeWeight(3);
-    buffer.noStroke();
-    drawCircles(buffer.width / 2, buffer.height / 2, currentSize);
-  }
-}
 
 class ConcCircles {
   float r = 16;
   float theta = 0;
   float numCircles = 32;
-  float kx, ky;
+  int rows = 8;
+  PVector kinectUser;
+  int maxSize;
+  int size;
 
   ConcCircles() {
+    maxSize = 32;
+    kinectUser = new PVector();
   }
 
   color getCircleColor(int i) {
-    int RED   = audio.averageSpecs[1].grey;
-    int GREEN = audio.averageSpecs[3].grey;
-    int BLUE  = audio.averageSpecs[i].grey;
-    return color(RED, GREEN, BLUE);
+    if (audioOn) {
+      int m = i % (audio.averageSpecs.length - 1);
+      return color(audio.averageSpecs[1].grey, audio.averageSpecs[3].grey, audio.averageSpecs[m].grey);
+    } else {
+      float b = round( noise(zoff, yoff, xoff) * 255 );
+      float g = round( noise(zoff, yoff) * 255 );
+      float r = round( noise(zoff) * 255 );
+      return color(r,g,b);
+    }
+  }
+  
+  int getCirlceSize(int i) {
+    if (audioOn) {
+      int m = i % (audio.averageSpecs.length - 1);
+      return round( map(audio.averageSpecs[m].value + 10, 10, 110, 2, maxSize) );
+    } else {
+      return round( random(2, maxSize) );
+    }
+  }
+
+  void updateTheta() {
+    int speed;
+    
+    // is the audio on?
+    if (audioOn) speed = audio.BPM + 1;
+    else speed = round( random(100,200) );
+    
+    // update theta
+    if (theta > 0) theta += 360 / numCircles / speed;
+    else theta -= 360 / numCircles / speed;
+  }
+
+  void drawCircle(int n, int size) {
+    float x = (r+16*n)*cos(theta) + kinectUser.x;
+    float y = (r+16*n)*sin(theta) + kinectUser.y;
+
+    buffer.ellipse(x, y, size, size);
   }
 
   void draw() {
-    //buffer.stroke(0);
-    //buffer.strokeWeight(3);
-    for (int i = 0; i < audio.averageSpecs.length - 1 ; i++) {
+    kinectUser = getSingleUser();
+
+    for (int i = 0; i < rows ; i++) {
+      buffer.fill( getCircleColor(i) );
+      size = getCirlceSize(i);
       for (int n = 0; n < numCircles; n++) {
-        buffer.fill( getCircleColor(i) );
-        if (USE_KINECT) {
-          if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-            kx = kinect.users[0].x; 
-            ky = kinect.users[0].y;
-          } 
-          else {
-            kx = buffer.width / 2; 
-            ky = buffer.height / 2;
-          }
-        }
-        else {
-          kx = buffer.width / 2; 
-          ky = buffer.height / 2;
-        }
-        
-        float x = (r+16*n)*cos(theta) + kx;
-        float y = (r+16*n)*sin(theta) + ky;
-        int value = int(map(audio.averageSpecs[i].value + 10, 10, 110, 2, 32));
-        buffer.ellipse(x, y, value, value);
-        if ( audio.isOnBeat() ) {
-          float test = random(0, 1);
-          if (test < 0.1) theta = random(theta * -1, theta);
-          if (test > 0.75) theta *= -1;
-        }
-        if (theta > 0) {
-          theta += 360 / numCircles / (audio.BPM + 1);
-        } 
-        else {
-          theta -= 360 / numCircles / (audio.BPM + 1);
-        }
+        drawCircle(n, size);
+        updateTheta();
       }
+    }
+    
+    if ( audioOn ) {
+      if ( audio.isOnBeat() ) {
+        float test = random(0, 1);
+        if (test < 0.25) theta = random(theta * -1, theta);
+        if (test > 0.75) theta *= -1;
+      }
+    } else {
+      float test = random(0, 1);
+      if (test < 0.1) theta = random(theta * -1, theta);
+      if (test > 0.9) theta *= -1;
     }
   }
 }
@@ -124,66 +114,50 @@ class ConcCircles {
 
 
 class SpecCity {
-  float kx, ky;
+
+  PVector kinectUser;
+  int LINE_MAX;
+  int SPEC_MAX;
+  int Z = -5;
 
   SpecCity() {
-    //
+    LINE_MAX = buffer.height / 2;
+    SPEC_MAX = buffer.width  / 2;
+    kinectUser     = new PVector();
   }
 
   void draw() {
-    buffer.beginShape(); 
-    buffer.fill(audio.colors.background); 
-    buffer.strokeWeight(2);
-    if (USE_KINECT) {
-      if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-        kx = kinect.users[0].x; 
-        ky = kinect.users[0].y;
-      } 
-      else {
-        kx = buffer.width / 2; 
-        ky = buffer.height / 2;
-      }
+    kinectUser = getSingleUser();
+    //buffer.strokeWeight(1);
+    buffer.pushMatrix();
+    //buffer.translate(kinectUser.x, kinectUser.y);
+    buffer.translate(80, 40);
+
+    for (int i = 1; i <= SPEC_MAX + 5 ; i++) {
+      // set the line color
+      buffer.stroke(audio.fullSpecs[i].grey, audio.averageSpecs[1].grey, audio.averageSpecs[3].grey);
+      int weight = round(map(audio.fullSpecs[i].value, 0, 100, 1, 4));
+      buffer.strokeWeight(weight);
+
+      int xR = i;
+      int xL = i * -1;
+      int yU = round( map(audio.fullSpecs[i].value, 0, 100, 1, LINE_MAX) );
+      int yD = yU * -1;
+
+      buffer.line(xL, 0, Z, xL, yU, Z);  // left side up
+      buffer.line(xL, 0, Z, xL, yD, Z);  // left side down
+      buffer.line(xR, 0, Z, xR, yU, Z);  // right side up
+      buffer.line(xR, 0, Z, xR, yD, Z);  // right side down
     }
-    else {
-      kx = buffer.width / 2; 
-      ky = buffer.height / 2;
-    }
-    
-    for (int i = 0; i < (buffer.width / 2) ; i++) {
-      int GREEN = audio.averageSpecs[1].grey;
-      int BLUE  = audio.averageSpecs[3].grey;
-      int RED   = audio.fullSpecs[i].grey;
-      int value_up = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 2, 0));
-      int value_down = int(map(audio.fullSpecs[i].value, 0, 100, buffer.height / 2, buffer.height));
-      buffer.stroke(RED, GREEN, BLUE);
-
-
-      //buffer.fill(RED, GREEN, BLUE);
-
-      buffer.line((buffer.width / 2) + i, buffer.height / 2, (buffer.width / 2) + i, value_up);
-      buffer.line((buffer.width / 2) - i, buffer.height / 2, (buffer.width / 2) - i, value_up);
-      buffer.line((buffer.width / 2) + i, buffer.height / 2, (buffer.width / 2) + i, value_down);
-      buffer.line((buffer.width / 2) - i, buffer.height / 2, (buffer.width / 2) - i, value_down);
-
-      //buffer.vertex(i + (buffer.width / 2), buffer.height / 3); buffer.vertex(i + (buffer.width / 2), value_up);
-      //buffer.vertex((buffer.width / 2) - i, buffer.height / 3); buffer.vertex((buffer.width / 2) - i, value_up);
-      //buffer.vertex(i + (buffer.width / 2), buffer.height / 3); 
-      //buffer.vertex(buffer.width - i, value_down);
-      //buffer.vertex((buffer.width / 2) - i, buffer.height / 3); 
-      //buffer.vertex(i, value_down);
-    }
-    buffer.endShape(CLOSE);
-
-    //for (int i = 0; i < 160 - 1; i++) {
-    //  buffer.line(i, (buffer.height / 2) + audio.in.left.get(i)*30, i + 1, (buffer.height / 2) + audio.in.left.get(i+1)*30);
-    //  buffer.line(i, 60 + audio.in.mix.get(i)*20, i + 1, 60 + audio.in.mix.get(i+1)*20); 
-    //}
+    buffer.popMatrix();
   }
 }
 
 class Pulsar {
   color lineColor;
   float kx, ky;
+  float Z = -5;
+  PVector kinectUser;
 
   Pulsar() {
   }
@@ -196,41 +170,28 @@ class Pulsar {
   }
 
   void drawLine(float radius, float angle) {
-    float x = kx + ( radius * cos( radians(angle) ) );
-    float y = ky + ( radius * sin( radians(angle) ) );
-    buffer.line(kx, ky, x, y);
+    float x = kinectUser.x + ( radius * cos( radians(angle) ) );
+    float y = kinectUser.y + ( radius * sin( radians(angle) ) );
+    buffer.line(kinectUser.x, kinectUser.y, Z, x, y, Z);
   }
 
   void draw() {
     buffer.noFill();
-    if (USE_KINECT) {
-      if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-        kx = kinect.users[0].x; 
-        ky = kinect.users[0].y;
-      } 
-      else {
-        kx = buffer.width / 2; 
-        ky = buffer.height / 2;
-      }
-    }
-    else {
-      kx = buffer.width / 2; 
-      ky = buffer.height / 2;
-    }
+    kinectUser = getSingleUser();
 
-    for (int i = 0; i < (audio.fullSpecs.length - 1) / 2; i++) {
-      buffer.strokeWeight(2);
+    for (int i = 0; i < (audio.fullSpecs.length / 2); i++) {    
+      //buffer.strokeWeight(1);
       buffer.stroke( setColor(i) );
-      //buffer.stroke( kinect.user_color );
+      int weight = round(map(audio.fullSpecs[i].value, 0, 100, 1, 4));
+      buffer.strokeWeight(weight);
 
       float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 4, 0, 180);
-      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, buffer.width*2);
+      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, 720);
       float spin   = map(audio.volume.value, 0, 100, 0, 180);
 
       drawLine(radius, angle + spin);
       drawLine(radius, angle + 180 + spin);
     }
-    //buffer.filter(POSTERIZE, 16);
   }
 }
 

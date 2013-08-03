@@ -11,7 +11,9 @@ Comparator<User> UserByY;
 Comparator<User> UserByZ;
 Comparator<User> UserByI;
 
-int[] fibonacci = { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };
+int[] fibonacci = { 
+  1, 1, 2, 3, 5, 8, 13, 21, 34, 55
+};
 
 void setupUtils() {
   PVectorByX = new PVectorXComparator();
@@ -33,12 +35,33 @@ int fib( int v, float s, float e) {
   int i = round( map(v, s, e, 0, 9) );
   return round( v * fibonacci[i] );
 }
+
+PVector getSingleUser() {
+  float x, y;
+  if (kinectOn) {
+    if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
+      x = kinect.users[0].x; 
+      y = kinect.users[0].y;
+    } 
+    else {
+      x = buffer.width / 2; 
+      y = buffer.height / 2;
+    }
+  }
+  else {
+    x = buffer.width / 2; 
+    y = buffer.height / 2;
+  }
   
+  return new PVector(x,y,0);
   
+}
+
+
 // delay() removed so we have to make our own 
 void delay(int mil) {
   int d = millis();
-  while(millis() - d < mil) {  
+  while (millis () - d < mil) {  
     // do nothing
   }
 }

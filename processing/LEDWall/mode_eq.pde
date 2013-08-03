@@ -907,6 +907,7 @@ void setupEQ() {
 
 void doEQ() {
   buffer.blendMode(BLEND);
+  buffer.background(0);
   eq.display();
 }
 
@@ -965,7 +966,9 @@ class EQ {
   }
 
   void display() {
+    buffer.hint(DISABLE_DEPTH_TEST);
     show();
+    buffer.hint(ENABLE_DEPTH_TEST);
   }
 }
 

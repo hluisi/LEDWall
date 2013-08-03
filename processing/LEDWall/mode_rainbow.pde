@@ -12,20 +12,14 @@ void setupRainbow() {
   println("RAINBOW SETUP ...");
 }
 
+// need to rewrite this
+
 void doRainbow() {
-  //buffer.blendMode(BLEND);
-  if (USE_KINECT) {
-    if (kinect.users != null && kinect.users.length > 0 && kinect.users[0].onScreen() ) {
-      rainbow.setLocation(kinect.users[0].x, kinect.users[0].y );
-    } 
-    else {
-      rainbow.setLocation(buffer.width / 2, buffer.height / 2 );
-    }
-  }
-  else {
-    rainbow.setLocation(buffer.width / 2, buffer.height / 2 );
-  }
+  PVector kinectUser = getSingleUser();
+  rainbow.setLocation(kinectUser.x, kinectUser.y );
   rainbow.setCycle(audio.BPM);
+  buffer.blendMode(BLEND);
+  buffer.background(0);
   rainbow.display();
 }
 
@@ -167,13 +161,10 @@ class Rainbow {
 
   void doTunnel() {
     buffer.rectMode(CENTER);
-    buffer.blendMode(BLEND);
-    //buffer.noStroke();
     buffer.noStroke();
 
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);
-    //buffer.translate(buffer.width/2, buffer.height/2);
 
     for (int j = 0; j < 2; j++) {
       for (int i = 0; i < colors.length; i++) {
