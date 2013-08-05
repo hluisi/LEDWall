@@ -24,16 +24,16 @@ void setupTeensys() {
   println("Serial Ports List:");
   println(list);
 
-  teensys[0] = new Teensy(this, 0, "COM12", false);
-  teensys[1] = new Teensy(this, 1, "COM8", false);
-  teensys[2] = new Teensy(this, 2, "COM11", false);
-  teensys[3] = new Teensy(this, 3, "COM9", false);
-  teensys[4] = new Teensy(this, 4, "COM10", false);
-  teensys[5] = new Teensy(this, 5, "COM5", false);
-  teensys[7] = new Teensy(this, 6, "COM6", false);
-  teensys[6] = new Teensy(this, 7, "COM4", true);
-  teensys[8] = new Teensy(this, 8, "COM3", false);  
-  teensys[9] = new Teensy(this, 9, "COM7", false);
+  teensys[0] = new Teensy(this, 0, "COM12", true);
+  teensys[1] = new Teensy(this, 1, "COM8",  true);
+  teensys[2] = new Teensy(this, 2, "COM11", true);
+  teensys[3] = new Teensy(this, 3, "COM9",  true);
+  teensys[4] = new Teensy(this, 4, "COM10", true);
+  teensys[5] = new Teensy(this, 5, "COM5",  true);
+  teensys[7] = new Teensy(this, 6, "COM6",  true);
+  teensys[6] = new Teensy(this, 7, "COM4",  true);
+  teensys[8] = new Teensy(this, 8, "COM3",  true);  
+  teensys[9] = new Teensy(this, 9, "COM7",  true);
 
 
   //println(gammaTable);
@@ -61,6 +61,7 @@ class Teensy {
   float   watts;
   byte[]  data;     // converted image data that gets sent
   Serial  port;     // serial port of the teensy
+  int comNumber;
   tThread t;
   String  portName; // serial port name
   int sendTime = 0;
@@ -71,6 +72,7 @@ class Teensy {
     data     = new byte[(TEENSY_WIDTH * TEENSY_HEIGHT * 3) + 3]; // setup the data array
     this.threadData = threadData;  // should we thread the data?
     portName = name;    // set the port name
+    comNumber = int(name.substring(3));
     id       = ID;      // set the id 
 
     // setup serial port
@@ -215,8 +217,8 @@ class tThread extends Thread {
 
   tThread(Serial port) {
     this.port = port;
-    setDaemon(true);
-    setPriority(3);
+    //setDaemon(true);
+    //setPriority(3);
     //println(getPriority());
     running = false;
     sendData = false;
@@ -248,6 +250,8 @@ class tThread extends Thread {
         sendData = false;
         port.write(data);  // send data over serial to teensy
         send_time = millis() - stime;
+      } else {
+        yield();
       }
     }
   }

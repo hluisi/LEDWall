@@ -39,7 +39,7 @@ class Kinect {
   User[] users;                 // an array of users (this class tracks user locations and creates user images)
   int[] depthMap;               // depth image used for mapping user depths
   int[] userMap;                // an array of user numbers on a per pixel level
-  boolean mapUser = false;      // map the user color to the depth image
+  boolean mapUser = true;      // map the user color to the depth image
 
     Kinect(PApplet parent) {
     context = new SimpleOpenNI(parent, SimpleOpenNI.RUN_MODE_MULTI_THREADED);  // init the kinect

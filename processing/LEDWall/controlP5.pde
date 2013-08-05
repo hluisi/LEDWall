@@ -7,15 +7,18 @@ final int TAB_START  = 200;
 final int TAB_HEIGHT = 25;
 int TAB_MAX_WIDTH;
 int TAB_WIDTH;
-PFont tabFont; // tab font   (12)
-PFont sFont;   // small font (11)
-PFont mFont;  // medium font (14)
-PFont lFont; // large font   (20)
-PFont xFont; // x-large font (40)
+
+PFont xsFont;  // (10)
+PFont sFont;   // (11)
+PFont tabFont; // (12)
+PFont mFont;   // (14)
+PFont lFont;   // (20)
+PFont xFont;   // (40)
 
 void setupControl() {
-  tabFont = loadFont("Arial-BoldMT-12.vlw");
+  xsFont  = loadFont("ArialMT-11.vlw");
   sFont   = loadFont("Arial-BoldMT-11.vlw");
+  tabFont = loadFont("Arial-BoldMT-12.vlw");
   mFont   = loadFont("Arial-BoldMT-14.vlw");
   lFont   = loadFont("Arial-BoldMT-20.vlw");
   xFont   = loadFont("Arial-BoldMT-40.vlw");

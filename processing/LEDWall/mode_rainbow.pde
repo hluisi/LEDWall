@@ -1,6 +1,7 @@
 // COULD USE A REWRITE
 
 Rainbow rainbow;
+Slider rSpeed;
 
 final String[] RAINBOW_STR = { 
   "WHEEL", "TUNNEL"
@@ -8,16 +9,52 @@ final String[] RAINBOW_STR = {
 
 void setupRainbow() {
   rainbow = new Rainbow();
-  rainbow.audioOff();
+  
+  int x = TAB_START + 10;
+  int y = WINDOW_YSIZE - 80;
+  
+  // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
+  rSpeed = 
+    createSlider("doRspeed", 50, 150, rainbow.cycle_time, x, y, TAB_MAX_WIDTH + 20, 40, "Speed", 20, lFont, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_RAINBOW]);
+
+  // controll name, text name, x, y, width, height, text size, value, move 2 tab
+  createToggle("allowRBPM", "Audio", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, rainbow.bpmOn, DISPLAY_STR[DISPLAY_MODE_RAINBOW]);
+
+  createTextfield("setMinRSpeed", "min speed", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(rainbow.speedMin, 1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_RAINBOW]);
+  cp5.getController("setMinRSpeed").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
+  createTextfield("setMaxRSpeed", "max speed", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+80, 50, 20, nf(rainbow.speedMax, 1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_RAINBOW]);
+  
   println("RAINBOW SETUP ...");
 }
 
-// need to rewrite this
+void doRSpeed(int v) {
+  if (!rainbow.bpmOn) rainbow.setCycle(v);
+}
+
+void allowRBPM(boolean b) {
+  rainbow.bpmOn = b;
+}
+
+void setMinRSpeed(String valueString) {
+  int minSpeed  = int(valueString);
+  rainbow.speedMin = minSpeed;
+  rSpeed.setMax(minSpeed);
+  rSpeed.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  rSpeed.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+}
+
+void setMaxRSpeed(String valueString) {
+  int maxSpeed  = int(valueString);
+  rainbow.speedMax = maxSpeed;
+  rSpeed.setMax(maxSpeed);
+  rSpeed.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  rSpeed.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+}
 
 void doRainbow() {
   PVector kinectUser = getSingleUser();
-  rainbow.setLocation(kinectUser.x, kinectUser.y );
-  rainbow.setCycle(audio.BPM);
+  rainbow.setLocation(kinectUser.x, kinectUser.y);
+  if (rainbow.bpmOn) rainbow.setCycle(audio.BPM);
   buffer.blendMode(BLEND);
   buffer.background(0);
   rainbow.display();
@@ -28,11 +65,13 @@ class Rainbow {
   final int MODE_WHEEL  = 0;
   final int MODE_TUNNEL = 1;
   final int TOTAL_MODES = 2;
+  int speedMin = 150;
+  int speedMax = 300;
   float horizontal = 0;
   float vertical = 0;
   float random_test = 0;
   int mode = 1;
-  boolean use_audio;
+  boolean bpmOn = true;
   PVector location;                       // the location of the center of the wheel
   PVector size;
   PVector last_size;
@@ -52,7 +91,7 @@ class Rainbow {
     resetColors();
     resetSize();
     last_cycle = millis();
-    use_audio = false;
+    //use_audio = false;
   }
 
   void resetSize() {
@@ -61,8 +100,8 @@ class Rainbow {
   }
 
   void setCycle(int t) {
-    int temp = int(map(t, 1, 200, 172, 1));
-    cycle_time = temp;
+    cycle_time = round(map(t, 0, 130, speedMax, speedMin));
+    if (bpmOn)  rSpeed.setValue(cycle_time); 
   }
 
   private void cycleColors() {
@@ -87,8 +126,10 @@ class Rainbow {
   void setLocation(float x, float y) {
     location.x = round(x);
     location.y = round(y);
+    //location.z = round(z);
   }
-
+  
+  /*
   void audioOn() {
     use_audio = true;
     resetColors();
@@ -100,13 +141,14 @@ class Rainbow {
     resetColors();
     cycle_time = 50;
   }
+  */
 
   private void check() {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
-      //if (use_audio) cycleColors(audio.COLORS[AUDIO_MODE]);
-      if (use_audio) cycleColors(audio.colors.background); 
-      else cycleColors();
+      //if (use_audio) cycleColors(audio.colors.background); 
+      //else cycleColors();
+      cycleColors();
       last_cycle = cTime;
     }
 
@@ -114,12 +156,6 @@ class Rainbow {
       random_test = random(0, 1);
       if (random_test < 0.65) {
         mode = round( random(TOTAL_MODES - 1) );
-        println("RAINBOW - new mode: " + RAINBOW_STR[mode]);
-        //if (mode == MODE_TUNNEL) {
-        //  audioOn();
-        //} else {
-        //  audioOff();
-        //}
       }
     }
   }
@@ -161,7 +197,8 @@ class Rainbow {
 
   void doTunnel() {
     buffer.rectMode(CENTER);
-    buffer.noStroke();
+    buffer.stroke(0);
+    buffer.strokeWeight(0.5);
 
     buffer.pushMatrix();
     buffer.translate(location.x, location.y);
@@ -192,14 +229,16 @@ class Rainbow {
           horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, last_size.x, size.x);
           vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, last_size.y, size.y);
         }
+        buffer.hint(DISABLE_DEPTH_TEST);
         buffer.rect(0, 0, horizontal, vertical);
+        buffer.hint(ENABLE_DEPTH_TEST);
         last_size.set(size.x, size.y);
         size.div(1.25);
       }
     }
 
-    buffer.fill(0);
-    buffer.rect(0, 0, size.x, size.y, 5);
+    //buffer.fill(0);
+    //buffer.rect(0, 0, size.x, size.y, 5);
     buffer.popMatrix();
     resetSize();
   }

@@ -10,6 +10,37 @@ void setupCircles() {
   circles = new ConcCircles();
   city = new SpecCity();
   pulsar = new Pulsar();
+  
+  // controll name, text name, x, y, width, height, text size, value, move 2 tab
+  createToggle("distriktOn", "distrikt", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, city.dOn, DISPLAY_STR[DISPLAY_MODE_CITY]);
+  
+  createTextfield("setCitySpecMax", "LINES", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(city.SPEC_MAX,1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CITY]);
+  cp5.getController("setCitySpecMax").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
+  createTextfield("setCityZ", "Z", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+80, 50, 20, nf(city.Z,1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CITY]);
+  createTextfield("setCityLineMax", "HEIGHT", TAB_MAX_WIDTH + 70, DEBUG_WINDOW_START+65, 50, 30, nf(city.LINE_MAX,1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CITY]);
+  cp5.getController("setCityLineMax").captionLabel().align(ControlP5.RIGHT_OUTSIDE, ControlP5.CENTER).setPaddingX(5);
+}
+
+void distriktOn(boolean b) {
+  city.dOn = b;
+}
+
+void setCitySpecMax(String valueString) {
+  int specMax = int(valueString);
+  city.SPEC_MAX = specMax;
+  //movieSpeed.setMin(minSpeed);
+  //movieSpeed.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  //movieSpeed.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+}
+
+void setCityZ(String valueString) {
+  int cityZ = int(valueString);
+  city.Z = cityZ;
+}
+
+void setCityLineMax(String valueString) {
+  int lineMax = int(valueString);
+  city.LINE_MAX = lineMax;
 }
 
 void doCircles() {
@@ -116,14 +147,18 @@ class ConcCircles {
 class SpecCity {
 
   PVector kinectUser;
-  int LINE_MAX;
-  int SPEC_MAX;
-  int Z = -5;
+  int LINE_MAX = 140;
+  int SPEC_MAX = 220;
+  int Z = -130;
+  int distrikt;
+  boolean dOn = false;
 
   SpecCity() {
-    LINE_MAX = buffer.height / 2;
-    SPEC_MAX = buffer.width  / 2;
     kinectUser     = new PVector();
+  }
+  
+  void setDistrikt(int v) {
+    distrikt = v;
   }
 
   void draw() {
@@ -141,7 +176,7 @@ class SpecCity {
 
       int xR = i;
       int xL = i * -1;
-      int yU = round( map(audio.fullSpecs[i].value, 0, 100, 1, LINE_MAX) );
+      int yU = round( map(audio.fullSpecs[i].value, 0, 100, 2, LINE_MAX) );
       int yD = yU * -1;
 
       buffer.line(xL, 0, Z, xL, yU, Z);  // left side up
@@ -149,6 +184,15 @@ class SpecCity {
       buffer.line(xR, 0, Z, xR, yU, Z);  // right side up
       buffer.line(xR, 0, Z, xR, yD, Z);  // right side down
     }
+    
+    if (dOn) {
+      int c = round(map(audio.volume.value, 0, 100, 48, 255));
+      buffer.fill(c);
+      buffer.noStroke();
+      buffer.translate(0, 0, -30);
+      svgs[distrikt].draw(buffer);
+    } //else LINE_MAX = 60;
+    
     buffer.popMatrix();
   }
 }

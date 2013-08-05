@@ -125,7 +125,8 @@ class MovieClips {
   }
 
   void setRandomClip() {
-    int next = round( random(clips.length - 1) );
+    //int next = round( random(clips.length - 1) );
+    int next = round(noise(yoff) * (clips.length - 1));
     setClip(next);
     movieSlider.setValue(current);
     //cp5.getController("doMovieSlider").setValue(current);
@@ -151,7 +152,7 @@ class MovieClips {
     // switch clips?
     if ( audio.isOnBeat() ) {
       float test = random(0, 1);
-      if (test > 0.75 && switchOn) {
+      if (test > 0.7 && switchOn) {
         setRandomClip();
       } 
       else {

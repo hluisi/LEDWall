@@ -30,7 +30,7 @@
 // to successfully run the LED wall  
 final boolean USE_MINIM   = true;  // load minim and use minim for audio reaction
 final boolean USE_SOPENNI = true;  // load and use simpleOpenNi for kinect interaction
-final boolean USE_TEENSYS = false; // send data to teensy's via serial
+final boolean USE_TEENSYS = true; // send data to teensy's via serial
 
 
 ////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ final String[] DISPLAY_STR = {
 boolean autoOn   = true;   // start in auto mode?
 boolean audioOn  = true;   // start with audio reation on?
 boolean aBackOn  = true;  // start with audio background on?
-boolean debugOn  = false;  // show debug info on wall?
+boolean debugOn  = true;  // show debug info on wall?
 boolean kinectOn = true;  // show kinect users  
 boolean wallOn   = true;   // send data to teensy's
 boolean simulateOn = false; // simulate the leds on the PC screen
@@ -93,7 +93,7 @@ int MAX_CP5;
 
 int MAX_BRIGHTNESS = 192;  // starting brightness of the wall
 
-int DISPLAY_MODE = 1;          // starting mode
+int DISPLAY_MODE = 2;          // starting mode
 int LAST_MODE    = 0;  // start on the right tab
 float xoff = 0.0, yoff = 0.0, zoff = 0.0;              // used for perlin noise
 float noiseInc = 0.2;
@@ -138,8 +138,8 @@ void setup() {
   setupRainbow();
   setupEQ();
 
+  setupCircles();  // must come before shapes
   setupShapes();
-  setupCircles();
   setupAtari();
   setupClips();
 
@@ -150,7 +150,7 @@ void setup() {
 
   // must be last
 
-  frameRate(60);
+  //frameRate(60);
 
   frame.setTitle("Wall of Light");
 
@@ -164,8 +164,8 @@ void setup() {
 void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
-    if (test < 0.15) {
-      int count = round( random(1, TOTAL_MODES - 1) );
+    if (test > 0.9) {
+      int count = round( random(2, TOTAL_MODES - 1) );
       DISPLAY_MODE = count;
       //r.activate(count);
     }
@@ -187,7 +187,7 @@ void draw() {
   if (autoOn) autoMode();   // auto change mode to audio beat
 
   doMode();                   // do the current mode(s)
-  
+
   int stime;
 
   if (kinectOn) {  // using the kinect?
@@ -198,13 +198,7 @@ void draw() {
     MAX_KINECT = max(MAX_KINECT, KINECT_TIME);
   }
 
-  if (debugOn) {
-    buffer.textAlign(CENTER, CENTER);
-    buffer.fill(255);
-    buffer.text(nf(frameRate, 2, 2), 20, ROWS - 7);
-    if (audioOn)  buffer.text(audio.BPM, COLUMNS / 2, ROWS - 7);
-    if (kinectOn) buffer.text(kinect.users.length, COLUMNS - 5, ROWS - 7);
-  }
+  if (debugOn) drawOnScreenDebug();
 
   buffer.popStyle();
   buffer.endDraw();           // end buffering
@@ -226,6 +220,48 @@ void draw() {
   updateNoise(); // update noise offsets
 }
 
+void drawOnScreenDebug() {
+  buffer.textFont(mFont);
+  buffer.textAlign(CENTER, CENTER);
+  buffer.fill(255);
+  buffer.text(nf(frameRate, 2, 2), 20, ROWS - 6);
+  if (audioOn)  {
+    buffer.text(audio.BPM, 80, 74);
+    /*
+    buffer.rectMode(CENTER);
+    buffer.noStroke();
+    buffer.fill(0);
+    buffer.rect(80,40,84,24);
+    int r = round(red(audio.colors.users[0]));
+    int g = round(green(audio.colors.users[0]));
+    int b = round(blue(audio.colors.users[0]));
+    buffer.fill(color(r,0,0));
+    buffer.rect(53,34, 28, 10);
+    buffer.fill(color(0,g,0));
+    buffer.rect(80,34, 28, 10);
+    buffer.fill(color(0,0,b));
+    buffer.rect(107,34, 28, 10);
+    
+    buffer.fill(255);
+    buffer.text(nf(r,3) + "/" + nf(g,3) + "/" + nf(b,3), 80, 46);
+    */
+  }
+    
+  if (kinectOn) buffer.text(kinect.users.length, COLUMNS - 5, ROWS - 6);
+  if (USE_TEENSYS) {
+    buffer.textFont(xsFont);
+    buffer.fill(255);
+    buffer.stroke(255);
+    buffer.strokeWeight(0.5);
+    for (int i = 0; i < teensys.length; i++) {
+      buffer.text(teensys[i].comNumber, 8 + (16*i), 5);
+      buffer.text(nf(teensys[i].sendTime,2), 8 + (16*i), 14);
+      if (i != 9) buffer.line(16 + (16*i), 2, 16 + (16*i), 16);
+    }
+    //buffer.line(0, 20, 160, 20);
+  }
+}
+
 void drawControlBack() {
   rectMode(CORNER);
   // globals tab
@@ -243,8 +279,8 @@ void drawControlBack() {
 
 void updateNoise() {
   xoff = xoff + noiseInc;
-  if ( (frameCount % 2) == 0) yoff = yoff + noiseInc;
-  if ( (frameCount % 3) == 0) zoff = zoff + noiseInc;
+  if ( (frameCount % 2) == 0) yoff = yoff + 0.03;
+  if ( (frameCount % 3) == 0) zoff = zoff + 0.02;
 }
 
 
@@ -280,6 +316,9 @@ void resetMaxs() {
   MAX_AUDIO = 0;
   MAX_DEBUG = 0;
   MAX_CP5 = 0;
+  for (int i = 0; i < teensys.length; i++) {
+    teensys[i].maxSend = 0;
+  }
 }
 
 void mousePressed() {
