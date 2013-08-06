@@ -255,7 +255,9 @@ class User {
     // set the user location based on the wall size
     x = projected.x / 4;  // div by 4 because the wall is 4 times 
     y = projected.y / 4;  // smaller then the kinect user image
-    z = projected.z / 4;    // bring things closer.  May want to remove this
+    z = (projected.z / 500) * -1;    // bring things closer.  May want to remove this
+    
+    //z = (525 / z);
     
     // check make sure we have real numbers
     if ( x != x || y != y || z != z) {    // checking for NaN

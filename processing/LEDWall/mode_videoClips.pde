@@ -2,36 +2,105 @@
 
 import processing.video.*;
 
-MovieClips movies;
-Slider movieSlider;
-Slider movieSpeed;
+MovieClips movies;    // mode class
+Slider movieSlider;   // movie selecting
+Slider movieSpeed;    // movie speed
 
 void setupClips() {
   println("VIDEO CLIPS - starting setup...");
   movies = new MovieClips(this, "videos");
-
-  int x = TAB_START + 10;
-  int y = WINDOW_YSIZE - 80;
-  int m = movies.clips.length - 1;
-
-  // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
+  
+  // slider for chossing movies
   movieSlider = 
-    createSlider("doMovieSlider", 0, m, movies.current, x, y, TAB_MAX_WIDTH + 20, 40, "Brightness", 20, lFont, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  movieSpeed = 
-    createSlider("doMovieSpeed", movies.minSpeed, movies.maxSpeed, movies.speed, TAB_MAX_WIDTH-220, DEBUG_WINDOW_START+50, 220, 50, "Speed", 14, mFont, Slider.FLEXIBLE, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+    createSlider("doMovieSlider",                    // function name
+                 0,                                  // min
+                 movies.clips.length - 1,            // max
+                 movies.current,                     // starting value
+                 TAB_START + 20,                     // x postion
+                 WINDOW_YSIZE - 100,                 // y postion
+                 TAB_MAX_WIDTH,                      // width
+                 60,                                 // height
+                 "Brightness",                       // starting caption
+                 40,                                 // handle size
+                 lFont,                              // font
+                 Slider.FLEXIBLE,                    // slider type
+                 DISPLAY_STR[DISPLAY_MODE_CLIPS]);   // tab
+  
+  // slider for controlling movie speed
+  movieSpeed =  
+    createSlider("doMovieSpeed",                     // function name
+                 movies.minSpeed,                    // min
+                 movies.maxSpeed,                    // max
+                 movies.speed,                       // starting value
+                 TAB_MAX_WIDTH-220,                  // x postion
+                 DEBUG_WINDOW_START+50,              // y postion
+                 220,                                // width
+                 50,                                 // height
+                 "Speed",                            // starting caption
+                 14,                                 // handle size
+                 mFont,                              // font
+                 Slider.FLEXIBLE,                    // slider type
+                 DISPLAY_STR[DISPLAY_MODE_CLIPS]);   // tab
+  
+  // toggle for turning on/off the random picking of clips
+  createToggle("allowMovieSwitch",                   // function name
+               "Random",                             // button caption
+               TAB_START + 20,                       // x postion
+               DEBUG_WINDOW_START + 40,              // y postion
+               50,                                   // width
+               50,                                   // height
+               mFont,                                // font
+               ControlP5.DEFAULT,                    // toggle type
+               movies.switchOn,                      // starting value
+               DISPLAY_STR[DISPLAY_MODE_CLIPS]);     // tab
+  
+  // toggle for turning on/off the random jumping to music of clips
+  createToggle("allowMovieJumps",                    // function name
+               "Jumps",                              // button name
+               TAB_START + 90,                       // x postion
+               DEBUG_WINDOW_START + 40,              // y postion
+               50,                                   // width
+               50,                                   // height
+               mFont,                                // font
+               ControlP5.DEFAULT,                    // toggle type
+               movies.jumpsOn,                       // starting value
+               DISPLAY_STR[DISPLAY_MODE_CLIPS]);     // tab
+  
+  // toggle for controlling movie speed via the BPM
+  createToggle("allowMovieBPM",                      // function name
+               "BPM",                                // button name
+               TAB_START + 160,                      // x postion
+               DEBUG_WINDOW_START + 40,              // y postion
+               50,                                   // width
+               50,                                   // height
+               mFont,                                // font
+               ControlP5.DEFAULT,                    // toggle type
+               movies.bpmOn,                         // starting value
+               DISPLAY_STR[DISPLAY_MODE_CLIPS]);     // tab
 
-  // controll name, text name, x, y, width, height, text size, value, move 2 tab
-  createToggle("allowMovieSwitch", "Random", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, movies.switchOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createToggle("allowMovieJumps", "Jump", TAB_START + 80, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, movies.jumpsOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-  createToggle("allowMovieBPM", "BPM", TAB_START + 140, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, movies.bpmOn, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
-
-  createTextfield("setMinSpeed", "min speed", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(movies.minSpeed, 1, 0), sFont, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
+  // sets the min speed for the movies when mapped to BPM
+  createTextfield("setMinSpeed",                     // function name
+                  "min speed",                       // caption name
+                  TAB_MAX_WIDTH + 10,                // x postion
+                  DEBUG_WINDOW_START+55,             // y postion
+                  50,                                // width
+                  20,                                // height
+                  nf(movies.minSpeed, 1, 0),         // starting value
+                  sFont,                             // font
+                  ControlP5.FLOAT,                   // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
+                  DISPLAY_STR[DISPLAY_MODE_CLIPS]);  // tab
   cp5.getController("setMinSpeed").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
+  
+  // sets the max speed for the movies when mapped to BPM
   createTextfield("setMaxSpeed", "max speed", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+80, 50, 20, nf(movies.maxSpeed, 1, 0), sFont, ControlP5.FLOAT, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
   createTextfield("setMaxBPM", "max bpm", TAB_MAX_WIDTH + 70, DEBUG_WINDOW_START+65, 50, 30, nf(movies.maxBPM, 1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_CLIPS]);
   cp5.getController("setMaxBPM").captionLabel().align(ControlP5.RIGHT_OUTSIDE, ControlP5.CENTER).setPaddingX(5);
 
   println("VIDEO CLIPS - setup finished!");
+}
+
+void doClips() {
+  movies.draw();
 }
 
 void doMovieSlider(int v) {
@@ -75,18 +144,14 @@ void allowMovieBPM(boolean b) {
   movies.bpmOn = b;
 }
 
-void doClips() {
-  //buffer.blendMode(ADD);
-  buffer.background(0);
-  movies.draw();
-  buffer.blendMode(BLEND);
-}
+
 
 class MovieClips {
   float speed = 1.0;
   float minSpeed = 0.5;
   float maxSpeed = 1.0;
   int maxBPM = 130;
+  int minBPM = 0;
 
   int current = 0;
   Movie[] clips;
@@ -175,7 +240,11 @@ class MovieClips {
 
   void draw() {
     update();
+    doBackground();
+    buffer.blendMode(ADD);
+    buffer.noStroke();
     buffer.image(clips[current], 0, 0); //, buffer.width, buffer.height);
+    buffer.blendMode(BLEND);
   }
 }
 

@@ -1,74 +1,104 @@
 // ALWAYS NEEDS A REWRITE
 
-void debugBack() {
-  fill( 24 );
-  rect(480, 0, WINDOW_XSIZE - 480, WINDOW_YSIZE - DEBUG_WINDOW_YSIZE);
-  fill( 16 );     // background for top area
-  rect(0, 240, WINDOW_XSIZE - 480, WINDOW_YSIZE - DEBUG_WINDOW_YSIZE - 240);
+void drawDebugBack() {
+  
+  fill( 48, 0, 4 );
+  rect(960, 0, 406, 202);
+  
+  fill( 64, 4, 8 );
+  rect(960, 203, 229, WINDOW_YSIZE - DEBUG_WINDOW_YSIZE);
+  //fill( 24 );
+  rect(1190, 203, 200, WINDOW_YSIZE - DEBUG_WINDOW_YSIZE);
+  
+  textFont(lFont);
+  textAlign(CENTER, CENTER);
+  fill(255);
+  text("KINECT USERS: " + nf(kinect.users.length,2), 1190, 10);
+  textFont(mFont);
+  text("X, Y, Z", 1085, 210);
 }
 
+
 void debugWallImage() {
-  image(buffer, 0, 0, 480, 240);
+  SIMULATE_TIME = 0;
+  int stime = millis();
+  image(buffer, 0, 0, 960, 480);
+  SIMULATE_TIME = millis() - stime;
+  MAX_SIMULATE = max(MAX_SIMULATE, SIMULATE_TIME);
 }
 
 void debugKinectImages() {
   textFont(lFont);
   for (int i = 0; i < kinect.users.length && i < 12; i++) {
-    image(kinect.users[i].img, 0, 240, 480, 240);
+    image(kinect.users[i].img, 963, 0, 400, 200);
     textAlign(CENTER, CENTER);
     fill(255);
-    text(kinect.users[i].i, (kinect.users[i].x*3), (kinect.users[i].y*3) + 240 );
+    float x = kinect.users[i].x*2.5 + 963;
+    float y = kinect.users[i].y*2.5;
+    if (y < 201) {
+      text(kinect.users[i].i, x, y);
+    }
     textAlign(LEFT, BASELINE);
     if (i < 12) text(nf(kinect.users[i].i, 2) + ": " + 
       nf(kinect.users[i].x, 3, 1) + "," +
       nf(kinect.users[i].y, 3, 1) + "," +
-      nf(kinect.users[i].z, 3, 1), 490, 260 + (20 * i));
+      nf(kinect.users[i].z, 3, 2), 965, 240 + (20 * i));
   }
 }
 
+/*
 void debugTeensyImages() {
-  int tx =  520;
-  int ty, v, m;
-  fill(255);
-  textFont(mFont);
-  textAlign(LEFT, BASELINE);
-  for (int i =0; i < wall.teensyImages.length; i++) {
-    ty = 10 + (22 * i);
-    text("T:" + i, tx - 25, ty + 12);
-    image(wall.teensyImages[i], tx, ty);
-    if (USE_TEENSYS) {
-      v = teensys[i].sendTime;
-      m = teensys[i].maxSend;
-    } 
-    else {
-      v = SIM_DELAY;
-      m = SIM_DELAY;
-    }
-    text(nf(v, 3) + " / " + nf(m, 3), tx + 80 + 10, ty + 12);
-  }
-}
+ int tx =  520;
+ int ty, v, m;
+ fill(255);
+ textFont(mFont);
+ textAlign(LEFT, BASELINE);
+ for (int i =0; i < wall.teensyImages.length; i++) {
+ ty = 10 + (22 * i);
+ text("T:" + i, tx - 25, ty + 12);
+ image(wall.teensyImages[i], tx, ty);
+ if (USE_TEENSYS) {
+ v = teensys[i].sendTime;
+ m = teensys[i].maxSend;
+ } 
+ else {
+ v = 0;
+ m = 0;
+ }
+ text(nf(v, 3) + " / " + nf(m, 3), tx + 80 + 10, ty + 12);
+ }
+ }
+ */
 
 void debugTimers() {
+  int x = WINDOW_XSIZE - 8;
+  textFont(mFont);
+  textAlign(CENTER, BASELINE);
+  text("TIMERS", WINDOW_XSIZE - 85, 218);
   textFont(lFont);
   textAlign(RIGHT, BASELINE);
   fill(255);
-  text("FPS: " + nf(frameRate, 2, 1), 950, 20);
-  if (audioOn) {
-    text("BPM: " + nf(audio.BPM, 3), 950, 60);
-    text("Vol: " + nf(audio.volume.value, 3), 950, 80);
-  }
-  
-  text("Mode: " + nf(MODE_TIME,2) + "/" + nf(MAX_MODE,2), 950, 120);
-  text("Audio: " + nf(AUDIO_TIME,2) + "/" + nf(MAX_AUDIO,2), 950, 140);
-  text("Kinect: " + nf(KINECT_TIME,2) + "/" + nf(MAX_KINECT,2), 950, 160);
-  text("User Map: " + nf(MAP_TIME,2) + "/" + nf(MAX_MAP,2), 950, 180);
-  text("TBuffer: " + nf(TBUFFER_TIME,2) + "/" + nf(MAX_TBUFFER,2), 950, 200);
-  text("Send: " + nf(SEND_TIME,2) + "/" + nf(MAX_SEND,2), 950, 220);
-  
-  text("Debug: " + nf(DEBUG_TIME,2) + "/" + nf(MAX_DEBUG,2), 950, 260);
-  text("CP5: " + nf(CP5_TIME,2) + "/" + nf(MAX_CP5,2), 950, 280);
-  text("Simulate: " + nf(SIMULATE_TIME,2) + "/" + nf(MAX_SIMULATE,2), 950, 300);
-  
+  text("fps: " + nf(frameRate, 2, 2), x, 240);
+  text("mode: " + nf(MODE_TIME, 2) + "/" + nf(MAX_MODE, 2), x, 260);
+  text("audio: " + nf(AUDIO_TIME, 2) + "/" + nf(MAX_AUDIO, 2), x, 280);
+  text("kinect: " + nf(KINECT_TIME, 2) + "/" + nf(MAX_KINECT, 2), x, 300);
+  text("user map: " + nf(MAP_TIME, 2) + "/" + nf(MAX_MAP, 2), x, 320);
+  text("t-buffer: " + nf(TBUFFER_TIME, 2) + "/" + nf(MAX_TBUFFER, 2), x, 340);
+  text("send: " + nf(SEND_TIME, 2) + "/" + nf(MAX_SEND, 2), x, 360);
+  text("debug: " + nf(DEBUG_TIME, 2) + "/" + nf(MAX_DEBUG, 2), x, 380);
+  text("cp5: " + nf(CP5_TIME, 2) + "/" + nf(MAX_CP5, 2), x, 400);
+  text("simulate: " + nf(SIMULATE_TIME, 2) + "/" + nf(MAX_SIMULATE, 2), x, 420);
+
+
+  //if (audioOn) {
+  //  text("BPM: " + nf(audio.BPM, 3), 950, 60);
+  //  text("Vol: " + nf(audio.volume.value, 3), 950, 80);
+  //}
+
+
+
+
+
   //if (kinectOn) {
   //  text("USERS: " + nf(kinect.users.length,2), 950, 240);
   //}
@@ -77,12 +107,14 @@ void debugTimers() {
 void drawDebug() {
   pushStyle();         // push the style
   noStroke();          // turn off stroke
-  debugBack();         // draw background
-  debugWallImage();    // draw wall image
-  debugKinectImages(); // draw kinect images
+
+    if (!simulateOn) debugWallImage();
+  drawDebugBack();
+  if (USE_SOPENNI) debugKinectImages(); // draw kinect images
+
 
     debugTimers();
-  debugTeensyImages(); // draw teensy images
+  //debugTeensyImages(); // draw teensy images
 
   /*
   fill(cp5.getColor().getCaptionLabel());

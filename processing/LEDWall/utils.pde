@@ -12,7 +12,7 @@ Comparator<User> UserByZ;
 Comparator<User> UserByI;
 
 int[] fibonacci = { 
-  1, 1, 2, 3, 5, 8, 13, 21, 34, 55
+  1, 2, 3, 5, 8, 13, 21, 34, 55, 89
 };
 
 void setupUtils() {
@@ -25,15 +25,20 @@ void setupUtils() {
   UserByI = new UserIComparator();
 } 
 
+void doBackground() {
+  if (aBackOn) buffer.background(audio.colors.background); 
+  else buffer.background(0);
+}
+
 // multiply a value to the fibonacci (kind of...)
 float fib( float v, float s, float e) {
   int i = round( map(v, s, e, 0, 9) );
-  return v * fibonacci[i];
+  return fibonacci[i];
 }
 
 int fib( int v, float s, float e) {
   int i = round( map(v, s, e, 0, 9) );
-  return round( v * fibonacci[i] );
+  return fibonacci[i];
 }
 
 PVector getSingleUser() {
@@ -173,7 +178,7 @@ class UserZComparator implements Comparator<User> {
     if (u1.isSet == false) return 1;  // u1 is not active
     if (u2.isSet == false) return -1; // u2 is not active
 
-    if (u1.z < u2.z) return -1;
+    if (u1.z > u2.z) return -1;
     else return 1;
   }
 }

@@ -50,6 +50,7 @@ void setupShapes() {
 
 void doShapes() {
   buffer.blendMode(ADD);
+  doBackground();
   shapes.display();
   buffer.blendMode(BLEND);
 }

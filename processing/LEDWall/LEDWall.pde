@@ -30,7 +30,7 @@
 // to successfully run the LED wall  
 final boolean USE_MINIM   = true;  // load minim and use minim for audio reaction
 final boolean USE_SOPENNI = true;  // load and use simpleOpenNi for kinect interaction
-final boolean USE_TEENSYS = true; // send data to teensy's via serial
+final boolean USE_TEENSYS = false; // send data to teensy's via serial
 
 
 ////////////////////////////////////////////////////////
@@ -46,11 +46,12 @@ final int DISPLAY_MODE_PULSAR  = 6;
 final int DISPLAY_MODE_CITY    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
-final int DISPLAY_MODE_TEST    = 10;
-final int TOTAL_MODES = 10;
+final int DISPLAY_MODE_SQUARES = 10;
+final int DISPLAY_MODE_TEST    = 11;
+final int TOTAL_MODES = 11;
 
 final String[] DISPLAY_STR = { 
-  "Globals", "EQ", "Users", "Rainbow", "Shapes", "Spin", "Pulsar", "Spec", "Atari", "Movies", "Test", "Debug"
+  "Globals", "EQ", "Users", "Rainbow", "Shapes", "Spin", "Pulsar", "Spec", "Atari", "Movies", "Squares", "Test", "Debug"
 };
 
 
@@ -62,10 +63,10 @@ final String[] DISPLAY_STR = {
 boolean autoOn   = true;   // start in auto mode?
 boolean audioOn  = true;   // start with audio reation on?
 boolean aBackOn  = true;  // start with audio background on?
-boolean debugOn  = true;  // show debug info on wall?
+boolean debugOn  = false;  // show debug info on wall?
 boolean kinectOn = true;  // show kinect users  
 boolean wallOn   = true;   // send data to teensy's
-boolean simulateOn = false; // simulate the leds on the PC screen
+boolean simulateOn = true; // simulate the leds on the PC screen
 boolean delayOn    = false;
 
 
@@ -110,6 +111,8 @@ DisposeHandler dh;
 void setup() {
 
   size(WINDOW_XSIZE, WINDOW_YSIZE, P3D);
+  println(WINDOW_XSIZE + "x" + WINDOW_YSIZE);
+
   smooth(4);
 
 
@@ -142,6 +145,7 @@ void setup() {
   setupShapes();
   setupAtari();
   setupClips();
+  setupSquares();
 
   if (USE_TEENSYS) setupTeensys();
   else delayOn = true;
@@ -164,7 +168,7 @@ void setup() {
 void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
-    if (test > 0.9) {
+    if (test > 0.8) {
       int count = round( random(2, TOTAL_MODES - 1) );
       DISPLAY_MODE = count;
       //r.activate(count);
@@ -179,10 +183,6 @@ void draw() {
   buffer.pushStyle();
   buffer.noStroke();
   buffer.noFill();
-
-  if (aBackOn) buffer.background(audio.colors.background); 
-  else buffer.background(0);
-  //buffer.background(0);
 
   if (autoOn) autoMode();   // auto change mode to audio beat
 
@@ -206,7 +206,7 @@ void draw() {
 
   DEBUG_TIME = 0;
   stime = millis();
-  if (!simulateOn) drawDebug();                // draw debug info
+  drawDebug();                // draw debug info
   DEBUG_TIME = millis() - stime;
   MAX_DEBUG = max(MAX_DEBUG, DEBUG_TIME);
 
@@ -297,6 +297,7 @@ void doMode() {
   if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
   if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
+  if (DISPLAY_MODE == DISPLAY_MODE_SQUARES)     doSquares();
   MODE_TIME = millis() - stime;
   MAX_MODE = max(MAX_MODE, MODE_TIME);
 
@@ -316,8 +317,10 @@ void resetMaxs() {
   MAX_AUDIO = 0;
   MAX_DEBUG = 0;
   MAX_CP5 = 0;
-  for (int i = 0; i < teensys.length; i++) {
-    teensys[i].maxSend = 0;
+  if (USE_TEENSYS) {
+    for (int i = 0; i < teensys.length; i++) {
+      teensys[i].maxSend = 0;
+    }
   }
 }
 
@@ -328,6 +331,10 @@ void mousePressed() {
   else if (mouseButton == RIGHT) { // right button resets max/min values
     resetMaxs();
   }
+}
+
+boolean sketchFullScreen() {
+  return true;
 }
 
 public class DisposeHandler {

@@ -20,11 +20,12 @@ final int DEBUG_WINDOW_YSIZE = 220;                                       // the
 final int INFO_WINDOW_SIZE = 200;
 
 final int DEBUG_WINDOW_START = ROWS * MUTI;
-final int WINDOW_XSIZE = COLUMNS * MUTI;
-final int WINDOW_YSIZE = DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE;
+//final int WINDOW_XSIZE = COLUMNS * MUTI;
+//final int WINDOW_YSIZE = DEBUG_WINDOW_START + DEBUG_WINDOW_YSIZE;
+final int WINDOW_XSIZE = 1366;
+final int WINDOW_YSIZE = 768;
 final int DEBUG_TEXT_X = WINDOW_XSIZE - INFO_WINDOW_SIZE + 10;
 
-int SIM_DELAY = 3;  // simulate sending data to teensy's
 
 VideoWall wall;
 
@@ -136,11 +137,8 @@ class VideoWall {
     
     if (USE_TEENSYS) send();         // send data
     else {
-      if (delayOn) {
-        delay(SIM_DELAY * 10);                  // or simulate sending of data
-        SEND_TIME = SIM_DELAY * 10;
+        SEND_TIME = 0;
         MAX_SEND = SEND_TIME;
-      }
     }
     if (simulateOn) display();  // show simulation of wall
   }

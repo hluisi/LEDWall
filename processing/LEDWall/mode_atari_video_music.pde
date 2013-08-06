@@ -8,6 +8,7 @@ void setupAtari() {
 
 void doAtari() {
   buffer.blendMode(ADD);
+  doBackground();
   atari.draw();
   buffer.blendMode(BLEND);
 }

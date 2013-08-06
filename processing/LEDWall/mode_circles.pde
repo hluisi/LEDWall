@@ -45,18 +45,21 @@ void setCityLineMax(String valueString) {
 
 void doCircles() {
   buffer.blendMode(ADD);
+  doBackground();
   circles.draw();
   buffer.blendMode(BLEND);
 }
 
 void doPulsar() {
   buffer.blendMode(ADD);
+  doBackground();
   pulsar.draw();
   buffer.blendMode(BLEND);
 }
 
 void doCity() {
   buffer.blendMode(ADD);
+  doBackground();
   city.draw();
   buffer.blendMode(BLEND);
 }

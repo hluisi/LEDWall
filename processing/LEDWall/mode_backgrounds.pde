@@ -2,6 +2,9 @@
 
 void doUserBg() {
   buffer.blendMode(ADD);
+  
+  doBackground();
+  
   buffer.stroke(255);
   buffer.strokeWeight(2);
   

@@ -3,7 +3,7 @@
 import controlP5.*;
 
 ControlP5 cp5;
-final int TAB_START  = 200;
+final int TAB_START  = 210;
 final int TAB_HEIGHT = 25;
 int TAB_MAX_WIDTH;
 int TAB_WIDTH;
@@ -43,7 +43,7 @@ void setupControl() {
   int b = MAX_BRIGHTNESS;
   
   // controler name, min, max, value, x, y, width, height, label, handle size, text size, type, move to tab
-  createSlider("doSliderBrightness", 0, 255, b, TAB_START - 60, DEBUG_WINDOW_START + 35, 50, DEBUG_WINDOW_YSIZE - 60, "Brightness", 10, tabFont, Slider.FLEXIBLE, "default");
+  createHSlider("doSliderBrightness", 0, 255, b, TAB_START - 80, DEBUG_WINDOW_START + 35, 50, DEBUG_WINDOW_YSIZE, "Brightness", 20, tabFont, Slider.FLEXIBLE, "default");
 
   createToggle("doToggleAutoOn", "Auto",  10, DEBUG_WINDOW_START + 35, 30, 30, sFont, ControlP5.DEFAULT, autoOn, "default");
   if (USE_MINIM) createToggle("doToggleAudioOn", "Audio",  50, DEBUG_WINDOW_START + 35, 30, 30, sFont, ControlP5.DEFAULT, audioOn, "default");
@@ -54,9 +54,20 @@ void setupControl() {
   
   if (USE_SOPENNI) createToggle("doToggleUserMap", "User",  90, DEBUG_WINDOW_START + 95, 30, 30, sFont, ControlP5.DEFAULT, kinect.mapUser, "default");
   
-  createToggle("doToggleSimulate", "Simulate Wall", 10, DEBUG_WINDOW_START + 155, 110, 40, tabFont, ControlP5.DEFAULT, simulateOn, "default");
+  createToggle("doToggleSimulate", "Simulate Wall", 10, DEBUG_WINDOW_START + 215, 110, 40, tabFont, ControlP5.DEFAULT, simulateOn, "default");
 }
 
+// name, default text, x, y, color, font, tab
+Textlabel createTextlabel(String name, String tx, int x, int y, color c, PFont f, String m2t) {
+  Textlabel tl = cp5.addTextlabel(name, tx, x, y);
+  //tl.setText(tx);
+  tl.setColorValue(c);
+  tl.setFont(f);
+  tl.moveTo(m2t);
+  return tl;
+}
+
+// function name, caption name, x, y, width, height, starting value, font, input filter, tab
 Textfield createTextfield(String cN, String lN, int x, int y, int w, int h, String value, PFont f, int ty, String m2t) {
   Textfield tf = cp5.addTextfield(cN, x, y, w, h);
   
@@ -87,6 +98,22 @@ Slider createSlider(String cN, float s, float e, float v, int x, int y, int w, i
   sc.setSliderMode(ty);
   sc.moveTo(m2t);
   sc.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER).setPaddingX(5);
+  sc.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
+  
+  sc.captionLabel().toUpperCase(false);
+  return sc;
+}
+
+Slider createHSlider(String cN, float s, float e, float v, int x, int y, int w, int h, String lN, int hs, PFont tf, int ty, String m2t) {
+  Slider sc = cp5.addSlider(cN, s, e, v, x, y, w, h);
+  
+  sc.getValueLabel().setFont(tf);
+  sc.getCaptionLabel().setFont(tf);
+  sc.setLabel(lN);
+  sc.setHandleSize(hs);
+  sc.setSliderMode(ty);
+  sc.moveTo(m2t);
+  //sc.getValueLabel().align(ControlP5.CENTER, ControlP5.CENTER);
   sc.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
   
   sc.captionLabel().toUpperCase(false);
