@@ -38,12 +38,12 @@ final boolean USE_TEENSYS = false; // send data to teensy's via serial
 ////////////////////////////////////////////////////////
 // Constants used for switching modes
 final int DISPLAY_MODE_EQ      = 1;
-final int DISPLAY_MODE_USERBG  = 2;
+final int DISPLAY_MODE_WAVE  = 2;
 final int DISPLAY_MODE_RAINBOW = 3;
 final int DISPLAY_MODE_SHAPES  = 4;
 final int DISPLAY_MODE_SPIN    = 5;
 final int DISPLAY_MODE_PULSAR  = 6;
-final int DISPLAY_MODE_CITY    = 7;
+final int DISPLAY_MODE_SPEC    = 7;
 final int DISPLAY_MODE_ATARI   = 8;
 final int DISPLAY_MODE_CLIPS   = 9;
 final int DISPLAY_MODE_SQUARES = 10;
@@ -51,7 +51,7 @@ final int DISPLAY_MODE_TEST    = 11;
 final int TOTAL_MODES = 11;
 
 final String[] DISPLAY_STR = { 
-  "Globals", "EQ", "Users", "Rainbow", "Shapes", "Spin", "Pulsar", "Spec", "Atari", "Movies", "Squares", "Test", "Debug"
+  "Globals", "EQ", "Wave", "Rainbow", "Shapes", "Spin", "Pulsar", "Spectrum", "Atari", "Movies", "Squares", "Test", "Debug"
 };
 
 
@@ -60,14 +60,13 @@ final String[] DISPLAY_STR = {
 ////////////////////////////////////////////////////////
 // Use below to set the defaults when first starting
 // the LED wall  
-boolean autoOn   = true;   // start in auto mode?
+boolean autoOn   = false;   // start in auto mode?
 boolean audioOn  = true;   // start with audio reation on?
 boolean aBackOn  = true;  // start with audio background on?
 boolean debugOn  = false;  // show debug info on wall?
 boolean kinectOn = true;  // show kinect users  
 boolean wallOn   = true;   // send data to teensy's
-boolean simulateOn = true; // simulate the leds on the PC screen
-boolean delayOn    = false;
+boolean simulateOn = false; // simulate the leds on the PC screen
 
 
 ////////////////////////////////////////////////////////
@@ -94,12 +93,14 @@ int MAX_CP5;
 
 int MAX_BRIGHTNESS = 192;  // starting brightness of the wall
 
-int DISPLAY_MODE = 2;          // starting mode
+int DISPLAY_MODE = 3;          // starting mode
 int LAST_MODE    = 0;  // start on the right tab
 float xoff = 0.0, yoff = 0.0, zoff = 0.0;              // used for perlin noise
 float noiseInc = 0.2;
 int IMAGE_MULTI = 3;           // how much should we blowup the image 
 int PIXEL_SIZE = 3;
+
+float autoSwitch = 0.5;
 
 
 // images... needs it's own mode (backgrounds?)
@@ -124,6 +125,8 @@ void setup() {
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
+  
+  setupColors();
 
   setupUtils();
   setupGamma();
@@ -140,15 +143,15 @@ void setup() {
 
   setupRainbow();
   setupEQ();
-
-  setupCircles();  // must come before shapes
+  setupPulsar();
+  setupSpin();  // must come before shapes
+  setupSpectrum();
   setupShapes();
   setupAtari();
   setupClips();
   setupSquares();
 
   if (USE_TEENSYS) setupTeensys();
-  else delayOn = true;
 
   setupWall();
 
@@ -168,7 +171,7 @@ void setup() {
 void autoMode() {
   if ( audio.isOnMode() ) {
     float test = random(1);
-    if (test > 0.8) {
+    if (test > autoSwitch) {
       int count = round( random(2, TOTAL_MODES - 1) );
       DISPLAY_MODE = count;
       //r.activate(count);
@@ -177,10 +180,10 @@ void autoMode() {
 }
 
 void draw() {
+  colors.update();
   background(0);
 
   buffer.beginDraw();         // begin buffering
-  buffer.pushStyle();
   buffer.noStroke();
   buffer.noFill();
 
@@ -200,7 +203,6 @@ void draw() {
 
   if (debugOn) drawOnScreenDebug();
 
-  buffer.popStyle();
   buffer.endDraw();           // end buffering
   wall.draw();                // draw the wall
 
@@ -287,17 +289,17 @@ void updateNoise() {
 void doMode() {
 
   int stime = millis();
-  if (DISPLAY_MODE == DISPLAY_MODE_TEST)    doTest();
-  if (DISPLAY_MODE == DISPLAY_MODE_EQ)      doEQ();
-  if (DISPLAY_MODE == DISPLAY_MODE_USERBG)  doUserBg();
-  if (DISPLAY_MODE == DISPLAY_MODE_SPIN)    doCircles();
-  if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)  doPulsar();
-  if (DISPLAY_MODE == DISPLAY_MODE_CITY)    doCity();
-  if (DISPLAY_MODE == DISPLAY_MODE_RAINBOW) doRainbow();
-  if (DISPLAY_MODE == DISPLAY_MODE_ATARI)   doAtari();
-  if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)   doClips();
-  if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)  doShapes();
-  if (DISPLAY_MODE == DISPLAY_MODE_SQUARES)     doSquares();
+  if (DISPLAY_MODE == DISPLAY_MODE_TEST)     doTest();
+  if (DISPLAY_MODE == DISPLAY_MODE_EQ)       doEQ();
+  if (DISPLAY_MODE == DISPLAY_MODE_WAVE)   doUserBg();
+  if (DISPLAY_MODE == DISPLAY_MODE_SPIN)     spin.draw();
+  if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)   pulsar.draw();
+  if (DISPLAY_MODE == DISPLAY_MODE_SPEC)     spec.draw();;
+  if (DISPLAY_MODE == DISPLAY_MODE_RAINBOW)  rainbow.draw();
+  if (DISPLAY_MODE == DISPLAY_MODE_ATARI)    atari.draw();;
+  if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)    doClips();
+  if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)   shapes.draw();
+  if (DISPLAY_MODE == DISPLAY_MODE_SQUARES)  doSquares();
   MODE_TIME = millis() - stime;
   MAX_MODE = max(MAX_MODE, MODE_TIME);
 

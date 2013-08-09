@@ -3,6 +3,7 @@
 void drawDebugBack() {
   
   fill( 48, 0, 4 );
+  
   rect(960, 0, 406, 202);
   
   fill( 64, 4, 8 );
@@ -15,14 +16,16 @@ void drawDebugBack() {
   fill(255);
   text("KINECT USERS: " + nf(kinect.users.length,2), 1190, 10);
   textFont(mFont);
-  text("X, Y, Z", 1085, 210);
+  text("USER X, Y, Z", 1085, 210);
 }
 
 
 void debugWallImage() {
   SIMULATE_TIME = 0;
   int stime = millis();
+  tint(255, MAX_BRIGHTNESS);
   image(buffer, 0, 0, 960, 480);
+  noTint();
   SIMULATE_TIME = millis() - stime;
   MAX_SIMULATE = max(MAX_SIMULATE, SIMULATE_TIME);
 }
@@ -105,15 +108,14 @@ void debugTimers() {
 }
 
 void drawDebug() {
-  pushStyle();         // push the style
   noStroke();          // turn off stroke
 
-    if (!simulateOn) debugWallImage();
+  if (!simulateOn) debugWallImage();
   drawDebugBack();
   if (USE_SOPENNI) debugKinectImages(); // draw kinect images
 
 
-    debugTimers();
+  debugTimers();
   //debugTeensyImages(); // draw teensy images
 
   /*
@@ -135,6 +137,5 @@ void drawDebug() {
    }
    */
 
-  popStyle();
 }
 

@@ -64,9 +64,9 @@ class VideoWall {
     int g = (c >> 8) & 0xFF;   // get the green
     int b = c & 0xFF;          // get the blue 
 
-    r = int( map( r, 0, 255, 0, MAX_BRIGHTNESS ) );  // map red to max LED brightness
-    g = int( map( g, 0, 255, 0, MAX_BRIGHTNESS ) );  // map green to max LED brightness
-    b = int( map( b, 0, 255, 0, MAX_BRIGHTNESS ) );  // map blue to max LED brightness
+    r = round( map( r, 0, 255, 0, MAX_BRIGHTNESS ) );  // map red to max LED brightness
+    g = round( map( g, 0, 255, 0, MAX_BRIGHTNESS ) );  // map green to max LED brightness
+    b = round( map( b, 0, 255, 0, MAX_BRIGHTNESS ) );  // map blue to max LED brightness
     
     float pixel_watts = map(r + g + b, 0, 768, 0, 0.24); 
     
@@ -79,7 +79,6 @@ class VideoWall {
   void display() {
     SIMULATE_TIME = 0;
     int stime = millis();
-    pushStyle();
     rectMode(CENTER);
     noStroke();
     WALL_WATTS = 0;
@@ -89,8 +88,8 @@ class VideoWall {
       int y = i / COLUMNS;
       drawPixel(x, y, buffer.pixels[i]);
     }
+    rectMode(CORNER);
     MAX_WATTS = max(MAX_WATTS, WALL_WATTS);
-    popStyle();
     SIMULATE_TIME = millis() - stime;
     MAX_SIMULATE = max(MAX_SIMULATE, SIMULATE_TIME);
   }

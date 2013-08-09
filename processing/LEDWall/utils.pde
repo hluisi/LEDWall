@@ -26,7 +26,7 @@ void setupUtils() {
 } 
 
 void doBackground() {
-  if (aBackOn) buffer.background(audio.colors.background); 
+  if (aBackOn) buffer.background(colors.background); 
   else buffer.background(0);
 }
 
@@ -39,6 +39,13 @@ float fib( float v, float s, float e) {
 int fib( int v, float s, float e) {
   int i = round( map(v, s, e, 0, 9) );
   return fibonacci[i];
+}
+
+color getBright(color c) {
+  colorMode(HSB, 360, 255, 255);
+  c = color(hue(c), 255, 255);
+  colorMode(RGB, 255, 255, 255, 255);
+  return c;
 }
 
 PVector getSingleUser() {

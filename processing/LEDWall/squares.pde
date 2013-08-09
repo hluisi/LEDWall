@@ -24,8 +24,8 @@ class Squares {
   int size;
   int rotation;
   int Z = -50;
-  int maxSize = 200;
-  int minSize = 50;
+  int maxSize = 80;
+  int minSize = 20;
 
   Squares() {
     b1 = new PVector(80, 40, 0);
@@ -106,16 +106,25 @@ class Squares {
     buffer.box(size, size, size);
     buffer.popMatrix();
   }
+  
+  color getColor(int s1, int s2, int s3) {
+    color c = getBright(colors.colorMap(s1, s2, s3));
+    return c;
+  }
 
   void draw() {
     update();
     doBackground();
-    buffer.blendMode(ADD);
+    //buffer.blendMode(ADD);
+    //buffer.noStroke();
+    buffer.blendMode(REPLACE);
+    //buffer.stroke(0);
+    //buffer.strokeWeight(1);
     buffer.noStroke();
-    drawBox(round(b1.x), round(b1.y), audio.colors.users[11]);
-    drawBox(round(b2.x), round(b2.y), audio.colors.users[10]);
-    drawBox(round(b3.x), round(b3.y), audio.colors.users[9]);
-    drawBox(round(b4.x), round(b4.y), audio.colors.users[8]);
+    drawBox(round(b1.x), round(b1.y), getColor(1,3,4));
+    drawBox(round(b2.x), round(b2.y), getColor(4,2,0));
+    drawBox(round(b3.x), round(b3.y), getColor(3,1,4));
+    drawBox(round(b4.x), round(b4.y), getColor(2,0,4));
     buffer.blendMode(BLEND);
   }
 }
@@ -159,28 +168,28 @@ void dSquares() {
 
 
 
-  buffer.fill(audio.colors.users[11]);
+  buffer.fill(colors.users[11]);
   buffer.pushMatrix();
   buffer.translate(b1.x, b1.y);
   buffer.translate(0, 0, Z);
   buffer.box(r, r, r);
   buffer.popMatrix();
 
-  buffer.fill(audio.colors.users[10]);
+  buffer.fill(colors.users[10]);
   buffer.pushMatrix();
   buffer.translate(b2.x, b2.y);
   buffer.translate(0, 0, Z);
   buffer.box(r, r, r);
   buffer.popMatrix();
 
-  buffer.fill(audio.colors.users[9]);
+  buffer.fill(colors.users[9]);
   buffer.pushMatrix();
   buffer.translate(b3.x, b3.y);
   buffer.translate(0, 0, Z);
   buffer.box(r, r, r);
   buffer.popMatrix();
 
-  buffer.fill(audio.colors.users[8]);
+  buffer.fill(colors.users[8]);
   buffer.pushMatrix();
   buffer.translate(b4.x, b4.y);
   buffer.translate(0, 0, Z);

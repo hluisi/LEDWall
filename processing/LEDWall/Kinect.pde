@@ -108,7 +108,6 @@ class Kinect {
   }
 
   void drawImages() {
-    buffer.pushStyle();
     for (int i = 0; i < users.length; i++) {
       if ( users[i].onScreen() ) {
         users[i].updatePixels(mapUser);
@@ -122,7 +121,6 @@ class Kinect {
       buffer.textAlign(CENTER, CENTER);
       buffer.text(users.length, COLUMNS - 5, ROWS - 7);
     }
-    buffer.popStyle();
   }
 
   void draw() {
@@ -198,13 +196,10 @@ class User {
     if (mapDepth) {
       MAP_TIME = 0;
       int stime = millis();
-      pushStyle();
-      colorMode(HSB, 360, 1.0, 1.0);
-      color tc = color(hue(c), 1.0, 1.0);
-      popStyle();
-      int tr = (tc >> 16) & 0xFF;  // get the red value of the user's color
-      int tg = (tc >> 8) & 0xFF;   // get the green value of the user's color
-      int tb =  tc & 0xFF;         // get the blue value of the user's color
+      
+      int tr = (c >> 16) & 0xFF;  // get the red value of the user's color
+      int tg = (c >> 8) & 0xFF;   // get the green value of the user's color
+      int tb =  c & 0xFF;         // get the blue value of the user's color
       
       for (int i = 0; i < userImage.pixels.length; i++) {
         if (userImage.pixels[i] == 0) continue;
@@ -247,9 +242,9 @@ class User {
     return i;
   }
 
-  void setColor() {
-    c = audio.colors.get(colorIndex);
-  }
+  //void setColor() {
+  //  c = audio.colors.users[colorIndex];
+  //}
 
   void updateCoM(PVector projected) {
     // set the user location based on the wall size
@@ -264,7 +259,7 @@ class User {
       isSet = false;  // got NaN so we're not set
     } else { // all is good
       resetPixels();
-      setColor();
+      c = colors.users[colorIndex];
       isSet = true;
     }
   }
@@ -300,7 +295,7 @@ class User {
 // Kinect User Callback - onNewUser
 ////////////////////////////////////////////////////////
 // called when a new user is found
-public void onNewUser(int userId) {
+public synchronized void onNewUser(int userId) {
   println("KINECT - onNewUser - found new user: " + userId);
   println(" - starting pose detection");
 
@@ -315,7 +310,7 @@ public void onNewUser(int userId) {
 ////////////////////////////////////////////////////////
 // called when user can't be found for 10 seconds. The file
 // may be found (PrimeSense\SensorKinect\Data\GlobalDefaultsKinect.ini)
-public void onLostUser(int userId) {
+public synchronized void onLostUser(int userId) {
   println("KINECT - onLostUser - lost user: " + userId);
   userHash.get(userId).setActive(false);    // set user to non-active status (won't be updated)
   userHash.remove(userId);                  // remove user from the hash table
@@ -325,7 +320,7 @@ public void onLostUser(int userId) {
 // Kinect User Callback - onExitUser
 ////////////////////////////////////////////////////////
 // called when user leaves the tracking area
-public void onExitUser(int userId) {
+public synchronized void onExitUser(int userId) {
   println("KINECT - onExitUser - user " + userId + " has exited.");
   userHash.get(userId).setActive(false);    // set user to non-active status (won't be updated)
 
@@ -338,7 +333,7 @@ public void onExitUser(int userId) {
 // Kinect User Callback - onReEnterUser
 ////////////////////////////////////////////////////////
 // called when the user re-enter's the tacking area
-public void onReEnterUser(int userId) {
+public synchronized void onReEnterUser(int userId) {
   println("KINECT - onReEnterUser - user " + userId + " has come back.");
   println(" - starting pose detection");
   kinect.context.requestCalibrationSkeleton(userId, true);  // try to auto calibrate user skeleton again
@@ -352,7 +347,7 @@ public void onReEnterUser(int userId) {
 // This can be done from onStartPose to tell OpenNI that the user
 // has started a calibration pose, or automaticly by adding true to the
 // requestCalibrationSkeleton(userId, true) method.  
-public void onStartCalibration(int userId) {
+public synchronized void onStartCalibration(int userId) {
   println("KINECT - onStartCalibration - starting calibration on user: " + userId);
 }
 
@@ -362,7 +357,7 @@ public void onStartCalibration(int userId) {
 // called when OpenNi has ended the skeleton calibration process. 
 // it's successfull or it wasn't and you can try using pose detection
 // calibrate the skeleton.   
-public void onEndCalibration(int userId, boolean successfull) {
+public synchronized void onEndCalibration(int userId, boolean successfull) {
   if (successfull) {
     println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
     kinect.context.startTrackingSkeleton(userId); // start tracking skeleton
@@ -383,7 +378,7 @@ public void onEndCalibration(int userId, boolean successfull) {
 // called when OpenNi thinks its found the start of a pose called from
 // the startPoseDetection method. You can stop there or start looking
 // for the end of the pose, etc...
-public void onStartPose(String pose, int userId) {
+public synchronized void onStartPose(String pose, int userId) {
   println("KINECT - onStartPose - userId: " + userId + ", pose: " + pose);
 
   if (pose.equals("Psi") == true) {
@@ -397,7 +392,7 @@ public void onStartPose(String pose, int userId) {
 // Kinect User Callback - onStartPose
 ////////////////////////////////////////////////////////
 // found the end of a pose. Don't forget to stop the pose detection!
-public void onEndPose(String pose, int userId) {
+public synchronized void onEndPose(String pose, int userId) {
   println("onEndPose - userId: " + userId + ", pose: " + pose);
   kinect.context.stopPoseDetection(userId);
 }

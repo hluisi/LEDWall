@@ -51,15 +51,6 @@ void setMaxRSpeed(String valueString) {
   rSpeed.getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(5);
 }
 
-void doRainbow() {
-  PVector kinectUser = getSingleUser();
-  rainbow.setLocation(kinectUser.x, kinectUser.y);
-  if (rainbow.bpmOn) rainbow.setCycle(audio.BPM);
-  buffer.blendMode(BLEND);
-  buffer.background(0);
-  rainbow.display();
-}
-
 
 class Rainbow {
   final int MODE_WHEEL  = 0;
@@ -72,12 +63,12 @@ class Rainbow {
   float random_test = 0;
   int mode = 1;
   boolean bpmOn = true;
-  PVector location;                       // the location of the center of the wheel
   PVector size;
   PVector last_size;
+  PVector kinectUser;
   int last_cycle, bi;                           // the last time the colors were cycled
   int cycle_time = 100;                // the time between cycling colors
-  color[] colors = new color [8];
+  color[] rcolors = new color [8];
   color[] default_colors = {
     color(255, 0, 0), color(255, 127, 0), color(255, 127, 0), color(127, 255, 0), 
     color(0, 255, 0), color(0, 255, 127), color(0, 127, 255), color(0, 0, 255)
@@ -85,13 +76,12 @@ class Rainbow {
 
 
   Rainbow() {
-    location = new PVector();
     size = new PVector();
     last_size = new PVector();
+    PVector kinectUser = new PVector();
     resetColors();
     resetSize();
     last_cycle = millis();
-    //use_audio = false;
   }
 
   void resetSize() {
@@ -105,49 +95,27 @@ class Rainbow {
   }
 
   private void cycleColors() {
-    color saved = colors[0];
-    for (int i = 0; i < (colors.length - 1); i++) {
-      colors[i] = colors[i + 1];
+    color saved = rcolors[0];
+    for (int i = 0; i < (rcolors.length - 1); i++) {
+      rcolors[i] = rcolors[i + 1];
     }
-    colors[colors.length - 1] = saved;
+    rcolors[rcolors.length - 1] = saved;
   }
 
   private void cycleColors(color c) {
-    for (int i = 0; i < (colors.length - 1); i++) {
-      colors[i] = colors[i + 1];
+    for (int i = 0; i < (rcolors.length - 1); i++) {
+      rcolors[i] = rcolors[i + 1];
     }
-    colors[colors.length - 1] = c;
+    rcolors[rcolors.length - 1] = c;
   }
 
   void resetColors() {
-    arrayCopy(default_colors, colors);
+    arrayCopy(default_colors, rcolors);
   }
-
-  void setLocation(float x, float y) {
-    location.x = round(x);
-    location.y = round(y);
-    //location.z = round(z);
-  }
-  
-  /*
-  void audioOn() {
-    use_audio = true;
-    resetColors();
-    cycle_time = 50;
-  }
-
-  void audioOff() {
-    use_audio = false;
-    resetColors();
-    cycle_time = 50;
-  }
-  */
 
   private void check() {
     int cTime = millis();
     if (cTime - last_cycle > cycle_time) {
-      //if (use_audio) cycleColors(audio.colors.background); 
-      //else cycleColors();
       cycleColors();
       last_cycle = cTime;
     }
@@ -161,71 +129,60 @@ class Rainbow {
   }
 
   void doWheel() {
+    //buffer.blendMode(ADD);
+    buffer.blendMode(LIGHTEST);
     buffer.noStroke();
+    //buffer.stroke(0);
     //buffer.strokeWeight(0.5);
 
-    for (int i = 0; i < colors.length; i++) {
+    for (int i = 0; i < rcolors.length; i++) {
       int rnd = round( random(-1,1) );
-      //int h_spec = i + rnd;
-      //int v_spec = i - 1 + rnd;
-        
-      //if (v_spec < 0) v_spec = colors.length - 1;
-      //if (v_spec > colors.length) v_spec = 0;
-      //if (h_spec < 0) h_spec = colors.length - 1;
-      //if (h_spec > colors.length) h_spec = 0;
-      
-      //rnd = round( random(-1,1) );
-
-      //horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, 20, 5);
-      //vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, 10, 1);
       
       horizontal = map(audio.volume.value, 0, 100, 20, 10 + (rnd * 2) );
       vertical   = map(audio.volume.value, 0, 100, 10, 5 + rnd);
 
-      buffer.fill( mapByVol( colors[i] ) );
-      if ((i + rnd) % 2 == 0) buffer.fill( audio.colors.get(i) );
-      buffer.triangle(location.x, location.y, 0, (i * 10) + vertical, 0, ((i + 1) * 10) - vertical);
-      buffer.triangle(location.x, location.y, (i * 20) + horizontal, 0, ((i + 1) * 20) - horizontal, 0);
+      buffer.fill( mapByVol( rcolors[i] ) );
+      if ((i + rnd) % 2 == 0) buffer.fill( colors.users[i] );
+      buffer.triangle(kinectUser.x, kinectUser.y, 0, (i * 10) + vertical, 0, ((i + 1) * 10) - vertical);
+      buffer.triangle(kinectUser.x, kinectUser.y, (i * 20) + horizontal, 0, ((i + 1) * 20) - horizontal, 0);
 
       bi = 7 - i;
-      buffer.fill( mapByVol( colors[bi] ) );
-      if ((i + rnd) % 2 == 0) buffer.fill( audio.colors.get(bi) );
-      buffer.triangle(location.x, location.y, buffer.width, (i * 10) + vertical, buffer.width, ((i + 1) * 10) - vertical);
-      buffer.triangle(location.x, location.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
+      buffer.fill( mapByVol( rcolors[bi] ) );
+      if ((i + rnd) % 2 == 0) buffer.fill( colors.users[bi] );
+      buffer.triangle(kinectUser.x, kinectUser.y, buffer.width, (i * 10) + vertical, buffer.width, ((i + 1) * 10) - vertical);
+      buffer.triangle(kinectUser.x, kinectUser.y, (i * 20) + horizontal, buffer.height, ((i + 1) * 20) - horizontal, buffer.height);
     }
   }
 
   void doTunnel() {
+    buffer.blendMode(SUBTRACT);
     buffer.rectMode(CENTER);
-    buffer.stroke(0);
-    buffer.strokeWeight(0.5);
+    //buffer.stroke(0);
+    //buffer.strokeWeight(0.5);
+    //buffer.noStroke();
 
     buffer.pushMatrix();
-    buffer.translate(location.x, location.y);
+    buffer.translate(kinectUser.x, kinectUser.y);
 
     for (int j = 0; j < 2; j++) {
-      for (int i = 0; i < colors.length; i++) {
+      for (int i = 0; i < rcolors.length; i++) {
         int rnd = round( random(-1,1) );
         int h_spec = i + rnd;
         int v_spec = i - 1 + rnd;
         
-        if (v_spec < 0) v_spec = colors.length - 1;
-        if (v_spec > colors.length) v_spec = 0;
-        if (h_spec < 0) h_spec = colors.length - 1;
-        if (h_spec > colors.length) h_spec = 0;
+        if (v_spec < 0) v_spec = rcolors.length - 1;
+        if (v_spec > rcolors.length) v_spec = 0;
+        if (h_spec < 0) h_spec = rcolors.length - 1;
+        if (h_spec > rcolors.length) h_spec = 0;
         
         rnd = round( random(-1,1) );
         
-        
         if ((i + rnd) % 2 == 0) {
-          //buffer.fill(0);
-          //buffer.fill(colors[i]);
-          buffer.fill( audio.colors.get(i) );
+          buffer.fill( colors.users[i] );
           horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, size.x, last_size.x + last_size.x);
           vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, size.y, last_size.y + last_size.y);
         } else {
-          //buffer.fill(0);
-          buffer.fill( mapByVol( colors[i] ) );
+          buffer.fill( mapByVol( rcolors[i] ) );
           horizontal = map(audio.averageSpecs[h_spec].value, 0, 100, last_size.x, size.x);
           vertical   = map(audio.averageSpecs[v_spec].value, 0, 100, last_size.y, size.y);
         }
@@ -236,20 +193,19 @@ class Rainbow {
         size.div(1.25);
       }
     }
-
-    //buffer.fill(0);
-    //buffer.rect(0, 0, size.x, size.y, 5);
     buffer.popMatrix();
     resetSize();
   }
 
 
-  void display() {
+  void draw() {
     check();
+    doBackground();
+    kinectUser = getSingleUser();
+    if (bpmOn) setCycle(audio.BPM);
     if (mode == MODE_WHEEL) doWheel();
     if (mode == MODE_TUNNEL) doTunnel();
-    //doTunnel();
-    buffer.noStroke();  // reset to no stroke
+    buffer.blendMode(BLEND);
   }
 }
 

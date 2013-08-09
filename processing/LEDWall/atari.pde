@@ -6,12 +6,6 @@ void setupAtari() {
   atari = new AtariVideoMusic();
 }
 
-void doAtari() {
-  buffer.blendMode(ADD);
-  doBackground();
-  atari.draw();
-  buffer.blendMode(BLEND);
-}
 
 class AtariVideoMusic {
   final int SOLID = 0;
@@ -129,10 +123,13 @@ class AtariVideoMusic {
 
   void draw() {
     update();
+    buffer.blendMode(ADD);
+    doBackground();
     for (int i = 0; i < display_count; i++) {
       alist[i].setMode(mode);
       alist[i].draw();
     }
+    buffer.blendMode(BLEND);
   }
   
 }
@@ -148,10 +145,7 @@ class AtariSingle {
   }
 
   color setColor(int i) {
-    int RED   = audio.averageSpecs[1].grey;
-    int GREEN = audio.averageSpecs[3].grey;
-    int BLUE  = audio.averageSpecs[i].grey;
-    return color(RED, GREEN, BLUE);
+    return getBright(colors.colorMap(1, 3, i));
   }
 
   void set(float _x, float _y, float _w, float _h) {
