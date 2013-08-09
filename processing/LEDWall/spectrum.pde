@@ -89,8 +89,10 @@ class Spectrum {
       //int c = round(map(audio.mids.value, 0, 100, 127, 255));
       buffer.fill(255);
       buffer.noStroke();
+      buffer.pushMatrix();
       buffer.translate(80, 40, -30);
       svgs[distrikt].draw(buffer);
+      buffer.popMatrix();
     } 
     
     buffer.blendMode(BLEND);

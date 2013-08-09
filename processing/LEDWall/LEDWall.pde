@@ -38,7 +38,7 @@ final boolean USE_TEENSYS = false; // send data to teensy's via serial
 ////////////////////////////////////////////////////////
 // Constants used for switching modes
 final int DISPLAY_MODE_EQ      = 1;
-final int DISPLAY_MODE_WAVE  = 2;
+final int DISPLAY_MODE_WAVE    = 2;
 final int DISPLAY_MODE_RAINBOW = 3;
 final int DISPLAY_MODE_SHAPES  = 4;
 final int DISPLAY_MODE_SPIN    = 5;
@@ -101,6 +101,7 @@ int IMAGE_MULTI = 3;           // how much should we blowup the image
 int PIXEL_SIZE = 3;
 
 float autoSwitch = 0.5;
+float autoTest = 0.0;
 
 
 // images... needs it's own mode (backgrounds?)
@@ -140,7 +141,7 @@ void setup() {
   else kinectOn = false;
 
   setupControl();
-
+  setupWave();
   setupRainbow();
   setupEQ();
   setupPulsar();
@@ -170,12 +171,16 @@ void setup() {
 
 void autoMode() {
   if ( audio.isOnMode() ) {
-    float test = random(1);
-    if (test > autoSwitch) {
+    autoTest = random(1);
+    if (autoTest > autoSwitch) {
       int count = round( random(2, TOTAL_MODES - 1) );
+      //int count = round( noise(yoff) * (TOTAL_MODES - 2) ) + 1;
       DISPLAY_MODE = count;
-      //r.activate(count);
+      autoLabel.setColorValue(color(255,0,0));
+    } else {
+      autoLabel.setColorValue(color(255));
     }
+    autoLabel.setText(nf(autoTest,1,2) /*+ " BPM"*/);
   }
 }
 
@@ -291,13 +296,13 @@ void doMode() {
   int stime = millis();
   if (DISPLAY_MODE == DISPLAY_MODE_TEST)     doTest();
   if (DISPLAY_MODE == DISPLAY_MODE_EQ)       doEQ();
-  if (DISPLAY_MODE == DISPLAY_MODE_WAVE)   doUserBg();
+  if (DISPLAY_MODE == DISPLAY_MODE_WAVE)     wave.draw();
   if (DISPLAY_MODE == DISPLAY_MODE_SPIN)     spin.draw();
   if (DISPLAY_MODE == DISPLAY_MODE_PULSAR)   pulsar.draw();
-  if (DISPLAY_MODE == DISPLAY_MODE_SPEC)     spec.draw();;
+  if (DISPLAY_MODE == DISPLAY_MODE_SPEC)     spec.draw();
   if (DISPLAY_MODE == DISPLAY_MODE_RAINBOW)  rainbow.draw();
-  if (DISPLAY_MODE == DISPLAY_MODE_ATARI)    atari.draw();;
-  if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)    doClips();
+  if (DISPLAY_MODE == DISPLAY_MODE_ATARI)    atari.draw();
+  if (DISPLAY_MODE == DISPLAY_MODE_CLIPS)    movies.draw();
   if (DISPLAY_MODE == DISPLAY_MODE_SHAPES)   shapes.draw();
   if (DISPLAY_MODE == DISPLAY_MODE_SQUARES)  doSquares();
   MODE_TIME = millis() - stime;

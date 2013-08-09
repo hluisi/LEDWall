@@ -265,8 +265,6 @@ class User {
   }
 
   void update() {
-    
-
     if ( kinect.context.getCoM(i, realWorld) ) {        // try to set center of mass real world location
       // let's try to get the head joint, which is better then the CoM
       
@@ -296,8 +294,8 @@ class User {
 ////////////////////////////////////////////////////////
 // called when a new user is found
 public synchronized void onNewUser(int userId) {
-  println("KINECT - onNewUser - found new user: " + userId);
-  println(" - starting pose detection");
+  //println("KINECT - onNewUser - found new user: " + userId);
+  //println(" - starting pose detection");
 
   kinect.context.requestCalibrationSkeleton(userId, true); // try to auto calibrate user skeleton 
   userHash.put( userId, new User(userId) );                // create new user object and add it to the user hash map
@@ -311,7 +309,7 @@ public synchronized void onNewUser(int userId) {
 // called when user can't be found for 10 seconds. The file
 // may be found (PrimeSense\SensorKinect\Data\GlobalDefaultsKinect.ini)
 public synchronized void onLostUser(int userId) {
-  println("KINECT - onLostUser - lost user: " + userId);
+  //println("KINECT - onLostUser - lost user: " + userId);
   userHash.get(userId).setActive(false);    // set user to non-active status (won't be updated)
   userHash.remove(userId);                  // remove user from the hash table
 }
@@ -321,7 +319,7 @@ public synchronized void onLostUser(int userId) {
 ////////////////////////////////////////////////////////
 // called when user leaves the tracking area
 public synchronized void onExitUser(int userId) {
-  println("KINECT - onExitUser - user " + userId + " has exited.");
+  //println("KINECT - onExitUser - user " + userId + " has exited.");
   userHash.get(userId).setActive(false);    // set user to non-active status (won't be updated)
 
   // save for now, may want to do pose detection
@@ -334,8 +332,8 @@ public synchronized void onExitUser(int userId) {
 ////////////////////////////////////////////////////////
 // called when the user re-enter's the tacking area
 public synchronized void onReEnterUser(int userId) {
-  println("KINECT - onReEnterUser - user " + userId + " has come back.");
-  println(" - starting pose detection");
+  //println("KINECT - onReEnterUser - user " + userId + " has come back.");
+  //println(" - starting pose detection");
   kinect.context.requestCalibrationSkeleton(userId, true);  // try to auto calibrate user skeleton again
   userHash.get(userId).setActive(true);                     // set to active again (so it will be updated)
 }
@@ -348,7 +346,7 @@ public synchronized void onReEnterUser(int userId) {
 // has started a calibration pose, or automaticly by adding true to the
 // requestCalibrationSkeleton(userId, true) method.  
 public synchronized void onStartCalibration(int userId) {
-  println("KINECT - onStartCalibration - starting calibration on user: " + userId);
+  //println("KINECT - onStartCalibration - starting calibration on user: " + userId);
 }
 
 ////////////////////////////////////////////////////////
@@ -359,11 +357,11 @@ public synchronized void onStartCalibration(int userId) {
 // calibrate the skeleton.   
 public synchronized void onEndCalibration(int userId, boolean successfull) {
   if (successfull) {
-    println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
+    //println("KINECT - onEndCalibration - calibration for user " + userId + " was successfull!");
     kinect.context.startTrackingSkeleton(userId); // start tracking skeleton
   } 
   else {
-    println("KINECT - onEndCalibration - calibration for user " + userId + " has failed!!!");
+    //println("KINECT - onEndCalibration - calibration for user " + userId + " has failed!!!");
 
     // try standard calibration pose, but it will keep trying util you
     // tell it to stop via the stopPoseDetection(userId) method. 
@@ -379,10 +377,10 @@ public synchronized void onEndCalibration(int userId, boolean successfull) {
 // the startPoseDetection method. You can stop there or start looking
 // for the end of the pose, etc...
 public synchronized void onStartPose(String pose, int userId) {
-  println("KINECT - onStartPose - userId: " + userId + ", pose: " + pose);
+  //println("KINECT - onStartPose - userId: " + userId + ", pose: " + pose);
 
   if (pose.equals("Psi") == true) {
-    println(" - stoping 'Psi' pose detection");
+    //println(" - stoping 'Psi' pose detection");
     kinect.context.stopPoseDetection(userId); 
     kinect.context.requestCalibrationSkeleton(userId, true);
   }
@@ -393,7 +391,7 @@ public synchronized void onStartPose(String pose, int userId) {
 ////////////////////////////////////////////////////////
 // found the end of a pose. Don't forget to stop the pose detection!
 public synchronized void onEndPose(String pose, int userId) {
-  println("onEndPose - userId: " + userId + ", pose: " + pose);
+  //println("onEndPose - userId: " + userId + ", pose: " + pose);
   kinect.context.stopPoseDetection(userId);
 }
 

@@ -15,6 +15,9 @@ PFont mFont;   // (14)
 PFont lFont;   // (20)
 PFont xFont;   // (40)
 
+Textlabel autoLabel;
+Textfield autoField;
+
 void setupControl() {
   // load fonts
   xsFont  = loadFont("ArialMT-11.vlw");
@@ -63,7 +66,7 @@ void setupControl() {
         //.setPaddingX(0)
          //.setPaddingY(0);
          
-  println(cp5.getController("doSliderBrightness").getValueLabel().getAlign());
+  cp5.getTooltip().register("doSliderBrightness","Changes the max brightness of the wall.").getLabel().setFont(mFont);
   
   // auto mode toggle
   createToggle("doToggleAutoOn",              // function name
@@ -81,22 +84,25 @@ void setupControl() {
       .align(ControlP5.RIGHT_OUTSIDE, ControlP5.BOTTOM_OUTSIDE)
         .setPaddingX(-50)
          .setPaddingY(5);
+  cp5.getTooltip().register("doToggleAutoOn","Toggles auto switching of modes.");
   
   // sets the auto mode switch point
-  createTextfield("setAutoSwitch",            // function name
-                  "@",                // caption name
-                  80,                         // x postion
-                  WINDOW_YSIZE - 255,         // y postion
-                  60,                         // width
-                  40,                         // height
-                  nf(autoSwitch, 1, 2),       // starting value
-                  lFont,                      // font
-                  ControlP5.FLOAT,            // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
-                  "default");                 // tab
+  autoField = 
+    createTextfield("setAutoSwitch",            // function name
+                    "@",                // caption name
+                    80,                         // x postion
+                    WINDOW_YSIZE - 255,         // y postion
+                    60,                         // width
+                    40,                         // height
+                    nf(autoSwitch, 1, 2),       // starting value
+                    lFont,                      // font
+                    ControlP5.FLOAT,            // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
+                    "default");                 // tab
   cp5.getController("setAutoSwitch")
     .captionLabel()
       .align(ControlP5.LEFT_OUTSIDE, ControlP5.CENTER)
         .setPaddingX(-3);
+  cp5.getTooltip().register("setAutoSwitch","0.01 to 0.99");
   
   if (USE_MINIM) {
     createToggle("doToggleAudioOn",           // function name
@@ -109,6 +115,7 @@ void setupControl() {
                  ControlP5.DEFAULT,           // toggle type
                  audioOn,                     // starting value
                  "default");                  // tab
+    cp5.getTooltip().register("doToggleAudioOn","Toggle Audio ON/OFF");
     
     createToggle("doToggleAudioBackOn",       // function name
                  "Back",                      // button name
@@ -120,6 +127,7 @@ void setupControl() {
                  ControlP5.DEFAULT,           // toggle type
                  aBackOn,                     // starting value
                  "default");                  // tab
+    cp5.getTooltip().register("doToggleAudioBackOn","Toggle Audio background");
   }
   
   if (USE_SOPENNI) {
@@ -133,6 +141,7 @@ void setupControl() {
                  ControlP5.DEFAULT,           // toggle type
                  kinectOn,                    // starting value
                  "default");                  // tab
+    cp5.getTooltip().register("doToggleKinectOn","Toggle kinect ON/OFF");
     
     createToggle("doToggleUserMap",           // function name
                  "User",                      // button name
@@ -144,6 +153,7 @@ void setupControl() {
                  ControlP5.DEFAULT,           // toggle type
                  kinect.mapUser,              // starting value
                  "default");                  // tab
+    cp5.getTooltip().register("doToggleUserMap","Toggle 3D user mapping");
   }
   
   createToggle("doToggleScreenDebug",         // function name
@@ -156,6 +166,7 @@ void setupControl() {
                ControlP5.DEFAULT,             // toggle type
                debugOn,                       // starting value
                "default");                    // tab
+  cp5.getTooltip().register("doToggleScreenDebug","Toggle on-screen debugging");
   
   createToggle("doToggleSimulate",            // function name
                "Simulate",                    // button name
@@ -167,6 +178,18 @@ void setupControl() {
                ControlP5.DEFAULT,             // toggle type
                simulateOn,                    // starting value
                "default");                    // tab
+  cp5.getTooltip().register("doToggleSimulate","Simulate the LEDs");
+  
+  // displays the current BPM
+  autoLabel = 
+    createTextlabel("showAutoTest",                      // function name
+                    nf(autoTest,1,2),                              // starting text
+                    40,             // x postion
+                    DEBUG_WINDOW_START + 102,         // y postion
+                    color(255),                      // font color
+                    xFont,                           // font
+                    "default");// tab
+  cp5.getTooltip().register("showAutoTest","The lower number the faster it will switch.");
 }
 
 // name, default text, x, y, color, font, tab
@@ -277,6 +300,9 @@ void doToggleAutoOn(boolean b) {
 
 void setAutoSwitch(String valueString) {
   autoSwitch = float(valueString);
+  if (autoSwitch > 0.99) autoSwitch = 0.99;
+  if (autoSwitch < 0.01) autoSwitch = 0.01;
+  autoField.setText( nf(autoSwitch, 1, 2) );
 }
 
 // turn on debug

@@ -80,7 +80,7 @@ class Pulsar {
       buffer.strokeWeight(weight);
 
       float angle  = map(i, 0, (audio.fullSpecs.length - 1) / 4, 0, 180);
-      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, 160);
+      float radius = map(audio.fullSpecs[i].value, 0, 100, 1, 320);
       float spin   = map(audio.volume.value, 0, 100, 0, 180);
 
       drawLine(radius, angle + spin);

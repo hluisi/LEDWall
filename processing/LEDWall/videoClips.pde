@@ -5,7 +5,8 @@ import processing.video.*;
 MovieClips movies;    // mode class
 Slider movieSlider;   // movie selecting
 Slider movieSpeed;    // movie speed
-Textlabel mBPM;       // bpm
+Textlabel mBPM, mSwitch;       // bpm
+Textfield mSetSwitch;
 
 void setupClips() {
   println("VIDEO CLIPS - starting setup...");
@@ -26,6 +27,30 @@ void setupClips() {
                  xFont,                              // font
                  Slider.FLEXIBLE,                    // slider type
                  DISPLAY_STR[DISPLAY_MODE_CLIPS]);   // tab
+  cp5.getTooltip().register("doMovieSlider","Use to set different movie clips.");
+  
+  mSetSwitch =        
+    createTextfield("setMovieSwitch",                       // function name
+                    "Switch",                              // caption name
+                    TAB_START + 30,                      // x postion
+                    DEBUG_WINDOW_START + 50,              // y postion
+                    100,                                   // width
+                    50,                                   // height
+                    nf(movies.switchValue, 1, 4),      // starting value
+                    lFont,                                // font
+                    ControlP5.FLOAT,                    // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
+                    DISPLAY_STR[DISPLAY_MODE_CLIPS]);    // tab
+  cp5.getTooltip().register("setMovieSwitch","0.0001 to 0.9999");
+  
+  mSwitch = 
+    createTextlabel("mShowSwitch",                      // function name
+                    nf(movies.switchTest,1,4),                              // starting text
+                    TAB_START + 20,                  // x postion
+                    DEBUG_WINDOW_START + 130,         // y postion
+                    color(255),                      // font color
+                    xFont,                           // font
+                    DISPLAY_STR[DISPLAY_MODE_CLIPS]);// tab
+  cp5.getTooltip().register("mShowSwitch","The lower number the faster it will switch clips.");
   
   // toggle for turning on/off the random picking of clips
   createToggle("allowMovieSwitch",                   // function name
@@ -38,6 +63,7 @@ void setupClips() {
                ControlP5.DEFAULT,                    // toggle type
                movies.switchOn,                      // starting value
                DISPLAY_STR[DISPLAY_MODE_CLIPS]);     // tab
+  cp5.getTooltip().register("allowMovieSwitch","Turn ON/OFF random switching of clips.");
   
   // toggle for turning on/off the random jumping to music of clips
   createToggle("allowMovieJumps",                    // function name
@@ -50,6 +76,7 @@ void setupClips() {
                ControlP5.DEFAULT,                    // toggle type
                movies.jumpsOn,                       // starting value
                DISPLAY_STR[DISPLAY_MODE_CLIPS]);     // tab
+  cp5.getTooltip().register("allowMovieJumps","Turn ON/OFF the beat jumping of clips.");
   
   // toggle for controlling movie speed via the BPM
   createToggle("allowMovieBPM",                      // function name
@@ -62,6 +89,7 @@ void setupClips() {
                ControlP5.DEFAULT,                    // toggle type
                movies.bpmOn,                         // starting value
                DISPLAY_STR[DISPLAY_MODE_CLIPS]);     // tab
+  cp5.getTooltip().register("allowMovieBPM","Turn ON/OFF BPM mapping of the clips speed.");
 
   // sets the min speed for the movies when mapped to BPM
   createTextfield("setMinSpeed",                     // function name
@@ -75,6 +103,7 @@ void setupClips() {
                   ControlP5.FLOAT,                   // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
                   DISPLAY_STR[DISPLAY_MODE_CLIPS]);  // tab
   cp5.getController("setMinSpeed").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
+  cp5.getTooltip().register("setMinSpeed","Set the min speed for the clips.");
   
   // sets the max speed for the movies when mapped to BPM
   createTextfield("setMaxSpeed",                     // function name
@@ -87,6 +116,7 @@ void setupClips() {
                   lFont,                             // font
                   ControlP5.FLOAT,                   // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
                   DISPLAY_STR[DISPLAY_MODE_CLIPS]);  // tab
+  cp5.getTooltip().register("setMinSpeed","Set the max speed for the clips.");
   
   // displays the current BPM
   mBPM = 
@@ -97,6 +127,7 @@ void setupClips() {
                     color(255),                      // font color
                     xFont,                           // font
                     DISPLAY_STR[DISPLAY_MODE_CLIPS]);// tab
+                    
   
   // slider for controlling movie speed
   movieSpeed =  
@@ -113,6 +144,7 @@ void setupClips() {
                  lFont,                              // font
                  Slider.FLEXIBLE,                    // slider type
                  DISPLAY_STR[DISPLAY_MODE_CLIPS]);   // tab
+  cp5.getTooltip().register("doMovieSpeed","Use to set the speed of the clips.");
   
   // sets the max bpm when fiquring out the clip speed 
   createTextfield("setMinBPM",                       // function name
@@ -126,6 +158,7 @@ void setupClips() {
                   ControlP5.INTEGER,                 // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
                   DISPLAY_STR[DISPLAY_MODE_CLIPS]);  // tab
   cp5.getController("setMinBPM").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE).setPaddingX(5);
+  cp5.getTooltip().register("setMinBPM","The min BPM for mapping the clip speed.");
   
   // sets the max speed for the movies when mapped to BPM
   createTextfield("setMaxBPM",                       // function name
@@ -138,14 +171,11 @@ void setupClips() {
                   lFont,                             // font
                   ControlP5.INTEGER,                 // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
                   DISPLAY_STR[DISPLAY_MODE_CLIPS]);  // tab
+  cp5.getTooltip().register("setMaxBPM","The max BPM for mapping the clip speed.");
 
   println("VIDEO CLIPS - setup finished!");
 }
 
-void doClips() {
-  movies.draw();
-  mBPM.setText(nf(audio.BPM,3) + " BPM");
-}
 
 void doMovieSlider(int v) {
   movies.setClip(v);
@@ -153,6 +183,13 @@ void doMovieSlider(int v) {
 
 void doMovieSpeed(float v) {
   if (!movies.bpmOn) movies.setSpeed(v);
+}
+
+void setMovieSwitch(String valueString) {
+  movies.switchValue = float(valueString);
+  if (movies.switchValue > 0.99) movies.switchValue = 0.9999;
+  if (movies.switchValue < 0.01) movies.switchValue = 0.0001;
+  mSetSwitch.setText(nf(movies.switchValue,1,4));
 }
 
 void setMinSpeed(String valueString) {
@@ -207,6 +244,8 @@ class MovieClips {
   int switch_count = 0;
   int jump_count = 0;
   String[] names;
+  float switchTest = 0.0;
+  float switchValue = 0.7;
 
   boolean switchOn = true;
   boolean jumpsOn  = true;
@@ -265,12 +304,14 @@ class MovieClips {
   void update() {
     // switch clips?
     if ( audio.isOnBeat() ) {
-      float test = random(0, 1);
-      if (test > 0.7 && switchOn) {
+      switchTest = random(0, 1);
+      if (switchTest > switchValue && switchOn) {
         setRandomClip();
+        mSwitch.setColorValue(color(255,0,0));
       } 
       else {
         if (jumpsOn) doJump();
+        mSwitch.setColorValue(color(255));
       }
     }
 
@@ -298,6 +339,9 @@ class MovieClips {
     buffer.noStroke();
     buffer.image(clips[current], 0, 0); //, buffer.width, buffer.height);
     buffer.blendMode(BLEND);
+    
+    mBPM.setText(nf(audio.BPM,3) + " BPM");
+    mSwitch.setText( nf(movies.switchTest,1,4) );
   }
 }
 
