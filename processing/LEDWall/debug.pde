@@ -91,6 +91,7 @@ void debugTimers() {
   text("debug: " + nf(DEBUG_TIME, 2) + "/" + nf(MAX_DEBUG, 2), x, 380);
   text("cp5: " + nf(CP5_TIME, 2) + "/" + nf(MAX_CP5, 2), x, 400);
   text("simulate: " + nf(SIMULATE_TIME, 2) + "/" + nf(MAX_SIMULATE, 2), x, 420);
+  text(nf(WALL_WATTS, 4, 2) + "/" + nf(MAX_WATTS, 4, 2), x, 460);
 
 
   //if (audioOn) {

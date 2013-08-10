@@ -245,7 +245,7 @@ class MovieClips {
   int jump_count = 0;
   String[] names;
   float switchTest = 0.0;
-  float switchValue = 0.7;
+  float switchValue = 0.75;
 
   boolean switchOn = true;
   boolean jumpsOn  = true;
@@ -270,6 +270,7 @@ class MovieClips {
       switch_count = 0;
       int seed = round(random(frameCount));
       randomSeed(seed);
+      //noiseSeed(seed);
     }
     
     current = v;
@@ -278,8 +279,8 @@ class MovieClips {
   }
 
   void setRandomClip() {
-    //int next = round( random(clips.length - 1) );
-    int next = round(noise(yoff) * (clips.length - 1));
+    int next = round( random(clips.length - 1) );
+    //int next = round(noise(xoff) * (clips.length - 1));
     setClip(next);
     movieSlider.setValue(current);
     //cp5.getController("doMovieSlider").setValue(current);

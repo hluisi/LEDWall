@@ -93,14 +93,14 @@ int MAX_CP5;
 
 int MAX_BRIGHTNESS = 192;  // starting brightness of the wall
 
-int DISPLAY_MODE = 3;          // starting mode
+int DISPLAY_MODE = 9;          // starting mode
 int LAST_MODE    = 0;  // start on the right tab
 float xoff = 0.0, yoff = 0.0, zoff = 0.0;              // used for perlin noise
 float noiseInc = 0.2;
 int IMAGE_MULTI = 3;           // how much should we blowup the image 
 int PIXEL_SIZE = 3;
 
-float autoSwitch = 0.5;
+float autoSwitch = 0.65;
 float autoTest = 0.0;
 
 
@@ -315,15 +315,16 @@ void doMode() {
 }
 
 void resetMaxs() {
-  MAX_SEND = 0;
-  MAX_TBUFFER = 0;
-  MAX_MODE = 0;
+  MAX_SEND     = 0;
+  MAX_TBUFFER  = 0;
+  MAX_MODE     = 0;
   MAX_SIMULATE = 0;
-  MAX_KINECT = 0;
-  MAX_MAP = 0;
-  MAX_AUDIO = 0;
-  MAX_DEBUG = 0;
-  MAX_CP5 = 0;
+  MAX_KINECT   = 0;
+  MAX_MAP      = 0;
+  MAX_AUDIO    = 0;
+  MAX_DEBUG    = 0;
+  MAX_CP5      = 0;
+  MAX_WATTS    = 0;
   if (USE_TEENSYS) {
     for (int i = 0; i < teensys.length; i++) {
       teensys[i].maxSend = 0;
