@@ -54,7 +54,7 @@ void wSetTotal(String valueString) {
 
 void wSetZ(String valueString) {
   int v = int(valueString);
-  v *= -1;
+  if (v > 0) v *= -1;
   wave.z = v;
   wZ.setText(nf(v,3));
 }
@@ -67,8 +67,8 @@ void wSetRez(String valueString) {
 class Wave {
   int total;
   int z = -154;
-  int rez = 2;
-  boolean useStroke = false;
+  int rez = 5;
+  boolean useStroke = true;
 
   Wave() {
     total = audio.in.bufferSize() - 1;

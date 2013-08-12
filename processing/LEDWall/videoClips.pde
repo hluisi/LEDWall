@@ -234,8 +234,8 @@ void allowMovieBPM(boolean b) {
 
 class MovieClips {
   float speed = 1.0;
-  float minSpeed = 0.5;
-  float maxSpeed = 1.0;
+  float minSpeed = 0.65;
+  float maxSpeed = 1.25;
   int maxBPM = 130;
   int minBPM = 0;
 

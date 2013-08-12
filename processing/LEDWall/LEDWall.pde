@@ -60,7 +60,7 @@ final String[] DISPLAY_STR = {
 ////////////////////////////////////////////////////////
 // Use below to set the defaults when first starting
 // the LED wall  
-boolean autoOn   = false;   // start in auto mode?
+boolean autoOn   = true;   // start in auto mode?
 boolean audioOn  = true;   // start with audio reation on?
 boolean aBackOn  = true;  // start with audio background on?
 boolean debugOn  = false;  // show debug info on wall?
@@ -100,7 +100,7 @@ float noiseInc = 0.2;
 int IMAGE_MULTI = 3;           // how much should we blowup the image 
 int PIXEL_SIZE = 3;
 
-float autoSwitch = 0.65;
+float autoSwitch = 0.75;
 float autoTest = 0.0;
 
 
@@ -126,7 +126,7 @@ void setup() {
 
   smpte = loadImage("smpte_640x320.png");
   test  = loadImage("test_640x320.png");
-  
+
   setupColors();
 
   setupUtils();
@@ -176,11 +176,12 @@ void autoMode() {
       int count = round( random(2, TOTAL_MODES - 1) );
       //int count = round( noise(yoff) * (TOTAL_MODES - 2) ) + 1;
       DISPLAY_MODE = count;
-      autoLabel.setColorValue(color(255,0,0));
-    } else {
+      autoLabel.setColorValue(color(255, 0, 0));
+    } 
+    else {
       autoLabel.setColorValue(color(255));
     }
-    autoLabel.setText(nf(autoTest,1,2) /*+ " BPM"*/);
+    autoLabel.setText(nf(autoTest, 1, 2) /*+ " BPM"*/);
   }
 }
 
@@ -232,28 +233,28 @@ void drawOnScreenDebug() {
   buffer.textAlign(CENTER, CENTER);
   buffer.fill(255);
   buffer.text(nf(frameRate, 2, 2), 20, ROWS - 6);
-  if (audioOn)  {
+  if (audioOn) {
     buffer.text(audio.BPM, 80, 74);
     /*
-    buffer.rectMode(CENTER);
-    buffer.noStroke();
-    buffer.fill(0);
-    buffer.rect(80,40,84,24);
-    int r = round(red(audio.colors.users[0]));
-    int g = round(green(audio.colors.users[0]));
-    int b = round(blue(audio.colors.users[0]));
-    buffer.fill(color(r,0,0));
-    buffer.rect(53,34, 28, 10);
-    buffer.fill(color(0,g,0));
-    buffer.rect(80,34, 28, 10);
-    buffer.fill(color(0,0,b));
-    buffer.rect(107,34, 28, 10);
-    
-    buffer.fill(255);
-    buffer.text(nf(r,3) + "/" + nf(g,3) + "/" + nf(b,3), 80, 46);
+      buffer.rectMode(CENTER);
+      buffer.noStroke();
+      buffer.fill(0);
+      buffer.rect(80, 40, 84, 24);
+      int r = round(red(colors.users[0]));
+      int g = round(green(colors.users[0]));
+      int b = round(blue(colors.users[0]));
+      buffer.fill(color(r, 0, 0));
+      buffer.rect(53, 34, 28, 10);
+      buffer.fill(color(0, g, 0));
+      buffer.rect(80, 34, 28, 10);
+      buffer.fill(color(0, 0, b));
+      buffer.rect(107, 34, 28, 10);
+
+      buffer.fill(255);
+      buffer.text(nf(r, 3) + "/" + nf(g, 3) + "/" + nf(b, 3), 80, 46);
     */
   }
-    
+
   if (kinectOn) buffer.text(kinect.users.length, COLUMNS - 5, ROWS - 6);
   if (USE_TEENSYS) {
     buffer.textFont(xsFont);
@@ -262,7 +263,7 @@ void drawOnScreenDebug() {
     buffer.strokeWeight(0.5);
     for (int i = 0; i < teensys.length; i++) {
       buffer.text(teensys[i].comNumber, 8 + (16*i), 5);
-      buffer.text(nf(teensys[i].sendTime,2), 8 + (16*i), 14);
+      buffer.text(nf(teensys[i].sendTime, 2), 8 + (16*i), 14);
       if (i != 9) buffer.line(16 + (16*i), 2, 16 + (16*i), 16);
     }
     //buffer.line(0, 20, 160, 20);

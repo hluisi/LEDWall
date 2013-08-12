@@ -173,7 +173,7 @@ void setTotalShapes(String valueString) {
 
 void setShapeMinZ(String valueString) {
   int v = int(valueString);
-  v *= -1;
+  if (v > 0) v *= -1;
   shapes.setMinZ(v);
   sMinZText.setText(nf(v,3));
 }
@@ -307,8 +307,8 @@ class Shapes {
   void draw() {
     update();
     doBackground();
-    buffer.blendMode(ADD);
-    //buffer.blendMode(REPLACE);
+    //buffer.blendMode(ADD);
+    buffer.blendMode(REPLACE);
     for (Particle p: particles) {
       p.update();
       p.display();
@@ -408,9 +408,9 @@ class Particle {
 
   void display() {
     buffer.fill( colors.users[pSpec] );
-    //buffer.stroke(0);
-    //buffer.strokeWeight(0.5);
-    buffer.noStroke();
+    buffer.stroke(0);
+    buffer.strokeWeight(0.5);
+    //buffer.noStroke();
     buffer.pushMatrix();
     buffer.translate(location.x, location.y, location.z);
     svgs[pShape].draw(buffer);

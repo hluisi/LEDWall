@@ -26,7 +26,7 @@ void setCitySpecMax(String valueString) {
 
 void setSpecZ(String valueString) {
   int v = int(valueString);
-  v *= -1;
+  if (v > 0) v *= -1;
   spec.Z = v;
   specZ.setText(nf(v,3));
 }
@@ -62,9 +62,9 @@ class Spectrum {
     doBackground();
     
     kinectUser = getSingleUser();
-    buffer.noStroke();
-    //buffer.stroke(0);
-    //buffer.strokeWeight(0.5);
+    //buffer.noStroke();
+    buffer.stroke(0);
+    buffer.strokeWeight(0.5);
 
     for (int i = 1; i <= SPEC_MAX + 5 ; i++) {
       

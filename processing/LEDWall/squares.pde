@@ -1,4 +1,5 @@
 Textlabel sSize, sRot;
+Textfield sqZ;
 
 Squares squares;
 
@@ -6,8 +7,29 @@ Squares squares;
 void setupSquares() {
   squares = new Squares();
   // name, default text, x, y, color, font, tab
-  sSize = createTextlabel("squaresSize", "Size: " + nf(squares.size,3), TAB_START + 20, DEBUG_WINDOW_START + 40, color(255), lFont, DISPLAY_STR[DISPLAY_MODE_SQUARES]);
-  sRot  = createTextlabel("squaresRotation", "Rotation: " + nf(squares.rotation,3), TAB_START + 20, DEBUG_WINDOW_START + 60, color(255), lFont, DISPLAY_STR[DISPLAY_MODE_SQUARES]);
+  
+  // sets the max speed for the movies when mapped to BPM
+  sqZ = 
+    createTextfield("setSquaresZ",                     // function name
+                    "Total",                              // caption name
+                    TAB_START + 20,                       // x postion
+                    DEBUG_WINDOW_START + 40,              // y postion
+                    100,                                   // width
+                    100,                                   // height
+                    nf(squares.Z, 3),                   // starting value
+                    lFont,                                // font
+                    ControlP5.INTEGER,                    // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
+                    DISPLAY_STR[DISPLAY_MODE_SQUARES]);    // tab
+  
+  sSize = createTextlabel("squaresSize", "Size: " + nf(squares.size,3), TAB_START + 20, DEBUG_WINDOW_START + 180, color(255), lFont, DISPLAY_STR[DISPLAY_MODE_SQUARES]);
+  sRot  = createTextlabel("squaresRotation", "Rotation: " + nf(squares.rotation,3), TAB_START + 20, DEBUG_WINDOW_START + 200, color(255), lFont, DISPLAY_STR[DISPLAY_MODE_SQUARES]);
+}
+
+void setSquaresZ(String valueString) {
+  int v = int(valueString);
+  if (v > 0) v *= -1;
+  squares.Z = v;
+  sqZ.setText(nf(v,3));
 }
 
 void doSquares() {
@@ -23,7 +45,7 @@ class Squares {
   PVector b4;
   int size;
   int rotation;
-  int Z = -50;
+  int Z = -80;
   int maxSize = 80;
   int minSize = 20;
 
@@ -48,7 +70,7 @@ class Squares {
   int getRotation() {
     int r;
     if (audioOn) {
-      r = round( map(audio.treb.value, 0, 100, 0, 360) );
+      r = round( map(audio.bass.value, 0, 100, 0, 360) );
       return r;
     } 
     else {
@@ -73,26 +95,26 @@ class Squares {
     int v;
 
     v = getAudio(0);
-    b1.x = map(v, 0, 100, 80, 0);
-    b1.y = map(v, 0, 100, 40, 0);
+    b1.x = map(v, 7, 100, 80-size, 0);
+    b1.y = map(v, 7, 100, 40-size, 0);
     b1.x = size*cos(rotation * b1.x) + b1.x;
     b1.y = size*sin(rotation * b1.y) + b1.y;
 
     v = getAudio(1);
-    b2.x = map(v, 0, 100, 80, 160);
-    b2.y = map(v, 0, 100, 40, 80);
+    b2.x = map(v, 7, 100, 80+size, 160);
+    b2.y = map(v, 7, 100, 40+size, 80);
     b2.x = size*cos(rotation * b2.x) + b2.x;
     b2.y = size*sin(rotation * b2.y) + b2.y;
 
     v = getAudio(2);
-    b3.x = map(v, 0, 100, 80, 160);
-    b3.y = map(v, 0, 100, 40, 0);
+    b3.x = map(v, 7, 100, 80+size, 160);
+    b3.y = map(v, 7, 100, 40-size, 0);
     b3.x = size*cos(rotation * b3.x) + b3.x;
     b3.y = size*sin(rotation * b3.y) + b3.y;
 
     v = getAudio(3);
-    b4.x = map(v, 0, 100, 80, 0);
-    b4.y = map(v, 0, 100, 40, 80);
+    b4.x = map(v, 7, 100, 80-size, 0);
+    b4.y = map(v, 7, 100, 40+size, 80);
     b4.x = size*cos(rotation * b4.x) + b4.x;
     b4.y = size*sin(rotation * b4.y) + b4.y;
   }
@@ -100,8 +122,8 @@ class Squares {
   void drawBox(int x, int y, color c) {
     buffer.fill(c);
     buffer.pushMatrix();
-    buffer.translate(x, y);
-    buffer.translate(0, 0, Z);
+    buffer.translate(x, y, Z);
+    //buffer.translate(0, 0, Z);
     buffer.rotate(radians(rotation));
     buffer.box(size, size, size);
     buffer.popMatrix();
@@ -118,9 +140,9 @@ class Squares {
     //buffer.blendMode(ADD);
     //buffer.noStroke();
     buffer.blendMode(REPLACE);
-    //buffer.stroke(0);
-    //buffer.strokeWeight(1);
-    buffer.noStroke();
+    buffer.stroke(0);
+    buffer.strokeWeight(1);
+    //buffer.noStroke();
     drawBox(round(b1.x), round(b1.y), getColor(1,3,4));
     drawBox(round(b2.x), round(b2.y), getColor(4,2,0));
     drawBox(round(b3.x), round(b3.y), getColor(3,1,4));

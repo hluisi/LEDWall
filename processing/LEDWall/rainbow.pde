@@ -61,7 +61,7 @@ class Rainbow {
   float horizontal = 0;
   float vertical = 0;
   float random_test = 0;
-  int mode = 1;
+  int mode = 0;
   boolean bpmOn = true;
   PVector size;
   PVector last_size;
@@ -123,7 +123,7 @@ class Rainbow {
     if ( audio.isOnBeat() ) {
       random_test = random(0, 1);
       if (random_test < 0.65) {
-        mode = round( random(TOTAL_MODES - 1) );
+        //mode = round( random(TOTAL_MODES - 1) );
       }
     }
   }
@@ -157,6 +157,7 @@ class Rainbow {
   void doTunnel() {
     buffer.blendMode(SUBTRACT);
     buffer.rectMode(CENTER);
+    
     //buffer.stroke(0);
     //buffer.strokeWeight(0.5);
     //buffer.noStroke();
@@ -204,7 +205,7 @@ class Rainbow {
     kinectUser = getSingleUser();
     if (bpmOn) setCycle(audio.BPM);
     if (mode == MODE_WHEEL) doWheel();
-    if (mode == MODE_TUNNEL) doTunnel();
+    //if (mode == MODE_TUNNEL) doTunnel();
     buffer.blendMode(BLEND);
   }
 }
