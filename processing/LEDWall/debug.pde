@@ -14,7 +14,7 @@ void drawDebugBack() {
   textFont(lFont);
   textAlign(CENTER, CENTER);
   fill(255);
-  text("KINECT USERS: " + nf(kinect.users.length,2), 1190, 10);
+  if (USE_SOPENNI) text("KINECT USERS: " + nf(kinect.users.length,2), 1190, 10);
   textFont(mFont);
   text("USER X, Y, Z", 1085, 210);
 }
