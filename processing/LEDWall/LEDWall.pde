@@ -60,7 +60,7 @@ final String[] DISPLAY_STR = {
 ////////////////////////////////////////////////////////
 // Use below to set the defaults when first starting
 // the LED wall  
-boolean autoOn   = true;   // start in auto mode?
+boolean autoOn   = false;   // start in auto mode?
 boolean audioOn  = true;   // start with audio reation on?
 boolean aBackOn  = true;  // start with audio background on?
 boolean debugOn  = false;  // show debug info on wall?
@@ -151,6 +151,7 @@ void setup() {
   setupAtari();
   setupClips();
   setupSquares();
+  setupOverlays();
 
   if (USE_TEENSYS) setupTeensys();
 
@@ -206,6 +207,8 @@ void draw() {
     KINECT_TIME = millis() - stime;
     MAX_KINECT = max(MAX_KINECT, KINECT_TIME);
   }
+  
+  text.draw();
 
   if (debugOn) drawOnScreenDebug();
 
@@ -342,9 +345,9 @@ void mousePressed() {
   }
 }
 
-boolean sketchFullScreen() {
-  return true;
-}
+//boolean sketchFullScreen() {
+//  return true;
+//}
 
 public class DisposeHandler {
 

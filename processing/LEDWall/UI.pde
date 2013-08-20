@@ -34,10 +34,12 @@ void setupControl() {
   cp5.setColor(ControlP5.RED);                            // set color
   
   TAB_MAX_WIDTH = WINDOW_XSIZE - TAB_START - 40;  // max tab width (from the end of default tab to the end of the screen)
-  TAB_WIDTH = TAB_MAX_WIDTH / TOTAL_MODES;        // the width of the tabs (not including the default tab)
+  TAB_WIDTH = TAB_MAX_WIDTH / (TOTAL_MODES + 1);        // the width of the tabs (not including the default tab)
 
   // create and setup the tabs
   setTab("default", DISPLAY_STR[0], 0, TAB_START - 5, TAB_HEIGHT, mFont, false, true); // default tab
+  
+  
   
   // setup mode tabs
   for (int i = 1; i <= TOTAL_MODES; i++) {
@@ -45,6 +47,9 @@ void setupControl() {
     cp5.addTab(name);
     setTab(name, name, i, TAB_WIDTH, TAB_HEIGHT, mFont, true, false);
   }
+  
+  cp5.addTab("Overlays");
+  setTab("Overlays", "Overlays", TOTAL_MODES+1, TAB_WIDTH, TAB_HEIGHT, mFont, true, false);
   
   // brightness slider
   createHSlider("doSliderBrightness",         // function name
@@ -289,7 +294,7 @@ void controlEvent(ControlEvent theEvent) {
   // tab?
   if ( theEvent.isTab() ) {
     int ID = theEvent.getTab().getId();
-    if (ID > 0) DISPLAY_MODE = ID;
+    if (ID > 0 && ID < TOTAL_MODES) DISPLAY_MODE = ID;
   }
 }
 
