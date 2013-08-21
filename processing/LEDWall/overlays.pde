@@ -1,8 +1,12 @@
-TextOverlay text;
+Overlay overlay;
 Textfield inText;
+Slider logoSlider;
+Toggle textToggle;
+Toggle logoToggle;
+MyColorPicker cp;
 
 void setupOverlays() {
-  text = new TextOverlay(CENTER, CENTER, mFont);
+  overlay = new Overlay(CENTER, CENTER, sFont);
   
   // sets the min speed for the movies when mapped to BPM
   inText = createTextfield("doTextOverlay",                     // function name
@@ -11,7 +15,7 @@ void setupOverlays() {
                   WINDOW_YSIZE - 70,           // y postion
                   TAB_MAX_WIDTH - 100,                                // width
                   40,                                // height
-                  text.txt,         // starting value
+                  overlay.txt,         // starting value
                   lFont,                             // font
                   ControlP5.DEFAULT,                   // input filter (BITFONT, DEFAULT, FLOAT, or INTEGER)
                   "Overlays");  // tab
@@ -19,7 +23,7 @@ void setupOverlays() {
   cp5.getTooltip().register("doTextOverlay","Input overlay text here.");
   
   // toggle for controlling movie speed via the BPM
-  createToggle("showTextOverlay",                      // function name
+  textToggle = createToggle("showTextOverlay",                      // function name
                "ON/OFF",                         // button name
                WINDOW_XSIZE - 100,                  // x postion
                WINDOW_YSIZE - 70,              // y postion
@@ -27,22 +31,71 @@ void setupOverlays() {
                40,                                   // height
                lFont,                                // font
                ControlP5.DEFAULT,                    // toggle type
-               text.isOn,                         // starting value
+               overlay.textOn,                         // starting value
                "Overlays");     // tab
   cp5.getTooltip().register("allowMovieBPM","Turn ON/OFF overlay text.");
   
+  logoSlider = 
+    createSlider("doLogoSlider",                         // function name
+                 0,                                       // min
+                 logos.length - 1,                         // max
+                 overlay.current_logo,                          // starting value
+                 TAB_START + 200,                          // x postion
+                 WINDOW_YSIZE - 140,                      // y postion
+                 TAB_MAX_WIDTH - 280,                           // width
+                 40,                                      // height
+                 logos[overlay.current_logo].name,                                // caption text
+                 40,                                      // handle size
+                 lFont,                                   // font
+                 Slider.FLEXIBLE,                         // slider type
+                 "Overlays");       // tab
+  
+  // toggle for controlling movie speed via the BPM
+  logoToggle = createToggle("showLogoOverlay",                      // function name
+               "ON/OFF",                         // button name
+               WINDOW_XSIZE - 100,                  // x postion
+               WINDOW_YSIZE - 140,              // y postion
+               80,                                   // width
+               40,                                   // height
+               lFont,                                // font
+               ControlP5.DEFAULT,                    // toggle type
+               overlay.logoOn,                         // starting value
+               "Overlays");     // tab
+  cp5.getTooltip().register("allowMovieBPM","Turn ON/OFF overlay text.");
+  
+  cp = new MyColorPicker(cp5, "picker", lFont);
+  cp.setPosition(TAB_START + 20, DEBUG_WINDOW_START + 40)
+    .setColorValue(color(255, 255, 255, 255))
+    .moveTo("Overlays");
+  cp.setItemSize(110,40);
   
 }
 
 void doTextOverlay(String valueString) {
-  text.set(valueString);
+  overlay.set(valueString);
 }
 
 void showTextOverlay(boolean b) {
-  text.isOn = b;
+  overlay.textOn = b;
+  if (overlay.textOn && overlay.logoOn) logoToggle.setState(false);
 }
 
-class TextOverlay {
+void doLogoSlider(int v) {
+  overlay.current_logo = v;
+  String name = logos[overlay.current_logo].name;
+  logoSlider.setLabel(name);
+}
+
+void showLogoOverlay(boolean b) {
+  overlay.logoOn = b;
+  if (overlay.logoOn && overlay.textOn) textToggle.setState(false);
+}
+
+void picker(int col) {
+  overlay.setColor(col);
+}
+
+class Overlay {
 
   String txt;                 // overlay text
   String[] words;             // words in the text
@@ -50,17 +103,27 @@ class TextOverlay {
   PFont f;                    // font
   int fontHeight;             // font height
   int align_x, align_y;       // text align x & y
-  boolean isOn;
+  int x = 80;
+  int y = 40;
+  boolean textOn;
+  boolean logoOn;
+  int current_logo = 0;
+  color c;
 
-  TextOverlay(int x, int y, PFont _f) {
+  Overlay(int x, int y, PFont _f) {
     align_x = x;
     align_y = y;
     f = _f;
     lines = new ArrayList<String>();
-    isOn = false;
+    textOn = false;
+    logoOn = false;
     txt = ".";
     set("testing 1 2 3 4");
-    
+    c = color(255);
+  }
+  
+  void setColor(color c) {
+    this.c = c;
   }
 
   private boolean eq(String tt) {
@@ -163,12 +226,19 @@ class TextOverlay {
       buffer.text(thisLine, sx, y);
     }
   }
+  
+  void drawLogo() {
+    buffer.noStroke();
+    buffer.pushMatrix();
+    buffer.translate(x, y);
+    logos[current_logo].draw(buffer);
+    buffer.popMatrix();
+  }
 
   void draw() {
-    if (isOn) {
-      buffer.textFont(f);
-      drawText();
-    }
+    buffer.fill(c);
+    if (textOn) drawText();
+    if (logoOn) drawLogo();
   }
 }
 

@@ -3,11 +3,12 @@
 import geomerative.*;
 
 //final int TOTAL_PARTICLES = 8;
-final float MARGIN = -10;
+final float MARGIN = 4;
 
 int totalShapes = 16;  // how many shapes on the screen
 
 RShape[] svgs;
+RShape[] logos;
 Shapes shapes;
 Slider shapeSlider;
 Textfield totalText;
@@ -17,26 +18,41 @@ Textfield sMinPush;
 Textfield sMaxPush;
 Textfield sSwitch;
 
+
+void loadShapes(String[] fileNames, RShape[] shapeArray, float margin) {
+  for (int i = 0; i < shapeArray.length; i++) {
+    String fileName = fileNames[i];
+    String[] test = split(fileName, '/');
+    String name = test[test.length - 1];
+    shapeArray[i] = RG.loadShape(fileName);
+    shapeArray[i] = RG.centerIn(shapeArray[i], buffer, margin);
+    shapeArray[i] = RG.polygonize(shapeArray[i]);
+    shapeArray[i].setName(name);
+    println("Shape: " + shapeArray[i].name);
+  }
+}
+
 void setupShapes() {
   RG.init(this);
   RG.ignoreStyles(true);
   
   // load the svgs
-  String[] shape_file_names = getFileNames("shapes", "svg"); // get the svg file names
+  String[] shape_file_names = getFileNames("shapes", "svg");     // get the svg file names
+  String[] logo_file_names  = getFileNames("logos", "svg"); // get the svg file names
+  
+  println(); 
+  println(logo_file_names);
+  println();
 
-  svgs = new RShape [shape_file_names.length];               // set the length of the svg array
-  for (int i = 0; i < svgs.length; i++) {
-    String fileName = shape_file_names[i];
-    String[] test = split(fileName, '\\');
-    String name = test[test.length - 1];
-    svgs[i] = RG.loadShape(fileName);
-    svgs[i] = RG.centerIn(svgs[i], buffer, MARGIN);
-    svgs[i] = RG.polygonize(svgs[i]);
-    
-    svgs[i].setName(name);
-    if (name.equals("distrikt.svg") == true) spec.setDistrikt(i);
-    println(i + ": " + svgs[i].name);
-  }
+  svgs  = new RShape [shape_file_names.length];                  // set the length of the svg array
+  logos = new RShape [logo_file_names.length];                   // set the length of the svg array
+  
+  loadShapes(shape_file_names, svgs, MARGIN);
+  loadShapes(logo_file_names, logos, 20);
+  
+  println(); 
+  for (int i = 0; i < logos.length; i++) println(logos[i].name);
+  println();
 
   shapes = new Shapes();
 

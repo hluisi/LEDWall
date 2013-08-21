@@ -258,7 +258,7 @@ class MovieClips {
 
     for (int i = 0; i < clips.length; i++) {
       //String[] parts = movie_files[i].split(java.io.File.pathSeparatorChar);
-      names[i] = movie_files[i].substring(movie_files[i].lastIndexOf("\\")+1);
+      names[i] = movie_files[i].substring(movie_files[i].lastIndexOf("/")+1);
       println("CLIPS - loading clip - " + i + ": " + names[i]);
       clips[i] = new Movie(app, movie_files[i]);
       clips[i].loop();

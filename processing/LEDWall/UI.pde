@@ -340,3 +340,46 @@ void doToggleSimulate(boolean b) {
   simulateOn = b;
 }
 
+
+class MyColorPicker extends ColorPicker {
+  protected Canvas showColor;
+  int fullHeight = 0;
+  
+  MyColorPicker(ControlP5 cp5, String theName, PFont tf) {
+    super(cp5, cp5.getTab("default"), theName, 0, 0, 100, 10);
+    sliderRed.getValueLabel().setFont(tf);
+    sliderRed.getCaptionLabel().setFont(tf);
+    sliderGreen.getValueLabel().setFont(tf);
+    sliderGreen.getCaptionLabel().setFont(tf);
+    sliderBlue.getValueLabel().setFont(tf);
+    sliderBlue.getCaptionLabel().setFont(tf);
+    sliderAlpha.getValueLabel().setFont(tf);
+    sliderAlpha.getCaptionLabel().setFont(tf);
+    
+    showColor = addCanvas(new ColorField());
+    removeCanvas(currentColor);
+    
+  }
+ 
+  void setItemSize(int w, int h) {
+    fullHeight = h * 4;
+    sliderRed.setSize(w, h);
+    sliderGreen.setSize(w, h);
+    sliderBlue.setSize(w, h);
+    sliderAlpha.setSize(w, h);
+    
+    sliderRed.setPosition(PVector.add(sliderGreen.getPosition(), new PVector(51, 0-11)));
+    sliderGreen.setPosition(PVector.add(sliderGreen.getPosition(), new PVector(51, h-10)));
+    sliderBlue.setPosition(PVector.add(sliderBlue.getPosition(), new PVector(51, 2*(h-10))));
+    sliderAlpha.setPosition(PVector.add(sliderAlpha.getPosition(), new PVector(51, 3*(h-10))));
+    //println(); println(currentColor.getPosition()); println();
+  }
+  
+  private class ColorField extends Canvas {
+                public void draw(PApplet theApplet) {
+                        theApplet.fill(_myArrayValue[0], _myArrayValue[1], _myArrayValue[2], _myArrayValue[3]);
+                        theApplet.rect(0, 0, 50, fullHeight + 3);
+                }
+        }
+  
+}

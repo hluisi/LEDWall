@@ -208,7 +208,7 @@ void draw() {
     MAX_KINECT = max(MAX_KINECT, KINECT_TIME);
   }
   
-  text.draw();
+  overlay.draw();
 
   if (debugOn) drawOnScreenDebug();
 
