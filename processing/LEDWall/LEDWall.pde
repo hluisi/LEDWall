@@ -31,6 +31,7 @@
 final boolean USE_MINIM   = true;  // load minim and use minim for audio reaction
 final boolean USE_SOPENNI = true;  // load and use simpleOpenNi for kinect interaction
 final boolean USE_TEENSYS = false; // send data to teensy's via serial
+final boolean USE_FULL_SCREEN = false; // run in full screen mode
 
 
 ////////////////////////////////////////////////////////
@@ -67,6 +68,8 @@ boolean debugOn  = false;  // show debug info on wall?
 boolean kinectOn = true;  // show kinect users  
 boolean wallOn   = true;   // send data to teensy's
 boolean simulateOn = false; // simulate the leds on the PC screen
+boolean whiteOn = false;
+
 
 
 ////////////////////////////////////////////////////////
@@ -197,6 +200,8 @@ void draw() {
   if (autoOn) autoMode();   // auto change mode to audio beat
 
   doMode();                   // do the current mode(s)
+  
+  if (whiteOn) buffer.filter(THRESHOLD);
 
   int stime;
 
@@ -345,9 +350,9 @@ void mousePressed() {
   }
 }
 
-//boolean sketchFullScreen() {
-//  return true;
-//}
+boolean sketchFullScreen() {
+  return USE_FULL_SCREEN;
+}
 
 public class DisposeHandler {
 

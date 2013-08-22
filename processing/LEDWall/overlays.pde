@@ -6,7 +6,7 @@ Toggle logoToggle;
 MyColorPicker cp;
 
 void setupOverlays() {
-  overlay = new Overlay(CENTER, CENTER, sFont);
+  overlay = new Overlay(CENTER, CENTER, mFont);
   
   // sets the min speed for the movies when mapped to BPM
   inText = createTextfield("doTextOverlay",                     // function name

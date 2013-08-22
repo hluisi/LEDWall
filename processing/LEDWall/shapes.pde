@@ -5,7 +5,7 @@ import geomerative.*;
 //final int TOTAL_PARTICLES = 8;
 final float MARGIN = 4;
 
-int totalShapes = 16;  // how many shapes on the screen
+int totalShapes = 12;  // how many shapes on the screen
 
 RShape[] svgs;
 RShape[] logos;
@@ -48,7 +48,7 @@ void setupShapes() {
   logos = new RShape [logo_file_names.length];                   // set the length of the svg array
   
   loadShapes(shape_file_names, svgs, MARGIN);
-  loadShapes(logo_file_names, logos, 20);
+  loadShapes(logo_file_names, logos, 2);
   
   println(); 
   for (int i = 0; i < logos.length; i++) println(logos[i].name);
@@ -337,8 +337,8 @@ class Particle {
   int pSpec;
   int pShape;
   int TOTAL_SHAPES;
-  int minZ = -200;
-  int maxZ = 40;
+  int minZ = -50;
+  int maxZ = 25;
   float minPush = 0.5;
   float maxPush = 5.0;
 

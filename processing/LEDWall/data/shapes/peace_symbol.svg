@@ -1,51 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   version="1.1"
-   id="peace_sign"
-   x="0px"
-   y="0px"
-   width="180"
-   height="180"
-   viewBox="0 0 180 180"
-   enable-background="new 0 0 180 180"
-   xml:space="preserve"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="peace_symbol.svg"><metadata
-   id="metadata3442"><rdf:RDF><cc:Work
-       rdf:about=""><dc:format>image/svg+xml</dc:format></cc:Work></rdf:RDF></metadata><defs
-   id="defs3440" /><sodipodi:namedview
-   pagecolor="#ffffff"
-   bordercolor="#666666"
-   borderopacity="1"
-   objecttolerance="10"
-   gridtolerance="10"
-   guidetolerance="10"
-   inkscape:pageopacity="0"
-   inkscape:pageshadow="2"
-   inkscape:window-width="1516"
-   inkscape:window-height="1041"
-   id="namedview3438"
-   showgrid="false"
-   inkscape:zoom="4.5555556"
-   inkscape:cx="90"
-   inkscape:cy="90"
-   inkscape:window-x="219"
-   inkscape:window-y="102"
-   inkscape:window-maximized="0"
-   inkscape:current-layer="peace_sign" />
-
-<path
-   style="fill:#000000"
-   d="M 81.691611,174.08126 C 47.44055,171.23108 15.105974,147.60246 4.894712,114.2946 -5.6429374,83.033703 5.9925577,46.653101 31.491817,26.117952 63.649969,-1.2464625 114.8753,-1.6931742 147.5851,24.969917 c 23.34514,18.008058 35.92875,48.950836 30.72197,78.099293 -5.33848,35.16853 -35.60726,63.43026 -70.12575,69.63157 -8.691825,1.72117 -17.669808,1.77714 -26.489709,1.38048 z M 79.92079,130.91193 c 0,-8.8704 0,-17.74079 0,-26.61119 -12.687215,12.08946 -25.500922,24.0493 -38.037791,36.29412 10.55721,8.97858 23.858687,15.0796 37.561796,16.79523 0.90587,-8.74192 0.280595,-17.67487 0.475995,-26.47816 z m 58.06464,10.15247 c -12.6021,-12.13972 -25.10585,-24.38296 -37.84857,-36.37559 0,17.63497 0,35.26994 0,52.90491 13.69361,-1.99907 28.60554,-8.67822 37.84857,-16.52932 z M 162.11927,85.022985 C 160.7484,57.060737 139.19541,32.692348 112.82145,24.789766 c -4.62913,-0.766463 -13.087486,-4.754962 -12.68179,0.03812 0.01,16.855785 0.0192,35.906693 0.0288,52.762478 17.00894,16.245511 33.86845,32.650846 51.05173,48.711336 7.79001,-10.91743 11.61622,-30.119799 10.89908,-41.278715 z M 54.531267,101.35276 C 62.994441,93.349601 71.457616,85.346443 79.92079,77.343284 79.801412,59.151321 80.214226,40.941919 79.611578,22.763811 76.74582,20.126571 66.969274,25.120852 61.229548,27.127833 34.473471,37.720406 15.547728,66.165246 18.276476,95.157232 c 0.952532,10.743608 4.482191,21.386588 10.55531,30.309478 8.65292,-7.94411 17.14531,-16.06355 25.699481,-24.11395 z"
-   id="path3343"
-   inkscape:connector-curvature="0"
-   sodipodi:nodetypes="ccccccccccccccccccccccccccccc" /></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="peace_sign" sodipodi:docname="peace_symbol.svg" inkscape:version="0.48.3.1 r9886" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="180px" height="180px"
+	 viewBox="0 0 180 180" enable-background="new 0 0 180 180" xml:space="preserve">
+<path id="path3343" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccccccccccccccccccccccccccc" d="M81.692,174.081
+	c-34.251-2.85-66.586-26.479-76.797-59.787C-5.643,83.034,5.993,46.653,31.492,26.118C63.65-1.246,114.875-1.693,147.585,24.97
+	c23.345,18.008,35.929,48.951,30.722,78.099c-5.338,35.169-35.607,63.43-70.126,69.632
+	C99.489,174.422,90.512,174.478,81.692,174.081z M79.921,130.912c0-8.87,0-17.741,0-26.611
+	C67.234,116.39,54.42,128.35,41.883,140.595c10.557,8.979,23.859,15.08,37.562,16.795C80.351,148.648,79.725,139.715,79.921,130.912
+	L79.921,130.912z M137.985,141.064c-12.602-12.14-25.106-24.383-37.849-36.376c0,17.635,0,35.27,0,52.905
+	C113.83,155.595,128.742,148.915,137.985,141.064z M162.119,85.023c-1.371-27.962-22.924-52.331-49.298-60.233
+	c-4.629-0.766-13.087-4.755-12.682,0.038c0.01,16.856,0.019,35.907,0.029,52.762c17.009,16.246,33.868,32.651,51.052,48.711
+	C159.01,115.384,162.836,96.182,162.119,85.023z M54.531,101.353c8.463-8.003,16.926-16.006,25.39-24.009
+	c-0.119-18.192,0.293-36.401-0.309-54.579c-2.866-2.637-12.642,2.357-18.382,4.364C34.473,37.72,15.548,66.165,18.276,95.157
+	c0.953,10.744,4.482,21.387,10.555,30.309C37.485,117.523,45.977,109.403,54.531,101.353z"/>
+</svg>

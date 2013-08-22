@@ -147,19 +147,20 @@ void setupControl() {
                  kinectOn,                    // starting value
                  "default");                  // tab
     cp5.getTooltip().register("doToggleKinectOn","Toggle kinect ON/OFF");
-    
-    createToggle("doToggleUserMap",           // function name
-                 "User",                      // button name
-                 80,                          // x postion
-                 WINDOW_YSIZE - 100,          // y postion
-                 60,                          // width
-                 30,                          // height
-                 tabFont,                     // font
-                 ControlP5.DEFAULT,           // toggle type
-                 kinect.mapUser,              // starting value
-                 "default");                  // tab
-    cp5.getTooltip().register("doToggleUserMap","Toggle 3D user mapping");
   }
+    
+  createToggle("doWhiteMode",           // function name
+               "White",                      // button name
+               80,                          // x postion
+               WINDOW_YSIZE - 100,          // y postion
+               60,                          // width
+               30,                          // height
+               tabFont,                     // font
+               ControlP5.DEFAULT,           // toggle type
+               whiteOn,              // starting value
+               "default");                  // tab
+  cp5.getTooltip().register("doWhiteMode","Toggle white mode");
+  
   
   createToggle("doToggleScreenDebug",         // function name
                "Debug",                       // button name
@@ -331,8 +332,8 @@ void doToggleKinectOn(boolean b) {
 }
 
 // turn on user depth mapping
-void doToggleUserMap(boolean b) {
-  kinect.mapUser = b;
+void doWhiteMode(boolean b) {
+  whiteOn = b;
 }
 
 // simulate wall
