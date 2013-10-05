@@ -77,8 +77,8 @@
 // or device names are assigned to each Teensy 3.0 by your operating system.
 #define VIDEO_XOFFSET  0
 #define VIDEO_YOFFSET  0       // display entire image
-#define VIDEO_WIDTH    100
-#define VIDEO_HEIGHT   100
+#define VIDEO_WIDTH    80
+#define VIDEO_HEIGHT   16
 
 
 const int ledsPerStrip = LED_WIDTH * LED_HEIGHT / 8;

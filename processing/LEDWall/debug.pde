@@ -39,10 +39,10 @@ void debugKinectImages() {
     float x = kinect.users[i].x*2.5 + 963;
     float y = kinect.users[i].y*2.5;
     if (y < 201) {
-      text(kinect.users[i].i, x, y);
+      text(kinect.users[i].id, x, y);
     }
     textAlign(LEFT, BASELINE);
-    if (i < 12) text(nf(kinect.users[i].i, 2) + ": " + 
+    if (i < 12) text(nf(kinect.users[i].id, 2) + ": " + 
       nf(kinect.users[i].x, 3, 1) + "," +
       nf(kinect.users[i].y, 3, 1) + "," +
       nf(kinect.users[i].z, 3, 2), 965, 240 + (20 * i));

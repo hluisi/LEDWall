@@ -145,8 +145,6 @@ class PVectorZComparator implements Comparator<PVector> {
 class UserXComparator implements Comparator<User> {
 
   public int compare(User u1, User u2) {
-    if ( !u1.isActive() )  return 1;
-    if ( !u2.isActive() )  return -1;
     if (u1.x != u1.x)      return 1;  // u1.x is NaN
     if (u2.x != u2.x)      return -1; // u2.x is NaN
     if (u1.isSet == false) return 1;  // u1 is not active
@@ -161,8 +159,7 @@ class UserXComparator implements Comparator<User> {
 class UserYComparator implements Comparator<User> {
 
   public int compare(User u1, User u2) {
-    if ( !u1.isActive() )  return 1;
-    if ( !u2.isActive() )  return -1;
+    
     if (u1.y != u1.y)      return 1;  // u1.x is NaN
     if (u2.y != u2.y)      return -1; // u2.x is NaN
     if (u1.isSet == false) return 1;  // u1 is not active
@@ -177,8 +174,7 @@ class UserYComparator implements Comparator<User> {
 class UserZComparator implements Comparator<User> {
 
   public int compare(User u1, User u2) {
-    if ( !u1.isActive() )  return 1;
-    if ( !u2.isActive() )  return -1;
+    
     if (u1.z != u1.z)      return 1;  // u1.x is NaN
     if (u2.z != u2.z)      return -1; // u2.x is NaN
     if (u1.isSet == false) return 1;  // u1 is not active
@@ -193,7 +189,7 @@ class UserZComparator implements Comparator<User> {
 class UserIComparator implements Comparator<User> {
 
   public int compare(User u1, User u2) {
-    if (u1.i < u2.i) return -1;
+    if (u1.id < u2.id) return -1;
     else return 1;
   }
 }
