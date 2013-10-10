@@ -6,6 +6,7 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
 
+
 Minim minim;
 AverageListener audio;
 
@@ -14,12 +15,14 @@ void setupMinim() {
   audio = new AverageListener();
 }
 
+
+
 class AverageListener implements AudioListener {
   AudioInput in;     // audio input
   FFT fft;           // FFT 
   BeatDetect beat;   // beat detect
 
-  boolean gotBeat = false, gotMode = false, gotKinect = false;
+    boolean gotBeat = false, gotMode = false, gotKinect = false;
 
   int last_update = millis();
   int BPM = 0, check = 0;
@@ -32,7 +35,12 @@ class AverageListener implements AudioListener {
   AverageListener() {
     in = minim.getLineIn(Minim.MONO, 512);           // create the audio in 
     in.mute();                                       // mute it
-    in.addListener(this);                            // add this object to listen to the audio in
+    in.addListener(this);     // add this object to listen to the audio in
+    in.printControls();
+    //println("Gain: " + in.getGain() );
+    //inGain = in.gain();
+    //in.setGain(-32);
+    println("Gain: " + in.getGain() );
     fft = new FFT(in.bufferSize(), in.sampleRate()); // create the FFT
     fft.logAverages(63, 1);                          // config the averages 
     fft.window(FFT.HAMMING);                         // shape the FFT buffer window using the HAMMING method
@@ -212,7 +220,4 @@ class AudioSpectrum {
     if (max_peak < 24) max_peak = 24;
   }
 }
-
-
-
 

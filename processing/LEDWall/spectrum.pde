@@ -6,7 +6,7 @@ void setupSpectrum() {
    spec = new Spectrum();
   
   // controll name, text name, x, y, width, height, text size, value, move 2 tab
-  createToggle("distriktOn", "distrikt", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, spec.dOn, DISPLAY_STR[DISPLAY_MODE_SPEC]);
+  //createToggle("distriktOn", "distrikt", TAB_START + 20, DEBUG_WINDOW_START + 50, 50, 50, mFont, ControlP5.DEFAULT, spec.dOn, DISPLAY_STR[DISPLAY_MODE_SPEC]);
   
   createTextfield("setCitySpecMax", "LINES", TAB_MAX_WIDTH + 10, DEBUG_WINDOW_START+55, 50, 20, nf(spec.SPEC_MAX,1), sFont, ControlP5.INTEGER, DISPLAY_STR[DISPLAY_MODE_SPEC]);
   cp5.getController("setCitySpecMax").captionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE);
@@ -15,9 +15,9 @@ void setupSpectrum() {
   cp5.getController("setCityLineMax").captionLabel().align(ControlP5.RIGHT_OUTSIDE, ControlP5.CENTER).setPaddingX(5);
 }
 
-void distriktOn(boolean b) {
-  spec.dOn = b;
-}
+//void distriktOn(boolean b) {
+//  spec.dOn = b;
+//}
 
 void setCitySpecMax(String valueString) {
   int specMax = int(valueString);

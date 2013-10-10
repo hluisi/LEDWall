@@ -45,7 +45,7 @@ class Squares {
   PVector b4;
   int size;
   int rotation;
-  int Z = -80;
+  int Z = -110;
   int maxSize = 80;
   int minSize = 20;
 
@@ -125,7 +125,9 @@ class Squares {
     buffer.translate(x, y, Z);
     //buffer.translate(0, 0, Z);
     buffer.rotate(radians(rotation));
+    //buffer.rotateZ(radians(rotation));
     buffer.box(size, size, size);
+    //buffer.sphere(size/2);
     buffer.popMatrix();
   }
   
@@ -141,8 +143,10 @@ class Squares {
     //buffer.noStroke();
     buffer.blendMode(REPLACE);
     buffer.stroke(0);
-    buffer.strokeWeight(1);
+    buffer.strokeWeight(0.5);
     //buffer.noStroke();
+    buffer.spotLight(255, 255, 255, buffer.width/2, buffer.height/2, size * 10, 0, 0, -1, PI/4, 2);;
+    
     drawBox(round(b1.x), round(b1.y), getColor(1,3,4));
     drawBox(round(b2.x), round(b2.y), getColor(4,2,0));
     drawBox(round(b3.x), round(b3.y), getColor(3,1,4));
@@ -151,6 +155,7 @@ class Squares {
   }
 }
 
+/*
 void dSquares() {
   buffer.background(0);
   buffer.blendMode(ADD);
@@ -220,4 +225,5 @@ void dSquares() {
 
   buffer.blendMode(BLEND);
 }
+*/
 

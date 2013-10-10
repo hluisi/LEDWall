@@ -61,7 +61,7 @@ final String[] DISPLAY_STR = {
 ////////////////////////////////////////////////////////
 // Use below to set the defaults when first starting
 // the LED wall  
-boolean autoOn   = false;   // start in auto mode?
+boolean autoOn   = true;   // start in auto mode?
 boolean audioOn  = true;   // start with audio reation on?
 boolean aBackOn  = true;  // start with audio background on?
 boolean debugOn  = false;  // show debug info on wall?
@@ -94,7 +94,7 @@ int MAX_DEBUG;
 int CP5_TIME;
 int MAX_CP5;
 
-int MAX_BRIGHTNESS = 192;  // starting brightness of the wall
+int MAX_BRIGHTNESS = 128;  // starting brightness of the wall
 
 int DISPLAY_MODE = 9;          // starting mode
 int LAST_MODE    = 0;  // start on the right tab
@@ -103,7 +103,7 @@ float noiseInc = 0.2;
 int IMAGE_MULTI = 3;           // how much should we blowup the image 
 int PIXEL_SIZE = 3;
 
-float autoSwitch = 0.75;
+float autoSwitch = 0.85;
 float autoTest = 0.0;
 
 

@@ -2,6 +2,7 @@
 
 import SimpleOpenNI.*;  // import simple open ni
 import java.util.Map;   // import hash map
+import java.util.concurrent.*;
 
 final int KINECT_WIDTH  = 640;  // the x size of the kinect's depth image
 final int KINECT_HEIGHT = 320;  // the y size of the kinect's depth image 
@@ -10,7 +11,7 @@ final int KINECT_HEIGHT = 320;  // the y size of the kinect's depth image
 PImage transparent;  // a transparent image used to reset the user images       
 Kinect kinect;     // the kinect object
 
-volatile HashMap<Integer, User> userHash; // user hash map
+HashMap<Integer, User> userHash; // user hash map
 
 ////////////////////////////////////////////////////////
 // Kinect setup function - setupKinect
@@ -65,13 +66,14 @@ class Kinect {
     context.setMirror(true);             // turn on mirroring
   }
 
-  synchronized void updateUsersArray() {
+  void updateUsersArray() {
     for (Map.Entry u : userHash.entrySet() ) {  // loop through the user hash table
       User thisUser = userHash.get( u.getKey() );
       if ( thisUser != null ) {
         thisUser.update();
-      } else {
-          thisUser.isSet = false;
+      } 
+      else {
+        thisUser.isSet = false;
       }
     }
     users = userHash.values().toArray( new User [userHash.size()] );  // set the users array
@@ -183,22 +185,22 @@ class User {
     userImage.updatePixels();
     img.copy(userImage, 0, 0, KINECT_WIDTH, KINECT_HEIGHT, 0, 0, COLUMNS, ROWS);
   }
-  
+
   void updatePixels(boolean mapDepth) {
     if (mapDepth) {
       MAP_TIME = 0;
       int stime = millis();
-      
+
       int tr = (c >> 16) & 0xFF;  // get the red value of the user's color
       int tg = (c >> 8) & 0xFF;   // get the green value of the user's color
       int tb =  c & 0xFF;         // get the blue value of the user's color
-      
+
       for (int i = 0; i < userImage.pixels.length; i++) {
         if (userImage.pixels[i] == 0) continue;
         float r = map(depthMap[i], depthMAX, depthMIN, 16, tr);  // map brightness from depth image to the red of the user color
         float g = map(depthMap[i], depthMAX, depthMIN, 16, tg);  // map brightness from depth image to the green of the user color
         float b = map(depthMap[i], depthMAX, depthMIN, 16, tb);  // map brightness from depth image to the blue of the user color
-        userImage.pixels[i] = color(r,g,b);
+        userImage.pixels[i] = color(r, g, b);
       }
       MAP_TIME = millis() - stime;
       MAX_MAP = max(MAX_MAP, MAP_TIME);
@@ -210,7 +212,7 @@ class User {
     return isSet;
   }
 
-  
+
 
   boolean hasSkeleton() {
     return skeleton;
@@ -237,13 +239,14 @@ class User {
     x = projected.x / 4;  // div by 4 because the wall is 4 times 
     y = projected.y / 4;  // smaller then the kinect user image
     z = (projected.z / 500) * -1;    // bring things closer.  May want to remove this
-    
+
     //z = (525 / z);
-    
+
     // check make sure we have real numbers
     if ( x != x || y != y || z != z) {    // checking for NaN
       isSet = false;  // got NaN so we're not set
-    } else { // all is good
+    } 
+    else { // all is good
       resetPixels();
       c = colors.users[colorIndex];
       isSet = true;
@@ -251,11 +254,11 @@ class User {
   }
 
   void update() {
-    println("getting CoM for user: " + id);
+    //println("getting CoM for user: " + id);
     if ( kinect.context.getCoM(id, realWorld) ) {        // try to set center of mass real world location
       // let's try to get the head joint, which is better then the CoM
-      println("got CoM");
-      
+      //println("got CoM");
+
       float confidence = kinect.context.getJointPositionSkeleton(id, SimpleOpenNI.SKEL_HEAD, headJoint);
       if (confidence < 0.5) {
         // not very good, so lets use the CoM
@@ -268,7 +271,6 @@ class User {
         kinect.context.convertRealWorldToProjective(headJoint, projWorld);  // convert real world to projected world
         updateCoM(projWorld);
       }
-      
     } 
     else {
       isSet = false;    // couldn't get CoM so nothing is set.
@@ -281,7 +283,7 @@ class User {
 // Kinect User Callback - onNewUser
 ////////////////////////////////////////////////////////
 // called when a new user is found
-public synchronized void onNewUser(SimpleOpenNI curContext, int userId) {
+public void onNewUser(SimpleOpenNI curContext, int userId) {
   //println("KINECT - onNewUser - found new user: " + userId);
   //println(" - starting pose detection");
 
@@ -296,10 +298,9 @@ public synchronized void onNewUser(SimpleOpenNI curContext, int userId) {
 ////////////////////////////////////////////////////////
 // called when user can't be found for 10 seconds. The file
 // may be found (PrimeSense\SensorKinect\Data\GlobalDefaultsKinect.ini)
-public synchronized void onLostUser(SimpleOpenNI curContext, int userId) {
+public void onLostUser(SimpleOpenNI curContext, int userId) {
   //println("KINECT - onLostUser - lost user: " + userId);
   //userHash.get(userId).setActive(false);    // set user to non-active status (won't be updated)
   userHash.remove(userId);                  // remove user from the hash table
 }
-
 

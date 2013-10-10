@@ -5,7 +5,7 @@ import geomerative.*;
 //final int TOTAL_PARTICLES = 8;
 final float MARGIN = 4;
 
-int totalShapes = 12;  // how many shapes on the screen
+int totalShapes = 8;  // how many shapes on the screen
 
 RShape[] svgs;
 RShape[] logos;
@@ -337,10 +337,10 @@ class Particle {
   int pSpec;
   int pShape;
   int TOTAL_SHAPES;
-  int minZ = -50;
-  int maxZ = 25;
-  float minPush = 0.5;
-  float maxPush = 5.0;
+  int minZ = -100;
+  int maxZ = 32;
+  float minPush = 0.25;
+  float maxPush = 10.0;
 
   final int MAX_SPEC = 4;
 

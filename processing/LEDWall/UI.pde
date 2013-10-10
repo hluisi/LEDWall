@@ -60,7 +60,7 @@ void setupControl() {
                 DEBUG_WINDOW_START + 35,      // y postion
                 80,                           // width
                 DEBUG_WINDOW_YSIZE,      // height
-                "Brightness",                 // caption name
+                "B",                 // caption name
                 20,                           // handle size
                 lFont,                        // font
                 Slider.FIX,              // slider type  (FIX or FLEXIBLE)
@@ -72,6 +72,26 @@ void setupControl() {
          //.setPaddingY(0);
          
   cp5.getTooltip().register("doSliderBrightness","Changes the max brightness of the wall.").getLabel().setFont(mFont);
+  /*
+  createHSlider("doSliderGain",         // function name
+                audio.in.gain().getMinimum(),                            // min value
+                audio.in.gain().getMaximum(),                          // max value
+                audio.in.getGain(),               // starting value
+                TAB_START - 50,               // x postion
+                DEBUG_WINDOW_START + 35,      // y postion
+                40,                           // width
+                DEBUG_WINDOW_YSIZE,      // height
+                "G",                 // caption name
+                20,                           // handle size
+                lFont,                        // font
+                Slider.FIX,              // slider type  (FIX or FLEXIBLE)
+                "default");                   // tab
+  cp5.getController("doSliderGain")
+    .valueLabel()
+      .align(ControlP5.CENTER, ControlP5.TOP);
+      
+  cp5.getTooltip().register("doSliderGain","Changes audio in gain.").getLabel().setFont(mFont);
+  */
   
   // auto mode toggle
   createToggle("doToggleAutoOn",              // function name
@@ -290,6 +310,11 @@ void setTab(String cName, String tabName, int ID, int w, int h, PFont tf, boolea
 void doSliderBrightness(int v) {
   MAX_BRIGHTNESS = v;
 }
+
+//void doSliderGain(float v) {
+//  audio.in.setGain(v);
+//  println("gain set to: " + v);
+//}
 
 void controlEvent(ControlEvent theEvent) {
   // tab?
