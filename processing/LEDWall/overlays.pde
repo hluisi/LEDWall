@@ -3,6 +3,7 @@ Textfield inText;
 Slider logoSlider;
 Toggle textToggle;
 Toggle logoToggle;
+Toggle colorToggle;
 MyColorPicker cp;
 
 void setupOverlays() {
@@ -63,6 +64,19 @@ void setupOverlays() {
                "Overlays");     // tab
   cp5.getTooltip().register("allowMovieBPM","Turn ON/OFF overlay text.");
   
+  // toggle for controlling movie speed via the BPM
+  colorToggle = createToggle("mapColorToggle",                      // function name
+               "MAP",                         // button name
+               TAB_START + 200,                  // x postion
+               DEBUG_WINDOW_START + 40,              // y postion
+               80,                                   // width
+               80,                                   // height
+               lFont,                                // font
+               ControlP5.DEFAULT,                    // toggle type
+               overlay.mapColor,                         // starting value
+               "Overlays");     // tab
+  cp5.getTooltip().register("mapColorToggle","Turn ON/OFF color mapping.");
+  
   cp = new MyColorPicker(cp5, "picker", lFont);
   cp.setPosition(TAB_START + 20, DEBUG_WINDOW_START + 40)
     .setColorValue(color(255, 255, 255, 255))
@@ -91,6 +105,11 @@ void showLogoOverlay(boolean b) {
   if (overlay.logoOn && overlay.textOn) textToggle.setState(false);
 }
 
+void mapColorToggle(boolean b) {
+  overlay.mapColor = b;
+  //if (overlay.logoOn && overlay.textOn) textToggle.setState(false);
+}
+
 void picker(int col) {
   overlay.setColor(col);
 }
@@ -105,8 +124,10 @@ class Overlay {
   int align_x, align_y;       // text align x & y
   int x = 80;
   int y = 40;
+  int cMin = 32;
   boolean textOn;
   boolean logoOn;
+  boolean mapColor;
   int current_logo = 0;
   color c;
 
@@ -117,6 +138,7 @@ class Overlay {
     lines = new ArrayList<String>();
     textOn = false;
     logoOn = false;
+    mapColor = false;
     txt = ".";
     set("testing 1 2 3 4");
     c = color(255);
@@ -236,7 +258,12 @@ class Overlay {
   }
 
   void draw() {
-    buffer.fill(c);
+    if (mapColor) {
+      color m =  mapAlphaByVol(c);
+      buffer.fill(m);
+    } else {
+      buffer.fill(c);
+    }
     if (textOn) drawText();
     if (logoOn) drawLogo();
   }

@@ -38,6 +38,7 @@ void setupKinect() {
 class Kinect {
   SimpleOpenNI context;         // kinect context
   User[] users;                 // an array of users (this class tracks user locations and creates user images)
+  int LIMIT = 1;
   int[] depthMap;               // depth image used for mapping user depths
   int[] userMap;                // an array of user numbers on a per pixel level
   boolean mapUser = true;      // map the user color to the depth image
@@ -102,7 +103,7 @@ class Kinect {
   }
 
   void drawImages() {
-    for (int i = 0; i < users.length; i++) {
+    for (int i = 0; i < kinect.users.length && i < LIMIT; i++) {
       if ( users[i].onScreen() ) {
         users[i].updatePixels(mapUser);
         buffer.image(users[i].img, 0, 0);

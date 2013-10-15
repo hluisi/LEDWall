@@ -21,6 +21,7 @@ class AverageListener implements AudioListener {
   AudioInput in;     // audio input
   FFT fft;           // FFT 
   BeatDetect beat;   // beat detect
+  //IIRFilter filt;
 
     boolean gotBeat = false, gotMode = false, gotKinect = false;
 
@@ -34,13 +35,15 @@ class AverageListener implements AudioListener {
 
   AverageListener() {
     in = minim.getLineIn(Minim.MONO, 512);           // create the audio in 
+    //filt = new LowPassFS(120, in.sampleRate() );
+    //in.patch(filt);
     in.mute();                                       // mute it
     in.addListener(this);     // add this object to listen to the audio in
-    in.printControls();
+    //in.printControls();
     //println("Gain: " + in.getGain() );
     //inGain = in.gain();
     //in.setGain(-32);
-    println("Gain: " + in.getGain() );
+    //println("Gain: " + in.getGain() );
     fft = new FFT(in.bufferSize(), in.sampleRate()); // create the FFT
     fft.logAverages(63, 1);                          // config the averages 
     fft.window(FFT.HAMMING);                         // shape the FFT buffer window using the HAMMING method

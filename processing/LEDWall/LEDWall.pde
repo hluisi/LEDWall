@@ -33,7 +33,6 @@ final boolean USE_SOPENNI = true;  // load and use simpleOpenNi for kinect inter
 final boolean USE_TEENSYS = false; // send data to teensy's via serial
 final boolean USE_FULL_SCREEN = false; // run in full screen mode
 
-
 ////////////////////////////////////////////////////////
 // LEDWall MODES
 ////////////////////////////////////////////////////////
@@ -54,7 +53,6 @@ final int TOTAL_MODES = 11;
 final String[] DISPLAY_STR = { 
   "Globals", "EQ", "Wave", "Rainbow", "Shapes", "Spin", "Pulsar", "Spectrum", "Atari", "Movies", "Squares", "Test", "Debug"
 };
-
 
 ////////////////////////////////////////////////////////
 // LEDWall defaults

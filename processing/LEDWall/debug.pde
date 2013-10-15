@@ -32,7 +32,7 @@ void debugWallImage() {
 
 void debugKinectImages() {
   textFont(lFont);
-  for (int i = 0; i < kinect.users.length && i < 12; i++) {
+  for (int i = 0; i < kinect.users.length && i < kinect.LIMIT; i++) {
     image(kinect.users[i].img, 963, 0, 400, 200);
     textAlign(CENTER, CENTER);
     fill(255);
@@ -83,7 +83,7 @@ void debugTimers() {
   fill(255);
   text("fps: " + nf(frameRate, 2, 2), x, 240);
   text("mode: " + nf(MODE_TIME, 2) + "/" + nf(MAX_MODE, 2), x, 260);
-  text("audio: " + nf(AUDIO_TIME, 2) + "/" + nf(MAX_AUDIO, 2), x, 280);
+  text("bpm:    " + nf(audio.BPM, 3), x, 280);
   text("kinect: " + nf(KINECT_TIME, 2) + "/" + nf(MAX_KINECT, 2), x, 300);
   text("user map: " + nf(MAP_TIME, 2) + "/" + nf(MAX_MAP, 2), x, 320);
   text("t-buffer: " + nf(TBUFFER_TIME, 2) + "/" + nf(MAX_TBUFFER, 2), x, 340);

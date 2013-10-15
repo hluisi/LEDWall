@@ -113,6 +113,30 @@ color mapByVol(color rgb) {
   return color(r, g, b);                               // return the new color
 }
 
+
+
+color mapByVol(color rgb, int cMin) {
+  int tr = (rgb >> 16) & 0xFF;                         // get the red value of the color
+  int tg = (rgb >> 8) & 0xFF;                          // get the green value of the color
+  int tb =  rgb & 0xFF;                                // get the blue value of the color
+  float r = map(audio.volume.value, 0, 100, cMin, tr);  // map the volume to the redness of the color
+  float g = map(audio.volume.value, 0, 100, cMin, tg);  // map the volume to the greenness of the color
+  float b = map(audio.volume.value, 0, 100, cMin, tb);  // map the volume to the blueness of the color
+  return color(r, g, b);                               // return the new color
+}
+
+color mapAlphaByVol(color argb) {
+  int ta = (argb >> 24) & 0xFF;
+  int tr = (argb >> 16) & 0xFF;                         // get the red value of the color
+  int tg = (argb >> 8) & 0xFF;                          // get the green value of the color
+  int tb =  argb & 0xFF;                                // get the blue value of the color
+  float a = map(audio.volume.value, 0, 100, 8, ta);
+  float r = map(audio.volume.value, 0, 100, 8, tr);  // map the volume to the redness of the color
+  float g = map(audio.volume.value, 0, 100, 8, tg);  // map the volume to the greenness of the color
+  float b = map(audio.volume.value, 0, 100, 8, tb);  // map the volume to the blueness of the color
+  return color(r, g, b, a);                               // return the new color
+}
+
 // To sort PVectors by their X values.
 class PVectorXComparator implements Comparator<PVector> {
 

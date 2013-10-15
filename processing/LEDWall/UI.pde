@@ -58,11 +58,11 @@ void setupControl() {
                 MAX_BRIGHTNESS,               // starting value
                 TAB_START - 95,               // x postion
                 DEBUG_WINDOW_START + 35,      // y postion
-                80,                           // width
-                DEBUG_WINDOW_YSIZE,      // height
-                "B",                 // caption name
+                40,                           // width
+                DEBUG_WINDOW_YSIZE - 40,      // height
+                "BR",                 // caption name
                 20,                           // handle size
-                lFont,                        // font
+                mFont,                        // font
                 Slider.FIX,              // slider type  (FIX or FLEXIBLE)
                 "default");                   // tab
   cp5.getController("doSliderBrightness")
@@ -72,26 +72,26 @@ void setupControl() {
          //.setPaddingY(0);
          
   cp5.getTooltip().register("doSliderBrightness","Changes the max brightness of the wall.").getLabel().setFont(mFont);
-  /*
-  createHSlider("doSliderGain",         // function name
-                audio.in.gain().getMinimum(),                            // min value
-                audio.in.gain().getMaximum(),                          // max value
-                audio.in.getGain(),               // starting value
+  
+  createHSlider("doSliderUsers",         // function name
+                1,                            // min value
+                10,                          // max value
+                kinect.LIMIT,               // starting value
                 TAB_START - 50,               // x postion
                 DEBUG_WINDOW_START + 35,      // y postion
                 40,                           // width
-                DEBUG_WINDOW_YSIZE,      // height
-                "G",                 // caption name
+                DEBUG_WINDOW_YSIZE - 40,      // height
+                "UL",                 // caption name
                 20,                           // handle size
-                lFont,                        // font
+                mFont,                        // font
                 Slider.FIX,              // slider type  (FIX or FLEXIBLE)
                 "default");                   // tab
-  cp5.getController("doSliderGain")
+  cp5.getController("doSliderUsers")
     .valueLabel()
       .align(ControlP5.CENTER, ControlP5.TOP);
       
-  cp5.getTooltip().register("doSliderGain","Changes audio in gain.").getLabel().setFont(mFont);
-  */
+  cp5.getTooltip().register("doSliderUsers","Kinect user limit").getLabel().setFont(mFont);
+  
   
   // auto mode toggle
   createToggle("doToggleAutoOn",              // function name
@@ -311,10 +311,10 @@ void doSliderBrightness(int v) {
   MAX_BRIGHTNESS = v;
 }
 
-//void doSliderGain(float v) {
-//  audio.in.setGain(v);
-//  println("gain set to: " + v);
-//}
+void doSliderUsers(int v) {
+  kinect.LIMIT = v;
+  //println("u set to: " + v);
+}
 
 void controlEvent(ControlEvent theEvent) {
   // tab?
