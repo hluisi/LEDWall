@@ -87,8 +87,13 @@ class Teensy {
     }
 
     delay(100);
+    String line;
+    
+    byte temp[] = port.readBytesUntil(10);
+    if (temp == null) line = null;
+    else line = new String(temp);
 
-    String line = port.readStringUntil(10);  // give me everything up to the linefeed
+    //String line = port.readStringUntil(10);  // give me everything up to the linefeed
 
     if (line == null) {  //  no data back from the teensy? 
       println("Serial port " + portName + " is not responding.");
@@ -96,7 +101,9 @@ class Teensy {
       exit();
     }
 
-    String param[] = line.split(",");  // get the param's (which we don't really need)
+
+    String[] param = line.split(",");
+ 
     if (param.length != 12) { // didn't get 12 back?  bad news...
       println("Error: port " + portName + " did not respond to LED config query");
       exit();

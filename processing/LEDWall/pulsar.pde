@@ -51,9 +51,9 @@ class Pulsar {
     float y = kinectUser.y + ( radius * sin( radians(angle) ) );
     
     //buffer.pushMatrix();
-    //buffer.rectMode(CORNERS);
-    //buffer.translate(kinectUser.x, kinectUser.y, Z);
-    //buffer.rect(0,0,x,y);
+    //buffer.rectMode(RADIUS);
+    //buffer.translate(kinectUser.x, kinectUser.y, 0);
+    //buffer.rect(80,40,x,y);
     
     if (kinectUser.x == 80 && kinectUser.y == 40)
       buffer.line(kinectUser.x, kinectUser.y, Z, x, y, 0);
@@ -64,8 +64,10 @@ class Pulsar {
   }
 
   void draw() {
-    //buffer.blendMode(REPLACE);
+    
+    buffer.pushStyle();
     buffer.blendMode(ADD);
+    //buffer.blendMode(REPLACE);
     doBackground();
     
     buffer.noFill();
@@ -87,5 +89,6 @@ class Pulsar {
       drawLine(radius, angle + 180 + spin);
     }
     buffer.blendMode(BLEND);
+    buffer.popStyle();
   }
 }

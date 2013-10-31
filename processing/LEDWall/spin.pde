@@ -18,20 +18,23 @@ void setupSpin() {
 class ConcCircles {
   float r = 16;
   float theta = 0;
-  float numCircles = 32;
-  int rows = 8;
+  float numCircles = 8;
+  int rows = 16;
   PVector kinectUser;
   int maxSize;
   int size;
+  float grow;
+  float gAmount = 0.25;
 
   ConcCircles() {
-    maxSize = 32;
+    maxSize = 16;
     kinectUser = new PVector();
   }
 
   color getCircleColor(int i) {
     int m = i % (audio.averageSpecs.length - 1);
-    color c = getBright(colors.colorMap(1,3,m));
+    //color c = getBright(colors.colorMap(1,3,m));
+    color c = colors.colorMap(1,3,m);
     return c;
   }
   
@@ -57,16 +60,20 @@ class ConcCircles {
   }
 
   void drawCircle(int n, int size) {
+    //float r2 = r + random(3);
     float x = (r+16*n)*cos(theta) + kinectUser.x;
     float y = (r+16*n)*sin(theta) + kinectUser.y;
     float z = -5;
     buffer.pushMatrix();
     buffer.translate(x, y, z);
-    buffer.ellipse(0, 0, size, size);
+    buffer.ellipse(0, 0, size + grow, size + grow);
+    //buffer.sphere(size);
     buffer.popMatrix();
+    grow += gAmount;
   }
   
   void update() {
+    grow = 0;
     if ( audioOn ) {
       if ( audio.isOnBeat() ) {
         float test = random(0, 1);

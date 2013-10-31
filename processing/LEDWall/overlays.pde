@@ -96,8 +96,10 @@ void showTextOverlay(boolean b) {
 
 void doLogoSlider(int v) {
   overlay.current_logo = v;
-  String name = logos[overlay.current_logo].name;
-  logoSlider.setLabel(name);
+  //String name = logos[overlay.current_logo].name;
+  //Label temp = logoSlider.getCaptionLabel();
+  //temp.setText(logos[overlay.current_logo].name);
+  logoSlider.setCaptionLabel(logos[overlay.current_logo].name);
 }
 
 void showLogoOverlay(boolean b) {
