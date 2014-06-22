@@ -24,16 +24,16 @@ void setupTeensys() {
   println("Serial Ports List:");
   println(list);
 
-  teensys[0] = new Teensy(this, 0, "COM12", true);
-  teensys[1] = new Teensy(this, 1, "COM8",  true);
-  teensys[2] = new Teensy(this, 2, "COM11", true);
-  teensys[3] = new Teensy(this, 3, "COM9",  true);
-  teensys[4] = new Teensy(this, 4, "COM10", true);
-  teensys[5] = new Teensy(this, 5, "COM5",  true);
-  teensys[7] = new Teensy(this, 6, "COM6",  true);
-  teensys[6] = new Teensy(this, 7, "COM4",  true);
-  teensys[8] = new Teensy(this, 8, "COM3",  true);  
-  teensys[9] = new Teensy(this, 9, "COM7",  true);
+  teensys[0] = new Teensy(this, 8, "COM12", true);
+  teensys[1] = new Teensy(this, 7, "COM8",  true);
+  teensys[2] = new Teensy(this, 0, "COM11", true);
+  teensys[3] = new Teensy(this, 2, "COM9",  true);
+  teensys[4] = new Teensy(this, 1, "COM10", true);
+  teensys[5] = new Teensy(this, 6, "COM5",  true);
+  teensys[7] = new Teensy(this, 3, "COM6",  true);
+  teensys[6] = new Teensy(this, 9, "COM14",  true);
+  teensys[8] = new Teensy(this, 4, "COM3",  true);  
+  teensys[9] = new Teensy(this, 5, "COM7",  true);
 
 
   //println(gammaTable);

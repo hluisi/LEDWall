@@ -30,8 +30,8 @@
 // to successfully run the LED wall  
 final boolean USE_MINIM   = true;  // load minim and use minim for audio reaction
 final boolean USE_SOPENNI = true;  // load and use simpleOpenNi for kinect interaction
-final boolean USE_TEENSYS = false; // send data to teensy's via serial
-final boolean USE_FULL_SCREEN = false; // run in full screen mode
+final boolean USE_TEENSYS = true; // send data to teensy's via serial
+final boolean USE_FULL_SCREEN = true; // run in full screen mode
 
 ////////////////////////////////////////////////////////
 // LEDWall MODES
